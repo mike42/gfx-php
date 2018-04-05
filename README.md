@@ -1,5 +1,7 @@
 # image-php - The pure PHP image processing library
 
+[![Build Status](https://travis-ci.org/mike42/image-php.svg?branch=master)](https://travis-ci.org/mike42/image-php)
+
 This project implements raster graphics processing in pure PHP.
 
 Currently, it can perform basic operations on the netpbm portable bitmap (P4) format.
