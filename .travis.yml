@@ -1,0 +1,35 @@
+---
+dist: trusty
+sudo: required
+
+language: php
+
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+  - hhvm-3.21
+  - hhvm-nightly
+
+matrix:
+  allow_failures:
+    - php: nightly
+    - php: hhvm-nightly
+
+install:
+  - composer install
+
+before_script:
+  - mkdir -p build/logs/
+
+script:
+  # Check code style
+  - php vendor/bin/phpcs --standard=psr2 src/ -n
+  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_success:
+  # Upload coverage statistics to coveralls service after test
+  - wget -c -nc https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
+  - php coveralls.phar -v
+...

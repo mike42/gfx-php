@@ -1,4 +1,7 @@
 <?php
+namespace Mike42\ImagePhp;
+
+use Exception;
 
 /**
  * Small implementation of basic raster operations on PBM files to support
