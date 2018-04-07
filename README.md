@@ -13,11 +13,14 @@ for the Thermal Sans Mono font, which involves rendering
 characters from a small bitmap font into a rectangle:
 
 ```php
-use Mike42\ImagePhp\PbmImage;
+<?php
+require_once(__DIR__ . "/../vendor/autoload.php");
+
+use Mike42\ImagePhp\Image;
 
 // Inputs
 $outFile = "out.pbm";
-$font = PbmImage::fromFile(dirname(__FILE__). "/fonts/5x7hex.pbm");
+$font = Image::fromFile(dirname(__FILE__). "/resources/5x7hex.pbm");
 $codePoint = str_split("0A2F");
 $charWidth = 5;
 $charHeight = 7;
@@ -28,13 +31,13 @@ $subImages = [];
 for($i = 0; $i < count($codePoint); $i++) {
   $id = array_search($codePoint[$i], $chars);
   if($id === false) {
-    die("Don't know how to encode " . $codePoint[$i]);
+    throw new Exception("Don't know how to encode " . $codePoint[$i]);
   }
   $subImages[] = $font -> subImage($id * $charWidth, 0, $charWidth, $charHeight);
 }
 
 // Place four images in a box
-$out = PbmImage::create(18, 17);
+$out = Image::create(18, 17, Image::IMAGE_BLACK_WHITE);
 $out -> rect(0, 0, 18, 17);
 $out -> rect(3, 0, 12, 17, true, 0, 0);
 $out -> compose($subImages[0], 0, 0, 4, 1, $charWidth, $charHeight);
