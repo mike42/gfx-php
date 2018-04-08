@@ -7,10 +7,10 @@ use Mike42\ImagePhp\Codec\ImageCodec;
 class Image
 {
     // Color depths
-    public const IMAGE_BLACK_WHITE = 1;
-    public const IMAGE_GRAY = 2;
-    public const IMAGE_RGB = 3;
-    public const IMAGE_RGBA = 4;
+    const IMAGE_BLACK_WHITE = 1;
+    const IMAGE_GRAY = 2;
+    const IMAGE_RGB = 3;
+    const IMAGE_RGBA = 4;
 
     protected static $codecs = null;
     
