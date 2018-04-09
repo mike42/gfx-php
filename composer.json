@@ -3,7 +3,7 @@
     "description": "The pure PHP image processing library",
     "homepage": "https://github.com/mike42/image-php",
     "type": "library",
-    "license": "LGPL",
+    "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Michael Billington",
