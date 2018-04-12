@@ -52,13 +52,13 @@ class GrayscaleRasterImage extends AbstractRasterImage
         $this -> data = $data;
     }
 
-    public static function create($width, $height, array $data = null) : BlackAndWhiteRasterImage
+    public static function create($width, $height, array $data = null, $maxVal = 255) : GrayscaleRasterImage
     {
         $expectedBytes = $width * $height;
         if ($data === null) {
             $data = array_values(array_fill(0, $expectedBytes, 255));
         }
-        return new BlackAndWhiteRasterImage($width, $height, $data);
+        return new GrayscaleRasterImage($width, $height, $data, $maxVal);
     }
 
     public function getRasterData(): string

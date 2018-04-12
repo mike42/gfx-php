@@ -53,9 +53,6 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         $width = $sizes[0];
         $height = $sizes[1];
         $line_end = $next_line_end;
-        // Skip comments again. Note that this call is potentially unsafe, since
-        // binary data can start with '#' too.
-        $line_end = self::skipComments($blob, $line_end);
         // Extract data and return differently based on each magic number.
         switch ($pnmMagicNumber) {
             case "P4":
@@ -70,17 +67,25 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 $dataValues = array_values($dataUnpacked);
                 return BlackAndWhiteRasterImage::create($width, $height, $dataValues);
             case "P5":
-                $expectedBytes = $width * $height;
+                // Determine color depth
+                $line_end = self::skipComments($blob, $line_end);
+                // TODO determine colour depth
+                $next_line_end = strpos($blob, "\n", $line_end + 1);
+                $depth = $maxVal >= 255 ? 2 : 1;
+                $line_end = $next_line_end;
+                // Extract data
+                $expectedBytes = $width * $height * $depth;
                 $data = substr($blob, $line_end + 1);
                 $actualBytes = strlen($data);
                 if ($expectedBytes != $actualBytes) {
                     throw new Exception("Expected $expectedBytes data, but got $actualBytes, file probably corrupt.");
                 }
-                $dataUnpacked = unpack("C*", $data);
+                $dataUnpacked = unpack("C2*", $data);
                 $dataValues = array_values($dataUnpacked);
-                return GraycaleRasterImage::create($width, $height, $dataValues);
+                return GrayscaleRasterImage::create($width, $height, $dataValues, $maxVal);
             case "P6":
-                $expectedBytes = $width * $height * 3;
+                $depth = 1;
+                $expectedBytes = $width * $height * $depth * 3;
                 $data = substr($blob, $line_end + 1);
                 $actualBytes = strlen($data);
                 if ($expectedBytes != $actualBytes) {
@@ -88,7 +93,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 }
                 $dataUnpacked = unpack("C*", $data);
                 $dataValues = array_values($dataUnpacked);
-                return RgbRasterImage::create($width, $height, $dataValues);
+                return RgbRasterImage::create($width, $height, $maxVal,$dataValues);
         }
         // TODO handle formats in a way that lets us remove this fallthrough.
         throw new Exception("Format not supported.");
