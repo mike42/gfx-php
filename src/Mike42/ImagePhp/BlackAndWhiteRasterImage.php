@@ -17,12 +17,12 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
 
     protected $data;
 
-    public function invert() : void
+    public function invert()
     {
         array_walk($this -> data, 'self::invertByte');
     }
 
-    public function clear() : void
+    public function clear()
     {
         array_walk($this -> data, 'self::clearByte');
     }
@@ -135,7 +135,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return $ret;
     }
 
-    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height) : void
+    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
     {
         for ($y = 0; $y < $height; $y++) {
             $srcY = $y + $startY;
