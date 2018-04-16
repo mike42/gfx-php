@@ -93,7 +93,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 }
                 $dataUnpacked = unpack("C*", $data);
                 $dataValues = array_values($dataUnpacked);
-                return RgbRasterImage::create($width, $height, $maxVal,$dataValues);
+                return RgbRasterImage::create($width, $height, $maxVal, $dataValues);
         }
         // TODO handle formats in a way that lets us remove this fallthrough.
         throw new Exception("Format not supported.");
