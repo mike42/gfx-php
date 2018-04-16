@@ -9,4 +9,8 @@ interface RasterImage
     public function getHeight(): int;
     
     public function getRasterData(): string;
+    
+    public function scale(int $width, int $height): RasterImage;
+    
+    public function write(string $filename);
 }

@@ -69,8 +69,9 @@ class PnmCodec implements ImageDecoder, ImageEncoder
             case "P5":
                 // Determine color depth
                 $line_end = self::skipComments($blob, $line_end);
-                // TODO determine colour depth
                 $next_line_end = strpos($blob, "\n", $line_end + 1);
+                $maxValLine = substr($blob, $line_end + 1, ($next_line_end - $line_end) - 1);
+                $maxVal = (int)$maxValLine;
                 $depth = $maxVal >= 255 ? 2 : 1;
                 $line_end = $next_line_end;
                 // Extract data
@@ -121,10 +122,19 @@ class PnmCodec implements ImageDecoder, ImageEncoder
 
     public function encode(RasterImage $image): string
     {
-        $dimensions = $image -> getWidth() . " " . $image -> getHeight();
-        $data = $image -> getRasterData();
-        $contents = "P4\n$dimensions\n$data";
-        return $contents;
+        if ($image instanceof BlackAndWhiteRasterImage) {
+            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+            $data = $image -> getRasterData();
+            $contents = "P4\n$dimensions\n$data";
+            return $contents;
+        } else if ($image instanceof GrayscaleRasterImage) {
+            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+            $maxVal = $image -> getMaxVal();
+            $data = $image -> getRasterData();
+            $contents = "P5\n$dimensions\n$maxVal\n$data";
+            return $contents;
+        }
+        throw new Exception("Unsupported image type");
     }
 
     public function getEncodeFormats(): array

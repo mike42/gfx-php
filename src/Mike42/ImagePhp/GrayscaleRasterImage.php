@@ -10,6 +10,8 @@ class GrayscaleRasterImage extends AbstractRasterImage
     protected $height;
 
     protected $data;
+    
+    protected $maxVal;
 
     public function getWidth() : int
     {
@@ -29,8 +31,14 @@ class GrayscaleRasterImage extends AbstractRasterImage
         if ($y < 0 || $y >= $this -> height) {
             return;
         }
+        // Cut off at max and min
+        if ($value < 0) {
+            $value = 0;
+        } else if ($value > $this -> maxVal) {
+            $value = $this -> maxVal;
+        }
         $byte = $y * $this -> width + $x;
-        $this -> data[$byte] = $value & 0xFF;
+        $this -> data[$byte] = $value;
     }
 
     public function getPixel(int $x, int $y)
@@ -45,11 +53,17 @@ class GrayscaleRasterImage extends AbstractRasterImage
         return $this -> data[$byte];
     }
 
-    protected function __construct($width, $height, array $data)
+    protected function __construct($width, $height, array $data, int $maxVal)
     {
         $this -> width = $width;
         $this -> height = $height;
         $this -> data = $data;
+        $this -> maxVal = $maxVal;
+    }
+    
+    public function getMaxVal()
+    {
+        return $this -> maxVal;
     }
 
     public static function create($width, $height, array $data = null, $maxVal = 255) : GrayscaleRasterImage
