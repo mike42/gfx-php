@@ -81,7 +81,11 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 if ($expectedBytes != $actualBytes) {
                     throw new Exception("Expected $expectedBytes data, but got $actualBytes, file probably corrupt.");
                 }
-                $dataUnpacked = unpack("C2*", $data);
+                if ($depth == 2) {
+                    $dataUnpacked = unpack("n*", $data);
+                } else {
+                    $dataUnpacked = unpack("C*", $data);
+                }
                 $dataValues = array_values($dataUnpacked);
                 return GrayscaleRasterImage::create($width, $height, $dataValues, $maxVal);
             case "P6":

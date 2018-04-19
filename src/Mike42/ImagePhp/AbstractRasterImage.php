@@ -46,7 +46,18 @@ abstract class AbstractRasterImage implements RasterImage
     public function scale(int $width, int $height) : RasterImage
     {
         $img = $this::create($width, $height);
-      
+        $thisWidth = $this -> getWidth();
+        $thisHeight = $this -> getHeight();
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $srcX = intdiv($x * $thisWidth, $width);
+                $srcY = intdiv($y * $thisHeight, $height);
+                //echo "$srcX / $thisWidth ->  $x / $width \n";
+                $srcColor = $this -> getPixel($srcX, $srcY);
+                $destColor = $this -> mapColor($srcColor, $img);
+                $img -> setPixel($x, $y, $destColor);
+            }
+        }
         return $img;
     }
 }

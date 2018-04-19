@@ -77,6 +77,22 @@ class GrayscaleRasterImage extends AbstractRasterImage
 
     public function getRasterData(): string
     {
+        if ($this -> maxVal > 255) {
+            return pack("n*", ... $this -> data);
+        }
         return pack("C*", ... $this -> data);
+    }
+    
+    public function mapColor(int $srcColor, RasterImage $destImage)
+    {
+        if ($destImage instanceof GrayscaleRasterImage) {
+            if ($destImage -> maxVal == $this -> maxVal) {
+                return $srcColor;
+            }
+            $destVal =  intdiv($srcColor * $destImage -> maxVal, $this -> maxVal);
+            //echo "$srcColor / " . $this -> maxVal . " -> $destVal / " . $destImage -> maxVal . "\n";
+            return $destVal;
+        }
+        throw new Exception("Cannot map colors");
     }
 }

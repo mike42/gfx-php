@@ -3,12 +3,16 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 
 use Mike42\ImagePhp\Image;
 
+// Write original back
+$img = Image::fromFile(dirname(__FILE__). "/resources/gradient.pgm");
+$img -> write("gradient-original.pgm");
+
 // Scale a gray image
 $img = Image::fromFile(dirname(__FILE__). "/resources/gradient.pgm");
-$img -> scale(20, 20);
-$img -> write("gradient-small.pgm");
+$img2 = $img -> scale(20, 20);
+$img2 -> write("gradient-small.pgm");
 
 $img = Image::fromFile(dirname(__FILE__). "/resources/gradient.pgm");
-$img -> scale(60, 60);
-$img -> write("gradient-large.pgm");
+$img3 = $img -> scale(60, 60);
+$img3 -> write("gradient-large.pgm");
 
