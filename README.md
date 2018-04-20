@@ -1,82 +1,64 @@
 # image-php - The pure PHP image processing library
 
-[![Build Status](https://travis-ci.org/mike42/image-php.svg?branch=master)](https://travis-ci.org/mike42/image-php)
+[![Build Status](https://travis-ci.org/mike42/image-php.svg?branch=master)](https://travis-ci.org/mike42/image-php) [![Latest Stable Version](https://poser.pugx.org/mike42/image-php/v/stable)](https://packagist.org/packages/mike42/image-php)
+[![Total Downloads](https://poser.pugx.org/mike42/image-php/downloads)](https://packagist.org/packages/mike42/image-php)
+[![License](https://poser.pugx.org/mike42/image-php/license)](https://packagist.org/packages/mike42/image-php)
 
-This project implements raster graphics processing in pure PHP.
+This library implements input, output and processing of raster images in pure PHP, so that image
+processing extensions (Gd, Imagick) are not required.
 
-Currently, it can perform basic operations on the netpbm portable bitmap (P4) format.
+This allows developers to eliminate some portability issues from their applications.
 
-## Example Usage
+## Requirements
 
-I initially implemented this to generate placeholder glyphs
-for the Thermal Sans Mono font, which involves rendering
-characters from a small bitmap font into a rectangle:
+- PHP 7.0 or newer
 
-```php
-<?php
-require_once(__DIR__ . "/../vendor/autoload.php");
+## Examples
 
-use Mike42\ImagePhp\Image;
+- See the `examples/` sub-folder.
 
-// Inputs
-$outFile = "out.pbm";
-$font = Image::fromFile(dirname(__FILE__). "/resources/5x7hex.pbm");
-$codePoint = str_split("0A2F");
-$charWidth = 5;
-$charHeight = 7;
+## Status & Scope
 
-// Create small image for each character
-$chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
-$subImages = [];
-for($i = 0; $i < count($codePoint); $i++) {
-  $id = array_search($codePoint[$i], $chars);
-  if($id === false) {
-    throw new Exception("Don't know how to encode " . $codePoint[$i]);
-  }
-  $subImages[] = $font -> subImage($id * $charWidth, 0, $charWidth, $charHeight);
-}
+Currently, we are implementing basic raster operations on select file formats. If you're interested in image processing algorithms, then please consider contributing an implementation.
 
-// Place four images in a box
-$out = Image::create(18, 17, Image::IMAGE_BLACK_WHITE);
-$out -> rect(0, 0, 18, 17);
-$out -> rect(3, 0, 12, 17, true, 0, 0);
-$out -> compose($subImages[0], 0, 0, 4, 1, $charWidth, $charHeight);
-$out -> compose($subImages[1], 0, 0, 10, 1, $charWidth, $charHeight);
-$out -> compose($subImages[2], 0, 0, 4, 9, $charWidth, $charHeight);
-$out -> compose($subImages[3], 0, 0, 10, 9, $charWidth, $charHeight);
+For algorithms, it appears feasable to implement:
 
-# Print output for debugging ;)
-echo $out -> toString();
-$out -> write($outFile);
-```
-
-This outputs a small PBM image, and this text:
-
-```
-█▀▀  ▄▄    ▄▄  ▀▀█
-█   █  █  █  █   █
-█   █  █  █▀▀█   █
-█   ▀▄▄▀  █  █   █
-█   ▄▄▄   ▄▄▄▄   █
-█      █  █      █
-█   █▀▀▀  █▀▀    █
-█   █▄▄▄  █      █
-▀▀▀            ▀▀▀
-````
-
-## Roadmap
-
-It's hoped that this can deliver an independently useful library
-for basic raster processing, but it's early days.
-
-If you're interested in image processing algorithms, then please consider contributing an implementation.
-
-For algorithms, we might do:
-
-- Color conversions, scale, crop, blur, composite, mask, affine transformations, lines, arcs, circles, and rectangles.
+- Color conversions
+- Scale
+- Crop
+- Blur
+- Composite
+- Mask
+- Affine transformations
+- Lines, arcs, circles, and rectangles.
 
 And the roadmap for format support:
 
-- We should be able to support the full suite of netpbm and BMP formats in pure PHP, while PNG can be implemented with the help of `zlib`.
-- TIFF/GIF will require a more detailed implementation.
-- JPEG support is not expected to be feasable without using an external library, if you're looking for JPEG support you should use Imagick or Gd directly.
+- The full suite of netpbm binary and text formats (PNM, PBM, PGM, PPM).
+- BMP, which involves RLE (de)compression
+- PNG, which involves DEFLATE (de)compression
+- GIF and TIFF, which involve LZW (de)compression
+
+In the interests of getting the basic features working first, I'm not currently planning to attempt lossy compression, or formats that are not common on either the web or for printing:
+
+- JPEG
+- MNG
+- PAM format
+- XPM
+- More advanced transformations
+
+Also, as we don't have the luxury of pulling in dependencies, I'm considering anything that is not a raster operation out-of-scope:
+
+- All vector image formats (PDF, SVG, EPS, etc).
+- Anything involving fonts
+
+### Test data sets
+
+- [imagetestsuite](https://code.google.com/archive/p/imagetestsuite/)
+- [bmpsuite](http://entropymine.com/jason/bmpsuite/)
+- [pngsuite](http://www.schaik.com/pngsuite/)
+- [jburkardt's data sets](https://people.sc.fsu.edu/~jburkardt/data/)
+
+## Similar projects
+
+- [Imagine](https://github.com/avalanche123/Imagine), which wraps available libraries.
