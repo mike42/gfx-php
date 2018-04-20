@@ -2,6 +2,8 @@
 
 namespace Mike42\ImagePhp;
 
+use Mike42\ImagePhp\Codec\PnmCodec;
+
 abstract class AbstractRasterImage implements RasterImage
 {
     public function rect($startX, $startY, $width, $height, $filled = false, $outline = 1, $fill = 1)
@@ -32,5 +34,30 @@ abstract class AbstractRasterImage implements RasterImage
         for ($y = $startY; $y <= $endY; $y++) {
             $this -> setPixel($x, $y, $outline);
         }
+    }
+    
+    public function write(string $filename)
+    {
+        // Temporary function while we don't support many formats...
+        $blob = PnmCodec::getInstance() -> encode($this);
+        file_put_contents($filename, $blob);
+    }
+    
+    public function scale(int $width, int $height) : RasterImage
+    {
+        $img = $this::create($width, $height);
+        $thisWidth = $this -> getWidth();
+        $thisHeight = $this -> getHeight();
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $srcX = intdiv($x * $thisWidth, $width);
+                $srcY = intdiv($y * $thisHeight, $height);
+                //echo "$srcX / $thisWidth ->  $x / $width \n";
+                $srcColor = $this -> getPixel($srcX, $srcY);
+                $destColor = $this -> mapColor($srcColor, $img);
+                $img -> setPixel($x, $y, $destColor);
+            }
+        }
+        return $img;
     }
 }

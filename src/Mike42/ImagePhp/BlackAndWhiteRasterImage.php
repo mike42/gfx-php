@@ -1,8 +1,6 @@
 <?php
 namespace Mike42\ImagePhp;
 
-use Mike42\ImagePhp\Codec\PnmCodec;
-
 /**
  * Small implementation of basic raster operations on PBM files to support
  * creation of placeholder glyphs
@@ -17,12 +15,12 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
 
     protected $data;
 
-    public function invert() : void
+    public function invert()
     {
         array_walk($this -> data, 'self::invertByte');
     }
 
-    public function clear() : void
+    public function clear()
     {
         array_walk($this -> data, 'self::clearByte');
     }
@@ -88,13 +86,6 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         $this -> bytesPerRow = intdiv($width + 7, 8);
     }
 
-    public function write($filename)
-    {
-        // Temporary function while we don't support many formats...
-        $blob = PnmCodec::getInstance() -> encode($this);
-        file_put_contents($filename, $blob);
-    }
-
     public static function create($width, $height, array $data = null) : BlackAndWhiteRasterImage
     {
         $bytesPerRow = intdiv($width + 7, 8);
@@ -135,7 +126,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return $ret;
     }
 
-    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height) : void
+    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
     {
         for ($y = 0; $y < $height; $y++) {
             $srcY = $y + $startY;
