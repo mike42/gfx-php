@@ -2,11 +2,11 @@
 
 namespace Mike42\ImagePhp\Codec;
 
-use Mike42\ImagePhp\RasterImage;
-use Exception;
 use Mike42\ImagePhp\BlackAndWhiteRasterImage;
 use Mike42\ImagePhp\GrayscaleRasterImage;
+use Mike42\ImagePhp\RasterImage;
 use Mike42\ImagePhp\RgbRasterImage;
+use Exception;
 
 class PnmCodec implements ImageDecoder, ImageEncoder
 {
@@ -89,16 +89,25 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 $dataValues = array_values($dataUnpacked);
                 return GrayscaleRasterImage::create($width, $height, $dataValues, $maxVal);
             case "P6":
-                $depth = 1;
+                $line_end = self::skipComments($blob, $line_end);
+                $next_line_end = strpos($blob, "\n", $line_end + 1);
+                $maxValLine = substr($blob, $line_end + 1, ($next_line_end - $line_end) - 1);
+                $maxVal = (int)$maxValLine;
+                $depth = $maxVal >= 255 ? 2 : 1;
+                $line_end = $next_line_end;
                 $expectedBytes = $width * $height * $depth * 3;
                 $data = substr($blob, $line_end + 1);
                 $actualBytes = strlen($data);
                 if ($expectedBytes != $actualBytes) {
                     throw new Exception("Expected $expectedBytes data, but got $actualBytes, file probably corrupt.");
                 }
-                $dataUnpacked = unpack("C*", $data);
+                if ($depth == 2) {
+                    $dataUnpacked = unpack("n*", $data);
+                } else {
+                    $dataUnpacked = unpack("C*", $data);
+                }
                 $dataValues = array_values($dataUnpacked);
-                return RgbRasterImage::create($width, $height, $maxVal, $dataValues);
+                return RgbRasterImage::create($width, $height, $dataValues, $maxVal);
         }
         // TODO handle formats in a way that lets us remove this fallthrough.
         throw new Exception("Format not supported.");
@@ -136,6 +145,12 @@ class PnmCodec implements ImageDecoder, ImageEncoder
             $maxVal = $image -> getMaxVal();
             $data = $image -> getRasterData();
             $contents = "P5\n$dimensions\n$maxVal\n$data";
+            return $contents;
+        } else if ($image instanceof RgbRasterImage) {
+            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+            $maxVal = $image -> getMaxVal();
+            $data = $image -> getRasterData();
+            $contents = "P6\n$dimensions\n$maxVal\n$data";
             return $contents;
         }
         throw new Exception("Unsupported image type");

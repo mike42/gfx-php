@@ -1,8 +1,6 @@
 <?php
 namespace Mike42\ImagePhp;
 
-use Mike42\ImagePhp\Codec\PnmCodec;
-
 class GrayscaleRasterImage extends AbstractRasterImage
 {
     protected $width;
@@ -70,7 +68,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
     {
         $expectedBytes = $width * $height;
         if ($data === null) {
-            $data = array_values(array_fill(0, $expectedBytes, 255));
+            $data = array_values(array_fill(0, $expectedBytes, $maxVal));
         }
         return new GrayscaleRasterImage($width, $height, $data, $maxVal);
     }
@@ -90,9 +88,8 @@ class GrayscaleRasterImage extends AbstractRasterImage
                 return $srcColor;
             }
             $destVal =  intdiv($srcColor * $destImage -> maxVal, $this -> maxVal);
-            //echo "$srcColor / " . $this -> maxVal . " -> $destVal / " . $destImage -> maxVal . "\n";
             return $destVal;
         }
-        throw new Exception("Cannot map colors");
+        throw new \Exception("Cannot map colors");
     }
 }
