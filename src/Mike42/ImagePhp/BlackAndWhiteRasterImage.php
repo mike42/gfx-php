@@ -142,4 +142,12 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
     {
         return pack("C*", ... $this -> data);
     }
+    
+    public function mapColor(int $srcColor, RasterImage $destImage)
+    {
+        if ($destImage instanceof BlackAndWhiteRasterImage) {
+            return $srcColor;
+        }
+        throw new \Exception("Cannot map colors");
+    }
 }
