@@ -111,4 +111,19 @@ class RgbRasterImage extends AbstractRasterImage
         $newMaxVal = $data[1];
         $item = intdiv($item * $newMaxVal, $maxVal);
     }
+    
+    public function toGrayscale() : GrayscaleRasterImage
+    {
+        $img = GrayscaleRasterImage::create($this -> width, $this -> height);
+        // TODO
+        return $img;
+    }
+    
+        
+    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    {
+        $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
+        // TODO
+        return $img;
+    }
 }
