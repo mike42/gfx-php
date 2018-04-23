@@ -112,18 +112,34 @@ class RgbRasterImage extends AbstractRasterImage
         $item = intdiv($item * $newMaxVal, $maxVal);
     }
     
+    public function toRgb() : RgbRasterImage
+    {
+        return clone $this;
+    }
+    
     public function toGrayscale() : GrayscaleRasterImage
     {
         $img = GrayscaleRasterImage::create($this -> width, $this -> height);
-        // TODO
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> intToRgb($this -> getPixel($x, $y));
+                $lightness = intdiv($original[0] + $original[1] + $original[2], 3);
+                $img -> setPixel($x, $y, $lightness);
+            }
+        }
         return $img;
     }
-    
         
     public function toBlackAndWhite() : BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
-        // TODO
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> intToRgb($this -> getPixel($x, $y));
+                $lightness = intdiv($original[0] + $original[1] + $original[2], 3);
+                $img -> setPixel($x, $y, $lightness > 128 ? 0 : 1);
+            }
+        }
         return $img;
     }
 }
