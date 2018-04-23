@@ -93,7 +93,6 @@ class GrayscaleRasterImage extends AbstractRasterImage
         throw new \Exception("Cannot map colors");
     }
     
-    
     public function toRgb() : RgbRasterImage
     {
         $img = RgbRasterImage::create($this -> width, $this -> height);

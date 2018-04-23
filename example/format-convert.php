@@ -23,9 +23,10 @@ $img4 -> write("gradient-black.pbm");
 
 // Write 5x7hex.pbm out as each supported format
 $img = Image::fromFile(dirname(__FILE__). "/resources/5x7hex.pbm");
-//$img -> write("font-original.pbm");
-//$img2 = $img -> toRgb();
-//$img2 -> write("font-color.ppm");
-//$img3 = $img -> toBlackAndWhite();
-//$img3 -> write("font-grayscale.pgm");
+$img2 = $img -> toBlackAndWhite();
+$img2 -> write("font-original.pbm");
+$img3 = $img -> toRgb();
+$img3 -> write("font-color.ppm");
+$img4 = $img -> toBlackAndWhite();
+$img4 -> write("font-grayscale.pgm");
 

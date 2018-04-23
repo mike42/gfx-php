@@ -131,4 +131,34 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
         throw new \Exception("Cannot map colors");
     }
+    
+    
+    public function toRgb() : RgbRasterImage
+    {
+        $img = RgbRasterImage::create($this -> width, $this -> height);
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> getPixel($x, $y);
+                $img -> setPixel($x, $y, $original == 0 ? 16777215 : 0);
+            }
+        }
+        return $img;
+    }
+    
+    public function toGrayscale() : GrayscaleRasterImage
+    {
+        $img = GrayscaleRasterImage::create($this -> width, $this -> height);
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> getPixel($x, $y);
+                $img -> setPixel($x, $y, $original == 0 ? 0 : 255);
+            }
+        }
+        return $img;
+    }
+        
+    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    {
+         return clone $this;
+    }
 }
