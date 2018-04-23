@@ -119,25 +119,6 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return $out;
     }
 
-    public function subImage(int $startX, int $startY, int $width, int $height)
-    {
-        $ret = $this::create($width, $height);
-        $ret -> compose($this, $startX, $startY, 0, 0, $width, $height);
-        return $ret;
-    }
-
-    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
-    {
-        for ($y = 0; $y < $height; $y++) {
-            $srcY = $y + $startY;
-            $destY = $y + $destStartY;
-            for ($x = 0; $x < $width; $x++) {
-                $srcX = $x + $startX;
-                $destX = $x + $destStartX;
-                $this -> setPixel($destX, $destY, $source -> getPixel($srcX, $srcY));
-            }
-        }
-    }
     public function getRasterData(): string
     {
         return pack("C*", ... $this -> data);
@@ -149,5 +130,35 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
             return $srcColor;
         }
         throw new \Exception("Cannot map colors");
+    }
+    
+    
+    public function toRgb() : RgbRasterImage
+    {
+        $img = RgbRasterImage::create($this -> width, $this -> height);
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> getPixel($x, $y);
+                $img -> setPixel($x, $y, $original == 0 ? 16777215 : 0);
+            }
+        }
+        return $img;
+    }
+    
+    public function toGrayscale() : GrayscaleRasterImage
+    {
+        $img = GrayscaleRasterImage::create($this -> width, $this -> height);
+        for ($y = 0; $y < $this -> height; $y++) {
+            for ($x = 0; $x < $this -> width; $x++) {
+                $original = $this -> getPixel($x, $y);
+                $img -> setPixel($x, $y, $original == 0 ? 0 : 255);
+            }
+        }
+        return $img;
+    }
+        
+    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    {
+         return clone $this;
     }
 }

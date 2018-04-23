@@ -60,4 +60,24 @@ abstract class AbstractRasterImage implements RasterImage
         }
         return $img;
     }
+
+    public function subImage(int $startX, int $startY, int $width, int $height)
+    {
+        $ret = $this::create($width, $height);
+        $ret -> compose($this, $startX, $startY, 0, 0, $width, $height);
+        return $ret;
+    }
+
+    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
+    {
+        for ($y = 0; $y < $height; $y++) {
+            $srcY = $y + $startY;
+            $destY = $y + $destStartY;
+            for ($x = 0; $x < $width; $x++) {
+                $srcX = $x + $startX;
+                $destX = $x + $destStartX;
+                $this -> setPixel($destX, $destY, $source -> getPixel($srcX, $srcY));
+            }
+        }
+    }
 }
