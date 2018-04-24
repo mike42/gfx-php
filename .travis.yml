@@ -25,7 +25,10 @@ before_script:
 script:
   # Check code style
   - php vendor/bin/phpcs --standard=psr2 src/ -n
+  # Unit tests
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  # Example scripts must work too
+  - mkdir -p tmp && (cd tmp && find ../example -name '*.php' -print0 | xargs -n 1 -0 sh -c 'echo $0; php $0 || exit 255')
 
 after_success:
   # Upload coverage statistics to coveralls service after test
