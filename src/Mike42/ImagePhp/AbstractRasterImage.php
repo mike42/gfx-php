@@ -2,6 +2,7 @@
 
 namespace Mike42\ImagePhp;
 
+use Mike42\ImagePhp\Codec\ImageCodec;
 use Mike42\ImagePhp\Codec\PnmCodec;
 
 abstract class AbstractRasterImage implements RasterImage
@@ -38,8 +39,13 @@ abstract class AbstractRasterImage implements RasterImage
     
     public function write(string $filename)
     {
-        // Temporary function while we don't support many formats...
-        $blob = PnmCodec::getInstance() -> encode($this);
+        // Use file extension to decide output codec
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        if ($ext === null) {
+            throw new \Exception("Cannot write '$filename': No file extension.");
+        }
+        $encoder = ImageCodec::getInstance() -> getEncoderForFormat($ext);
+        $blob = $encoder -> encode($this, $ext);
         file_put_contents($filename, $blob);
     }
     
@@ -61,7 +67,7 @@ abstract class AbstractRasterImage implements RasterImage
         return $img;
     }
 
-    public function subImage(int $startX, int $startY, int $width, int $height)
+    public function subImage(int $startX, int $startY, int $width, int $height) : RasterImage
     {
         $ret = $this::create($width, $height);
         $ret -> compose($this, $startX, $startY, 0, 0, $width, $height);

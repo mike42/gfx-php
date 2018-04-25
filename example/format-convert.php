@@ -5,28 +5,21 @@ use Mike42\ImagePhp\Image;
 
 // Write colorwheel.ppm out as each supported format
 $img = Image::fromFile(dirname(__FILE__). "/resources/colorwheel.ppm");
-$img2 = $img -> toRgb();
-$img2 -> write("colorwheel-original.pbm");
-$img3 = $img -> toGrayscale();
-$img3 -> write("colorwheel-gray.pgm");
-$img4 = $img -> toBlackAndWhite();
-$img4 -> write("colorwheel-black.pbm");
+$img -> write("colorwheel.bmp");
+$img -> write("colorwheel.pbm");
+$img -> write("colorwheel.pgm");
+$img -> write("colorwheel.ppm");
 
 // Write gradient.pgm out as each supported format
 $img = Image::fromFile(dirname(__FILE__). "/resources/gradient.pgm");
-$img2 = $img -> toGrayscale();
-$img2 -> write("gradient-original.pgm");
-$img3 = $img -> toRgb();
-$img3 -> write("gradient-color.ppm");
-$img4 = $img -> toBlackAndWhite();
-$img4 -> write("gradient-black.pbm");
+$img -> write("gradient.bmp");
+$img -> write("gradient.pbm");
+$img -> write("gradient.pgm");
+$img -> write("gradient.ppm");
 
 // Write 5x7hex.pbm out as each supported format
 $img = Image::fromFile(dirname(__FILE__). "/resources/5x7hex.pbm");
-$img2 = $img -> toBlackAndWhite();
-$img2 -> write("font-original.pbm");
-$img3 = $img -> toRgb();
-$img3 -> write("font-color.ppm");
-$img4 = $img -> toBlackAndWhite();
-$img4 -> write("font-grayscale.pgm");
-
+$img -> write("font.bmp");
+$img -> write("font.pbm");
+$img -> write("font.pgm");
+$img -> write("font.ppm");

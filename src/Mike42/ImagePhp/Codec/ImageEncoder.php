@@ -7,5 +7,5 @@ interface ImageEncoder
 {
     public function getEncodeFormats() : array;
 
-    public function encode(RasterImage $image) : string;
+    public function encode(RasterImage $image, string $format) : string;
 }

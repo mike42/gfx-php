@@ -21,7 +21,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         return $this -> height;
     }
 
-    public function setPixel(int $x, int $y, $value)
+    public function setPixel(int $x, int $y, int $value)
     {
         if ($x < 0 || $x >= $this -> width) {
             return;
