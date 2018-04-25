@@ -45,7 +45,7 @@ class ImageCodec
                 return $encoder;
             }
         }
-        throw new \Exception("No encoder for format $format");
+        throw new \Exception("No encoder for format '$format'");
     }
     
     public static function getInstance() : ImageCodec
@@ -53,7 +53,8 @@ class ImageCodec
         if (self::$instance  === null) {
             $encoders = [
                 PnmCodec::getInstance(),
-                BmpCodec::getInstance()
+                BmpCodec::getInstance(),
+                PngCodec::getInstance()
             ];
             $decoders = [
                 PnmCodec::getInstance()

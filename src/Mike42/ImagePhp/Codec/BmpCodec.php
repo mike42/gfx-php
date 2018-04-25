@@ -17,8 +17,9 @@ class BmpCodec implements ImageEncoder
         }
         // Output uncompressed 24 bit BMP file
         $header = pack(
-            "nV3",
-            0x424d, // 'BM' magic number
+            "C2V3",
+            0x42,
+            0x4d, // 'BM' magic number
             0, // File size
             0, // Reserved
             0
