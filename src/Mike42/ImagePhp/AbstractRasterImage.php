@@ -58,7 +58,6 @@ abstract class AbstractRasterImage implements RasterImage
             for ($x = 0; $x < $width; $x++) {
                 $srcX = intdiv($x * $thisWidth, $width);
                 $srcY = intdiv($y * $thisHeight, $height);
-                //echo "$srcX / $thisWidth ->  $x / $width \n";
                 $srcColor = $this -> getPixel($srcX, $srcY);
                 $destColor = $this -> mapColor($srcColor, $img);
                 $img -> setPixel($x, $y, $destColor);
