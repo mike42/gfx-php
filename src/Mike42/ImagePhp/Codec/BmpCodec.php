@@ -42,7 +42,7 @@ class BmpCodec implements ImageEncoder
         $colorTable = "";
         // Transform RGB ordering to BGR ordering
         $pixels = str_split($image -> getRasterData(), 3);
-        array_walk($pixels, [$this, "transform_rev_str"]);
+        array_walk($pixels, [$this, "transformRevString"]);
         $rasterData = implode("", $pixels);
         // Transform top-down unpadded lines to bottom-up padded lines
         $originalWidth = $width * 3;
@@ -55,7 +55,7 @@ class BmpCodec implements ImageEncoder
         return $header . $infoHeader . $colorTable . $pixelData;
     }
 
-    function transform_rev_str(&$item, $key)
+    protected function transformRevString(&$item, $key)
     {
         $item = strrev($item);
     }
