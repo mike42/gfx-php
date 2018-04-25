@@ -17,13 +17,13 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         $pnmMagic = substr($blob, 0, 2);
         if ($pnmMagic == "P1" || $pnmMagic == "P4") {
             // Portable BitMap
-            return "image/x‑portable‑bitmap";
+            return "pbm";
         } else if ($pnmMagic == "P2" || $pnmMagic == "P5") {
             // Portable GrayMap
-            return "image/x‑portable‑graymap";
+            return "pgm";
         } else if ($pnmMagic == "P3" || $pnmMagic == "P6") {
             // Portable PixMap
-            return "image/x‑portable‑pixmap";
+            return "ppm";
         }
         return null;
     }
@@ -112,14 +112,10 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         // TODO handle formats in a way that lets us remove this fallthrough.
         throw new Exception("Format not supported.");
     }
-    
-    protected function pbmBinary()
-    {
-    }
 
     public function getDecodeFormats(): array
     {
-        return ["image/x‑portable‑bitmap", "image/x‑portable‑graymap", "image/x‑portable‑pixmap"];
+        return ["ppm", "pgm", "pbm"];
     }
 
     protected static function skipComments(string $im_data, int $line_end) : int
@@ -133,32 +129,57 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         return $line_end;
     }
 
-    public function encode(RasterImage $image): string
+    public function encode(RasterImage $image, string $format): string
     {
-        if ($image instanceof BlackAndWhiteRasterImage) {
-            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
-            $data = $image -> getRasterData();
-            $contents = "P4\n$dimensions\n$data";
-            return $contents;
-        } else if ($image instanceof GrayscaleRasterImage) {
-            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
-            $maxVal = $image -> getMaxVal();
-            $data = $image -> getRasterData();
-            $contents = "P5\n$dimensions\n$maxVal\n$data";
-            return $contents;
-        } else if ($image instanceof RgbRasterImage) {
-            $dimensions = $image -> getWidth() . " " . $image -> getHeight();
-            $maxVal = $image -> getMaxVal();
-            $data = $image -> getRasterData();
-            $contents = "P6\n$dimensions\n$maxVal\n$data";
-            return $contents;
+        if ($format === "pnm") {
+            // PNM extension can hold PBM, PGM or PPM.
+            // Auto-select based on type of image
+            if ($image instanceof BlackAndWhiteRasterImage) {
+                $format = "pbm";
+            } else if ($image instanceof GrayscaleRasterImage) {
+                $format = "pgm";
+            } else {
+                $format = "ppm";
+            }
         }
-        throw new Exception("Unsupported image type");
+        // Encode based on extension
+        switch ($format) {
+            case "pbm":
+                if (!($image instanceof BlackAndWhiteRasterImage)) {
+                    // Convert if necessary
+                    $image = $image -> toBlackAndWhite();
+                }
+                $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+                $data = $image -> getRasterData();
+                $contents = "P4\n$dimensions\n$data";
+                return $contents;
+            case "pgm":
+                if (!($image instanceof GrayscaleRasterImage)) {
+                    // Convert if necessary
+                    $image = $image -> toGrayscale();
+                }
+                $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+                $maxVal = $image -> getMaxVal();
+                $data = $image -> getRasterData();
+                $contents = "P5\n$dimensions\n$maxVal\n$data";
+                return $contents;
+            case "ppm":
+                if (!($image instanceof RgbRasterImage)) {
+                    // Convert if necessary
+                    $image = $image -> toRgb();
+                }
+                $dimensions = $image -> getWidth() . " " . $image -> getHeight();
+                $maxVal = $image -> getMaxVal();
+                $data = $image -> getRasterData();
+                $contents = "P6\n$dimensions\n$maxVal\n$data";
+                return $contents;
+        }
+        throw new Exception("Unsupported image type: $format");
     }
 
     public function getEncodeFormats(): array
     {
-        return ["image/x‑portable‑bitmap", "image/x‑portable‑graymap", "image/x‑portable‑pixmap"];
+        return ["ppm", "pgm", "pbm"];
     }
 
     public static function getInstance()

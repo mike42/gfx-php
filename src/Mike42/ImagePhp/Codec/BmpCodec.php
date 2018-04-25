@@ -16,14 +16,17 @@ class BmpCodec implements ImageEncoder
             $image = $image -> toRgb();
         }
         // Output uncompressed 24 bit BMP file
-        $header = pack("nV3",
+        $header = pack(
+            "nV3",
             0x424d, // 'BM' magic number
             0, // File size
             0, // Reserved
-            0); // Offset
+            0
+        ); // Offset
         $width = $image -> getWidth();
         $height = $image -> getHeight();
-        $infoHeader = pack("V3v2V6",
+        $infoHeader = pack(
+            "V3v2V6",
             40,
             $width, // Width
             $height, // Height
@@ -34,7 +37,8 @@ class BmpCodec implements ImageEncoder
             1, // Horizontal res
             1, // Vertical res
             0, // Number of colors
-            0); // Number of important colors
+            0
+        ); // Number of important colors
         $colorTable = "";
         // Transform RGB ordering to BGR ordering
         $pixels = str_split($image -> getRasterData(), 3);

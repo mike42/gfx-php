@@ -151,7 +151,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         for ($y = 0; $y < $this -> height; $y++) {
             for ($x = 0; $x < $this -> width; $x++) {
                 $original = $this -> getPixel($x, $y);
-                $img -> setPixel($x, $y, $original == 0 ? 0 : 255);
+                $img -> setPixel($x, $y, $original == 0 ? 255 : 0);
             }
         }
         return $img;

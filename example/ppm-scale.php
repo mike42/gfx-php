@@ -15,4 +15,3 @@ $img2 -> write("colorwheel-small.ppm");
 $img = Image::fromFile(dirname(__FILE__). "/resources/colorwheel.ppm");
 $img3 = $img -> scale(60, 60);
 $img3 -> write("colorwheel-large.ppm");
-

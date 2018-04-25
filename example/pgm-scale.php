@@ -15,4 +15,3 @@ $img2 -> write("gradient-small.pgm");
 $img = Image::fromFile(dirname(__FILE__). "/resources/gradient.pgm");
 $img3 = $img -> scale(60, 60);
 $img3 -> write("gradient-large.pgm");
-

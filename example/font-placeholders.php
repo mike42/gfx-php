@@ -13,12 +13,12 @@ $charHeight = 7;
 // Create small image for each character
 $chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
 $subImages = [];
-for($i = 0; $i < count($codePoint); $i++) {
-  $id = array_search($codePoint[$i], $chars);
-  if($id === false) {
-    throw new Exception("Don't know how to encode " . $codePoint[$i]);
-  }
-  $subImages[] = $font -> subImage($id * $charWidth, 0, $charWidth, $charHeight);
+for ($i = 0; $i < count($codePoint); $i++) {
+    $id = array_search($codePoint[$i], $chars);
+    if ($id === false) {
+        throw new Exception("Don't know how to encode " . $codePoint[$i]);
+    }
+    $subImages[] = $font -> subImage($id * $charWidth, 0, $charWidth, $charHeight);
 }
 
 // Place four images in a box
