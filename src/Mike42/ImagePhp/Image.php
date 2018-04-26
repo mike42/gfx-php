@@ -22,7 +22,7 @@ class Image
         }
         return self::fromBlob($blob);
     }
-    
+
     public static function fromBlob(string $blob, string $filename = null) : RasterImage
     {
         if (self::$codecs === null) {

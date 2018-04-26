@@ -54,7 +54,8 @@ class ImageCodec
             $encoders = [
                 PnmCodec::getInstance(),
                 BmpCodec::getInstance(),
-                PngCodec::getInstance()
+                PngCodec::getInstance(),
+                GifCodec::getInstance()
             ];
             $decoders = [
                 PnmCodec::getInstance()

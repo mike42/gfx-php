@@ -3,7 +3,6 @@
 namespace Mike42\ImagePhp;
 
 use Mike42\ImagePhp\Codec\ImageCodec;
-use Mike42\ImagePhp\Codec\PnmCodec;
 
 abstract class AbstractRasterImage implements RasterImage
 {
