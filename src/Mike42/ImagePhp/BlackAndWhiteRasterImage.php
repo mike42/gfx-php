@@ -156,9 +156,14 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-        
+
     public function toBlackAndWhite() : BlackAndWhiteRasterImage
     {
          return clone $this;
+    }
+
+    public function toIndexed(): IndexedRasterImage
+    {
+        return $this -> toGrayscale() -> toIndexed();
     }
 }

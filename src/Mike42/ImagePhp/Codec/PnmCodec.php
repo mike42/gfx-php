@@ -72,7 +72,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 $next_line_end = strpos($blob, "\n", $line_end + 1);
                 $maxValLine = substr($blob, $line_end + 1, ($next_line_end - $line_end) - 1);
                 $maxVal = (int)$maxValLine;
-                $depth = $maxVal >= 255 ? 2 : 1;
+                $depth = $maxVal > 255 ? 2 : 1;
                 $line_end = $next_line_end;
                 // Extract data
                 $expectedBytes = $width * $height * $depth;
@@ -93,7 +93,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
                 $next_line_end = strpos($blob, "\n", $line_end + 1);
                 $maxValLine = substr($blob, $line_end + 1, ($next_line_end - $line_end) - 1);
                 $maxVal = (int)$maxValLine;
-                $depth = $maxVal >= 255 ? 2 : 1;
+                $depth = $maxVal > 255 ? 2 : 1;
                 $line_end = $next_line_end;
                 $expectedBytes = $width * $height * $depth * 3;
                 $data = substr($blob, $line_end + 1);

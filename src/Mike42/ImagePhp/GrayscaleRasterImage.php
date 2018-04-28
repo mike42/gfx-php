@@ -20,7 +20,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
     {
         return $this -> height;
     }
-
+    
     public function setPixel(int $x, int $y, int $value)
     {
         if ($x < 0 || $x >= $this -> width) {
@@ -122,5 +122,20 @@ class GrayscaleRasterImage extends AbstractRasterImage
             }
         }
         return $img;
+    }
+    
+    public function toIndexed(): IndexedRasterImage
+    {
+        if ($this -> maxVal > 255) {
+            // Making use of how scale() uses default values to make a new canvas, which has the
+            // side-effect of creating an 8-bit image.
+            return $this -> scale($this -> width, $this -> height) -> toIndexed();
+        }
+        $data = $this -> data;
+        $colorTable = [];
+        for ($i = 0; $i < 256; $i++) {
+            $colorTable[] = [$i, $i, $i];
+        }
+        return IndexedRasterImage::create($this -> width, $this -> height, $data, $colorTable, 255);
     }
 }

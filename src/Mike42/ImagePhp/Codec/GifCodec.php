@@ -1,9 +1,9 @@
 <?php
 namespace Mike42\ImagePhp\Codec;
 
-use Mike42\ImagePhp\GrayscaleRasterImage;
 use Mike42\ImagePhp\RasterImage;
 use Mike42\ImagePhp\Util\LzwCompression;
+use Mike42\ImagePhp\IndexedRasterImage;
 
 class GifCodec implements ImageEncoder
 {
@@ -11,14 +11,15 @@ class GifCodec implements ImageEncoder
 
     public function encode(RasterImage $image, string $format): string
     {
-        if (!($image instanceof GrayscaleRasterImage)) {
+        if (!($image instanceof IndexedRasterImage)) {
             // Convert if necessary
-            $image = $image -> toGrayscale();
-        } else {
-            if ($image -> getMaxVal() != 256) {
-                // Scaling has the side-effect of mapping to 256 colors
-                $image = $image -> scale($image -> getWidth(), $image -> getHeight());
-            }
+            $image = $image -> toIndexed();
+        }
+        $palette = $image -> getPalette();
+        if (count($palette) > 256) {
+            // Still no way to reduce color count yet, juggle it via grayscale.
+            $image = $image -> toGrayscale() -> toIndexed();
+            $palette = $image -> getPalette();
         }
         // GIF signature
         $signature = pack("c6", 0x47, 0x49, 0x46, 0x38, 0x39, 0x61);
@@ -28,14 +29,31 @@ class GifCodec implements ImageEncoder
         $header = pack('v2c3', $width, $height, 0xF7, 0, 0);
         // Color table of grayscale
         $colorTable = [];
-        for ($i = 0; $i < 256; $i++) {
-            $colorTable[] = $i;
-            $colorTable[] = $i;
-            $colorTable[] = $i;
+        $paletteSize = count($palette);
+        for ($i = 0; $i < $paletteSize; $i++) {
+            $entry = $palette[$i];
+            $colorTable[] = $entry[0];
+            $colorTable[] = $entry[1];
+            $colorTable[] = $entry[2];
         }
+        // Padding to 256 color entries
+        for ($i = $paletteSize; $i < 256; $i++) {
+            $colorTable[] = 0;
+            $colorTable[] = 0;
+            $colorTable[] = 0;
+        }
+       
         $gct = pack("C*", ... $colorTable);
+        // Transparent color for graphic control
+        $transparentColorFlag = 0x00;
+        $transparentColor = 0;
+        if ($image -> getTransparentColor() !== null) {
+            $transparentColor = $image -> getTransparentColor() & 0xFF;
+            $transparentColorFlag = 0x01;
+        }
         // Graphic control
-        $gce = pack("C4vC2", 0x21, 0xF9, 0x04, 0x01, 0x00, 0x10, 0x00);
+        // TODO one of these flags does not do what you think it does.
+        $gce = pack("C4vC2", 0x21, 0xF9, 0x04, 0x00 | $transparentColorFlag, 0x00, $transparentColor, 0x00);
         // Image
         $imageDescriptor = pack('Cv4C', 0x2C, 0, 0, $width, $height, 0);
         $raster = $image -> getRasterData();

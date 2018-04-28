@@ -4,23 +4,23 @@ namespace Mike42\ImagePhp;
 class RgbRasterImage extends AbstractRasterImage
 {
     protected $width;
-    
+
     protected $height;
-    
+
     protected $data;
-    
+
     protected $maxVal;
-    
+
     public function getWidth() : int
     {
         return $this -> width;
     }
-    
+
     public function getHeight() : int
     {
         return $this -> height;
     }
-    
+
     public function getRasterData(): string
     {
         if ($this -> maxVal > 255) {
@@ -28,12 +28,12 @@ class RgbRasterImage extends AbstractRasterImage
         }
         return pack("C*", ... $this -> data);
     }
-    
+
     public function getMaxVal()
     {
         return $this -> maxVal;
     }
-    
+
     public function getPixel(int $x, int $y)
     {
         if ($x < 0 || $x >= $this -> width) {
@@ -44,6 +44,16 @@ class RgbRasterImage extends AbstractRasterImage
         }
         $byte = ($y * $this -> width + $x) * 3;
         return self::rgbToInt($this -> data[$byte], $this -> data[$byte + 1], $this -> data[$byte + 2], $this -> maxVal);
+    }
+
+    public function indexToRgb(int $val)
+    {
+        return self::intToRgb($val);
+    }
+    
+    public function rgbToIndex(array $val)
+    {
+        return self::rgbToInt($val[0], $val[1], $val[2]);
     }
     
     public static function rgbToInt(int $r, int $g, int $b)
@@ -91,7 +101,7 @@ class RgbRasterImage extends AbstractRasterImage
         $this -> data = $data;
         $this -> maxVal = $maxVal;
     }
-    
+
     public static function create($width, $height, array $data = null, $maxVal = 255) : RgbRasterImage
     {
         $expectedBytes = $width * $height * 3;
@@ -104,19 +114,19 @@ class RgbRasterImage extends AbstractRasterImage
         }
         return new RgbRasterImage($width, $height, $data, $maxVal);
     }
-    
+
     public static function convertDepth(&$item, $key, array $data)
     {
         $maxVal = $data[0];
         $newMaxVal = $data[1];
         $item = intdiv($item * $newMaxVal, $maxVal);
     }
-    
+
     public function toRgb() : RgbRasterImage
     {
         return clone $this;
     }
-    
+
     public function toGrayscale() : GrayscaleRasterImage
     {
         $img = GrayscaleRasterImage::create($this -> width, $this -> height);
@@ -129,7 +139,7 @@ class RgbRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-        
+
     public function toBlackAndWhite() : BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
@@ -141,5 +151,27 @@ class RgbRasterImage extends AbstractRasterImage
             }
         }
         return $img;
+    }
+    public function toIndexed(): IndexedRasterImage
+    {
+        // Each pixel as a numeric value
+        $pixels = array_map([$this, "rgbToIndex"], array_chunk($this -> data, 3, false));
+        // List of unique colors
+        $colorValues = array_values(array_unique($pixels, SORT_NUMERIC));
+        $paletteSize = count($colorValues);
+        // Use 24-bit color number as key, palette index as value
+        $lookup = array_flip($colorValues);
+        // Replace palette values w/ expanded [r, g, b] values for use in IndexedRasterImage
+        for ($i = 0; $i < $paletteSize; $i++) {
+            $colorValues[$i] = $this -> intToRgb($colorValues[$i]);
+        }
+        // Replace pixel values with color ID's
+        $imageSize = count($pixels);
+        for ($i = 0; $i < $imageSize; $i++) {
+            $pixels[$i] = $lookup[$pixels[$i]];
+        }
+        // Max value round-off to 256 colors if possible, otherwise leave unlimited
+        $maxVal = $paletteSize > 256 ? 16777215 : 255;
+        return IndexedRasterImage::create($this -> width, $this -> height, $pixels, $colorValues, $maxVal);
     }
 }
