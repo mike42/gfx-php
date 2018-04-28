@@ -20,7 +20,9 @@ interface RasterImage
     
     public function setPixel(int $x, int $y, int $value);
     
-    public function toGrayscale();
+    public function toGrayscale() : GrayscaleRasterImage;
     
-    public function toBlackAndWhite();
+    public function toBlackAndWhite() : BlackAndWhiteRasterImage;
+    
+    public function toIndexed() : IndexedRasterImage;
 }

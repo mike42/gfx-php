@@ -156,9 +156,23 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-        
+
     public function toBlackAndWhite() : BlackAndWhiteRasterImage
     {
          return clone $this;
+    }
+
+    public function toIndexed(): IndexedRasterImage
+    {
+        $width = $this -> width;
+        $height = $this -> height;
+        $pixelData = array_fill(0, $width * $height, 0);
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $pixelData[$y * $width + $x] = $this -> getPixel($x, $y);
+            }
+        }
+        $colorTable = PaletteGenerator::blackAndWhitePalette();
+        return IndexedRasterImage::create($width, $height, $pixelData, $colorTable, 255);
     }
 }
