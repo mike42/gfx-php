@@ -152,8 +152,10 @@ class RgbRasterImage extends AbstractRasterImage
         }
         return $img;
     }
+
     public function toIndexed(): IndexedRasterImage
     {
+        // NB: It might be possible to speed this up with array_fill_keys and array_replace.
         // Each pixel as a numeric value
         $pixels = array_map([$this, "rgbToIndex"], array_chunk($this -> data, 3, false));
         // List of unique colors

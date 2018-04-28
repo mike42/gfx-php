@@ -110,7 +110,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
     {
         return clone $this;
     }
-        
+    
     public function toBlackAndWhite() : BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
@@ -132,10 +132,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
             return $this -> scale($this -> width, $this -> height) -> toIndexed();
         }
         $data = $this -> data;
-        $colorTable = [];
-        for ($i = 0; $i < 256; $i++) {
-            $colorTable[] = [$i, $i, $i];
-        }
+        $colorTable = PaletteGenerator::monochromePalette();
         return IndexedRasterImage::create($this -> width, $this -> height, $data, $colorTable, 255);
     }
 }

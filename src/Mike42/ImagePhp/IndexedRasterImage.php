@@ -21,6 +21,7 @@ class IndexedRasterImage extends AbstractRasterImage
         $this -> height = $height;
         $this -> data = $data;
         $this -> palette = $palette;
+        $this -> maxVal = $maxVal;
     }
 
     public function getPalette()
@@ -154,14 +155,86 @@ class IndexedRasterImage extends AbstractRasterImage
     {
         $this -> transparentColor = $color;
     }
-    
+
+    public function setPalette(array $palette)
+    {
+        $palette = self::validatePalette($palette);
+        // Build map of old palette colors to new ones
+        $map = [];
+        foreach ($this -> palette as $id => $color) {
+            $map[$id] = self::closestColorId($color, $palette);
+        }
+        // Replace existing data values using the map
+        foreach ($this -> data as $k => $v) {
+            $this -> data[$k] = $map[$v];
+        }
+        // Swap palette in the background
+        $this -> palette = $palette;
+    }
+
+    protected static function closestColorId(array $color, array $palette)
+    {
+        $closest = 0;
+        $distance = (256 ** 2) * 3;
+        foreach ($palette as $id => $compare) {
+            $compareDist = (($color[0] - $compare[0]) ** 2) +
+                (($color[1] - $compare[1]) ** 2) +
+                (($color[2] - $compare[2]) ** 2);
+            if ($compareDist < $distance) {
+                $closest = $id;
+                $distance = $compareDist;
+            }
+        }
+        return $closest;
+    }
+
+    public function setMaxVal(int $maxVal)
+    {
+        if ($maxVal >= count($this -> palette) - 1) {
+            // No need to adjust palette
+            $this -> maxVal = $maxVal;
+            return;
+        }
+        // TODO construct suitably-sized palette using quantization
+        if ($maxVal >= 255) {
+            $this -> maxVal = $maxVal;
+            $this -> setPalette(PaletteGenerator::colorPalette());
+            return;
+        } else if ($maxVal >= 2) {
+            $this -> maxVal = $maxVal;
+            $this -> setPalette(PaletteGenerator::blackAndWhitePalette());
+            return;
+        } else if ($maxVal >= 1) {
+            $this -> maxVal = $maxVal;
+            $this -> setPalette(PaletteGenerator::whitePalette());
+            return;
+        }
+        throw new \Exception("Image must contain at least one color");
+    }
+
+    public function allocateColor(array $color)
+    {
+        $idx = count($this -> palette);
+        if ($idx > $this -> maxVal) {
+            throw new \Exception("Palette is at its maximum size");
+        }
+        $this -> palette[] = $color;
+        return $idx;
+    }
+
+    public function deallocateColor(array $color)
+    {
+        // TODO
+        throw new \Exception("Not implemented");
+    }
+
     public static function create(int $width, int $height, array $data = null, array $palette = null, int $maxVal = 255)
     {
         $expectedSize = $width * $height;
         if ($data == null) {
             // Empty image, white background
             if (count($palette) == 0) {
-                $palette = [[255, 255, 255]]; // White
+                $palette = PaletteGenerator::whitePalette(); // White
             }
             $data = array_fill(0, $expectedSize, 0);
         }
@@ -170,6 +243,23 @@ class IndexedRasterImage extends AbstractRasterImage
         if ($actualSize !== $expectedSize) {
             throw new \Exception("Expected $expectedSize pixels for $width x $height image, but got $actualSize.");
         }
+        // Normalise palette data
+        $newPalette = self::validatePalette($palette);
+        // Validate that we can render this data with this palette
+        $highestPaletteValue = count($palette) - 1;
+        $highestPixel = max($data);
+        if ($highestPixel > $highestPaletteValue) {
+            throw new \Exception("Expected all image values to be <= the palette size ($highestPaletteValue), but the highest is $highestPixel.");
+        }
+        $highestPixel = max($data);
+        if ($highestPixel > $highestPaletteValue) {
+            throw new \Exception("Image data cannot be rendered with this palette. The palette contains values up to $highestPaletteValue, but image values go up to $highestPixel.");
+        }
+        return new IndexedRasterImage($width, $height, $data, $maxVal, $palette);
+    }
+    
+    protected static function validatePalette($palette)
+    {
         // So that we know that we aren't missing any keys, palette should be array, not map.
         // Palette entries must be array of three values up to 255 for R, G, B.
         // It's slightly easier to just convert the structure than to check all of this
@@ -187,16 +277,6 @@ class IndexedRasterImage extends AbstractRasterImage
             }
             $newPalette[] = $color;
         }
-        // Validate that we can render this data with this palette
-        $highestPaletteValue = count($palette) - 1;
-        $highestPixel = max($data);
-        if ($highestPixel > $highestPaletteValue) {
-            throw new \Exception("Expected all image values to be <= the palette size ($highestPaletteValue), but the highest is $highestPixel.");
-        }
-        $highestPixel = max($data);
-        if ($highestPixel > $highestPaletteValue) {
-            throw new \Exception("Image data cannot be rendered with this palette. The palette contains values up to $highestPaletteValue, but image values go up to $highestPixel.");
-        }
-        return new IndexedRasterImage($width, $height, $data, $maxVal, $palette);
+        return $newPalette;
     }
 }

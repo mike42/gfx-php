@@ -16,9 +16,10 @@ class GifCodec implements ImageEncoder
             $image = $image -> toIndexed();
         }
         $palette = $image -> getPalette();
-        if (count($palette) > 256) {
-            // Still no way to reduce color count yet, juggle it via grayscale.
-            $image = $image -> toGrayscale() -> toIndexed();
+        if ($image -> getMaxVal() > 256) {
+            // Color count is too large, clone the image and drop the color depth
+            $image = $image -> toIndexed();
+            $image -> setMaxVal(255);
             $palette = $image -> getPalette();
         }
         // GIF signature
