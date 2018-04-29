@@ -1,11 +1,12 @@
 The pure PHP image processing library
 =====================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+This library implements input, output and processing of raster images in pure
+PHP, so that image processing PHP extensions are not required.
 
-   API Documentation <api.rst>
+This allows developers to eliminate some portability issues from their applications.
+
+Look how easy it is to use:
 
 .. code-block:: php
    
@@ -14,9 +15,52 @@ The pure PHP image processing library
    $img = Image::fromFile("colorwheel256.ppm");
    $img -> write("test.gif");
 
+Features
+--------
+
+- Format support includes PNG, GIF, BMP and the NetPBM formats.
+- Support for scaling, cropping, format conversion and colorspace transformations.
+- All PHP: This library does not require Gd, ImageMagick or GraphicsMagick extensions.
+
+Installation
+------------
+
+Install image-php by running:
+
+    composer install mike42/image-php
+
+Contribute
+----------
+
+- Issue Tracker: https://github.com/mike42/image-php/issues
+- Source Code: https://github.com/mike42/image-php
+
+Navigation
+==========
+
+.. toctree::
+   :maxdepth: 1
+   :caption: User Documentation
+
+   user/formats.rst
+   user/imagetypes.rst
+   user/operations.rst
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Project Information
+   
+   project/license.rst
+   project/contributing.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Documentation
+
+   Classes <api.rst>
+
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

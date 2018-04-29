@@ -45,7 +45,8 @@ def renderNamespaceByRefId(namespaceRefId, name):
     shortnameDir = "api" if isRoot else ("api/" + "/".join(parts[:-1] + [parts[-1]]).lower())
     glob = "api/*" if isRoot else parts[-1].lower() + "/*"
     outfile = outDir + "/" + shortnameIdx + ".rst"
-    os.mkdir(outDir + "/" + shortnameDir)
+    if not os.path.exists(outDir + '/' + shortnameDir):
+        os.mkdir(outDir + "/" + shortnameDir)
 
     print("  Page title will be '" + title + "'")
     print("  Page path will be  '" + outfile + "'")
