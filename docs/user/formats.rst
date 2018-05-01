@@ -83,7 +83,7 @@ The BMP format is selected by using the ``bmp`` file extension.
   
   $tux -> write("tux.bmp");
 
-This library will currently output BMP files as 24-bit uncompressed RGB files.
+This library will currently output BMP files using an uncompressed 24-bit RGB representation of the image.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^
