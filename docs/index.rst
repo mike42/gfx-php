@@ -6,7 +6,7 @@ PHP, so that image processing PHP extensions are not required.
 
 This allows developers to eliminate some portability issues from their applications.
 
-Look how easy it is to use:
+The basic usage is like this:
 
 .. code-block:: php
    
@@ -18,14 +18,16 @@ Look how easy it is to use:
 Features
 --------
 
-- Format support includes PNG, GIF, BMP and the NetPBM formats.
+- Format support includes PNG, GIF, BMP and the Netpbm formats.
 - Support for scaling, cropping, format conversion and colorspace transformations.
-- All PHP: This library does not require Gd, ImageMagick or GraphicsMagick extensions.
+- Pure PHP: This library does not require Gd, ImageMagick or GraphicsMagick extensions.
 
 Installation
 ------------
 
 Install image-php by running:
+
+.. code-block:: bash
 
     composer install mike42/image-php
 
