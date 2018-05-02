@@ -103,7 +103,7 @@ class IndexedRasterImage extends AbstractRasterImage
         return $img;
     }
 
-    public function getPixel(int $x, int $y)
+    public function getPixel(int $x, int $y) : int
     {
         if ($x < 0 || $x >= $this -> width) {
             return;
