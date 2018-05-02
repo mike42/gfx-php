@@ -98,20 +98,11 @@ def classXmlToRst(compounddef, title):
                         argnameName = argname.find('parametername').text
                         argdesc = arg.find('parameterdescription')
                         argdescPara = argdesc.find('para').text
-                        rst += "      :param " + argnameType + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
+                        rst += ("      :param " + itsatype(argnameType)).rstrip() + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
                 ret = dd.find('*/simplesect')
                 if ret != None:
-                    para = ret.find('para')
-                    typer = para.find('ref')
-                    txt = para.text
-                    if typer != None:
-                        if txt != None:
-                            txt = ":class:`" + typer.text + "` " + txt
-                        else:
-                            txt = ":class:`" + typer.text + "` "
-                    if txt == None:
-                        txt = "mixed"
-                    rst += ("      :returns: " + txt).rstrip() + "\n"
+                    paras = ret.iter('para')
+                    rst += "      :returns: " + paras2rst(paras).strip()
                 if (params != None) or (ret != None):
                     rst += "\n"
 
@@ -127,6 +118,29 @@ def classXmlToRst(compounddef, title):
 
     #rst +=  .. php:method:: setDate($year, $month, $day)
     return rst
+
+def paras2rst(paras):
+    return "\n".join([para2rst(x) for x in paras])
+
+def xmldebug(inp):
+    print(ET.tostring(inp, encoding='utf8', method='xml').decode())
+
+def para2rst(inp):
+    ret = "" if inp.text is None else inp.text
+    for subtag in inp:
+        txt = subtag.text
+        if subtag.tag == "ref":
+            txt = ":class:`" + txt + "`"
+        ret += txt + ("" if subtag.tail == None else subtag.tail)
+    return ret
+
+def itsatype(inp):
+    if inp == None:
+        return ""
+    if inp in ["", "int", "string", "array", "float", "double"]:
+        return inp
+    else:
+        return ":class:`" + inp + "`"
 
 def renderClassByRefId(classRefId, name):
     print("Processing class " + name)

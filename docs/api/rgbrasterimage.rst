@@ -6,15 +6,12 @@ RgbRasterImage
   .. php:method:: getWidth ()
 
       :returns: int
-
   .. php:method:: getHeight ()
 
       :returns: int
-
   .. php:method:: getRasterData ()
 
       :returns: string
-
   .. php:method:: getMaxVal ()
 
   .. php:method:: getPixel (int $x, int $y)
@@ -22,7 +19,6 @@ RgbRasterImage
       :param int $x: X co-ordinate
       :param int $y: Y co-ordinate
       :returns: int
-
   .. php:method:: indexToRgb (int $val)
 
   .. php:method:: rgbToIndex (array $val)
@@ -38,17 +34,14 @@ RgbRasterImage
   .. php:method:: toRgb ()
 
       :returns: :class:`RgbRasterImage`
-
   .. php:method:: toGrayscale ()
 
       :returns: :class:`GrayscaleRasterImage`
-
   .. php:method:: toBlackAndWhite ()
 
   .. php:method:: toIndexed ()
 
       :returns: :class:`IndexedRasterImage`
-
   .. php:staticmethod:: rgbToInt (int $r, int $g, int $b)
 
   .. php:staticmethod:: intToRgb ($in)
