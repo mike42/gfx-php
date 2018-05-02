@@ -34,7 +34,7 @@ For algorithms, it appears feasable to implement:
 
 And the roadmap for format support:
 
-- The full suite of netpbm binary and text formats (PNM, PBM, PGM, PPM).
+- The full suite of Netpbm binary and text formats (PNM, PBM, PGM, PPM).
 - BMP, which involves RLE (de)compression
 - PNG, which involves DEFLATE (de)compression
 - GIF and TIFF, which involve LZW (de)compression
