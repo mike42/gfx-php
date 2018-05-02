@@ -89,12 +89,37 @@ def classXmlToRst(compounddef, title):
                 methodName = member.find('definition').text.split("::")[-1]
                 argsString = member.find('argsstring').text
                 rst += "  .. php:method:: " + methodName + " " + argsString + "\n\n"
+                dd = member.find('detaileddescription')
+                params = dd.find('*/parameterlist')
+                if params != None:
+                    for arg in params.iter('parameteritem'):
+                        argname = arg.find('parameternamelist')
+                        argnameType = argname.find('parametertype').text
+                        argnameName = argname.find('parametername').text
+                        argdesc = arg.find('parameterdescription')
+                        argdescPara = argdesc.find('para').text
+                        rst += "      :param " + argnameType + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
+                ret = dd.find('*/simplesect')
+                if ret != None:
+                    para = ret.find('para')
+                    typer = para.find('ref')
+                    txt = para.text
+                    if typer != None:
+                        if txt != None:
+                            txt = ":class:`" + typer.text + "` " + txt
+                        else:
+                            txt = ":class:`" + typer.text + "` "
+                    if txt == None:
+                        txt = "mixed"
+                    rst += ("      :returns: " + txt).rstrip() + "\n"
+                if (params != None) or (ret != None):
+                    rst += "\n"
+
         elif kind == "public-static-func":
             for member in section.iter('memberdef'):
                 methodName = member.find('definition').text.split("::")[-1]
                 argsString = member.find('argsstring').text
                 rst += "  .. php:staticmethod:: " + methodName + " " + argsString + "\n\n"
-
 
             pass
         else:

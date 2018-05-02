@@ -50,7 +50,7 @@ Each of these returns an image of the requested type. They work by instantiating
 Implicit conversions
 ^^^^^^^^^^^^^^^^^^^^
 
-Some file formats only accept specific types of raster data, so the :meth`RasterImage::write()` method will need to convert it. For example, this ``.pbm`` will be limited to 2 colors, which is achieved by using :meth:`RasterImage:toBlackAndWhite` in the background:
+Some file formats only accept specific types of raster data, so the :meth:`RasterImage::write()` method will need to convert it. For example, this ``.pbm`` will be limited to 2 colors, which is achieved by using :meth:`RasterImage:toBlackAndWhite` in the background:
 
 .. code-block:: php
 

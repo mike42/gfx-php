@@ -7,7 +7,13 @@ AbstractRasterImage
 
   .. php:method:: write (string $filename)
 
+      :param string $filename: Filename to write to.
+
   .. php:method:: scale (int $width, int $height)
+
+      :param int $width: The width of the returned image.
+      :param int $height: The height of the returned image.
+      :returns: :class:`RasterImage`
 
   .. php:method:: subImage (int $startX, int $startY, int $width, int $height)
 
