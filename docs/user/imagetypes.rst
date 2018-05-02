@@ -20,9 +20,10 @@ Creating an image
 
 Each of these classes has a static method which can be used to create an image of that type.
 
-At a minimum, these accept a ``width`` and ``height``.
+These only require a ``width`` and ``height``.
 
-.. code:php
+.. code-block:: php
+
    use Mike42\ImagePhp\BlackAndWhiteRasterImage;
    $image = BlackAndWhiteRasterImage::create(50, 100);
 
@@ -31,8 +32,9 @@ Converting between image types
 
 You can convert between image types. This is similar to performing a `color-space conversion` in an image editor.
 
-.. code:php
-   use
+.. code-block:: php
+
+   use Mike42\ImagePhp\Image;
    $image = Image::load("tux.ppm");
    $image -> toBlackAndWhite();
 
@@ -43,17 +45,17 @@ The methods to use are:
 - :meth:`RasterImage::toIndexed()`
 - :meth:`RasterImage::toRgb()`
 
-These methods each instantiate a new image, and copy across the data as accurately as possible.
+Each of these returns an image of the requested type. They work by instantiating a new image, then copying across the data as accurately as possible. As a result, the original image is unmodified.
 
 Implicit conversions
 ^^^^^^^^^^^^^^^^^^^^
 
-Some file formats only accept specific types of raster data, so the :meth`RasterImage::write()` method will need to convert it. For example, this ``.pbm`` will be limited to 2 colors, which is achieved by using :meth:`RasterImage:toBlackAndWhite` is used in the background:
+Some file formats only accept specific types of raster data, so the :meth`RasterImage::write()` method will need to convert it. For example, this ``.pbm`` will be limited to 2 colors, which is achieved by using :meth:`RasterImage:toBlackAndWhite` in the background:
 
-```
-use Mike42\ImagePhp\Image;
-$wheel = Image::load("colorwheel.ppm");
-$wheel -> write("wheel.pbm");
-```
+.. code-block:: php
+
+   use Mike42\ImagePhp\Image;
+   $wheel = Image::load("colorwheel.ppm");
+   $wheel -> write("wheel.pbm");
 
 Since converting the color space creates a new image, the image stored in ``$wheel`` is unmodified.

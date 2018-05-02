@@ -104,5 +104,7 @@ Since each of these formats has a different raster data representation, you shou
 
 If you want to avoid these conversions, then you should use the ``pnm`` extension to write your files. Since files with this extension can hold any of the above formats, the output encoder will avoid converting the raster data where possible.
 
+.. code-block:: php
+
   $tux -> write("tux.pnm");
 
