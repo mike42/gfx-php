@@ -34,7 +34,7 @@ interface RasterImage
     public function getRasterData(): string;
 
     /**
-     * Produce a new RasterImage based on this one. The new image will be scaled to the requested dimensions via resampling. 
+     * Produce a new RasterImage based on this one. The new image will be scaled to the requested dimensions via resampling.
      *
      * @param int $width The width of the returned image.
      * @param int $height The height of the returned image.
