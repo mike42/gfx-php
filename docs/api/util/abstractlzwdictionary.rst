@@ -5,10 +5,12 @@ AbstractLzwDictionary
 
   .. php:method:: getClearCode ()
 
-      :returns: number
+    :returns: number
+
   .. php:method:: getEodCode ()
 
-      :returns: number
+    :returns: number
+
   .. php:method:: __construct (int $minCodeSize)
 
   .. php:method:: getSize ()

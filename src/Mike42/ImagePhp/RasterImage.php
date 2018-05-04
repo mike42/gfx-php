@@ -16,20 +16,20 @@ interface RasterImage
     /**
      * Get the width of the image in pixels.
      *
-     * @return int
+     * @return int The width of the image in pixels.
      */
     public function getWidth(): int;
 
     /**
      * Get the height of the image in pixels.
      *
-     * @return int
+     * @return int The height of the image in pixels.
      */
     public function getHeight(): int;
 
     /**
      * Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
-     * @return string
+     * @return string A binary string representation of the raster data for this image.
      */
     public function getRasterData(): string;
 
@@ -38,7 +38,7 @@ interface RasterImage
      *
      * @param int $width The width of the returned image.
      * @param int $height The height of the returned image.
-     * @return RasterImage
+     * @return RasterImage A scaled version of the image.
      */
     public function scale(int $width, int $height): RasterImage;
     
@@ -52,7 +52,7 @@ interface RasterImage
     /**
      * Produce a copy of this RasterImage in the RGB colorspace.
      *
-     * @return RgbRasterImage
+     * @return RgbRasterImage An RGB version of the image.
      */
     public function toRgb() : RgbRasterImage;
 
@@ -61,7 +61,7 @@ interface RasterImage
      *
      * @param int $x X co-ordinate
      * @param int $y Y co-ordinate
-     * @return int
+     * @return int The value of the pixel at ($x, $y).
      */
     public function getPixel(int $x, int $y) : int;
 
@@ -76,19 +76,20 @@ interface RasterImage
     /**
      * Produce a copy of this RasterImage in a monochrome colorspace.
      *
-     * @return GrayscaleRasterImage
+     * @return GrayscaleRasterImage A monochrome version of the image.
      */
     public function toGrayscale() : GrayscaleRasterImage;
 
     /**
      * Produce a copy of this RasterImage in a pure black-and-white colorspace.
+     * @return BlackAndWhiteRasterImage a black and white version of the image.
      */
     public function toBlackAndWhite() : BlackAndWhiteRasterImage;
 
     /**
      * Produce a copy of this RasterImage as an indexed image with an associated palette of unique colors.
      *
-     * @return IndexedRasterImage
+     * @return IndexedRasterImage An paletted version of the image.
      */
     public function toIndexed() : IndexedRasterImage;
 }

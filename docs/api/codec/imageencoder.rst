@@ -1,7 +1,7 @@
 ImageEncoder
 ============
 
-.. php:class:: ImageEncoder
+.. php:interface:: ImageEncoder
 
   .. php:method:: getEncodeFormats ()
 

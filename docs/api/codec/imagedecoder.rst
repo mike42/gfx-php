@@ -1,7 +1,7 @@
 ImageDecoder
 ============
 
-.. php:class:: ImageDecoder
+.. php:interface:: ImageDecoder
 
   .. php:method:: getDecodeFormats ()
 
