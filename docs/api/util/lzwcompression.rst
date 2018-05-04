@@ -1,9 +1,9 @@
 LzwCompression
 ==============
 
-.. php:class:: LzwCompression
+Utility classes to decode or encode entire strings.
 
-  Utility classes to decode or encode entire strings.
+.. php:class:: LzwCompression
 
   .. php:staticmethod:: compress (string $inp, int $minCodeSize)
 

@@ -23,6 +23,7 @@ RgbRasterImage
 
   .. php:method:: getMaxVal ()
 
+
   .. php:method:: getPixel (int $x, int $y)
 
     Get the value of a given pixel. The meaning of the integer value of this pixel is implementation-dependent.
@@ -33,7 +34,11 @@ RgbRasterImage
 
   .. php:method:: indexToRgb (int $val)
 
+    :param int $val:
+
   .. php:method:: rgbToIndex (array $val)
+
+    :param array $val:
 
   .. php:method:: setPixel (int $x, int $y, int $value)
 
@@ -44,6 +49,9 @@ RgbRasterImage
     :param int $value: Value to set
 
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
+
+    :param int $srcColor:
+    :param $destImage:
 
   .. php:method:: toRgb ()
 

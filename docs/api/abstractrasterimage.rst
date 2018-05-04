@@ -5,6 +5,14 @@ AbstractRasterImage
 
   .. php:method:: rect ($startX, $startY, $width, $height, $filled=false, $outline=1, $fill=1)
 
+    :param $startX:
+    :param $startY:
+    :param $width:
+    :param $height:
+    :param $filled:
+    :param $outline:
+    :param $fill:
+
   .. php:method:: write (string $filename)
 
     Write the image to a file. The output format is determined by the file extension.
@@ -21,5 +29,18 @@ AbstractRasterImage
 
   .. php:method:: subImage (int $startX, int $startY, int $width, int $height)
 
+    :param int $startX:
+    :param int $startY:
+    :param int $width:
+    :param int $height:
+
   .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
+
+    :param $source:
+    :param int $startX:
+    :param int $startY:
+    :param int $destStartX:
+    :param int $destStartY:
+    :param int $width:
+    :param int $height:
 

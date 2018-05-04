@@ -1,9 +1,9 @@
 RasterImage
 ===========
 
-.. php:interface:: RasterImage
+Generic interface to raster images.
 
-  Generic interface to raster images.
+.. php:interface:: RasterImage
 
   .. php:method:: getWidth ()
 

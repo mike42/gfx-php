@@ -5,6 +5,7 @@ IndexedRasterImage
 
   .. php:method:: getPalette ()
 
+
   .. php:method:: getRasterData ()
 
     Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
@@ -18,6 +19,7 @@ IndexedRasterImage
     :returns: int The height of the image in pixels.
 
   .. php:method:: getMaxVal ()
+
 
   .. php:method:: setPixel (int $x, int $y, int $value)
 
@@ -67,19 +69,34 @@ IndexedRasterImage
 
   .. php:method:: indexToRgb (int $index)
 
+    :param int $index:
+
   .. php:method:: rgbToIndex (array $rgb)
+
+    :param array $rgb:
 
   .. php:method:: getTransparentColor ()
 
+
   .. php:method:: setTransparentColor (int $color=null)
+
+    :param int $color:
 
   .. php:method:: setPalette (array $palette)
 
+    :param array $palette:
+
   .. php:method:: setMaxVal (int $maxVal)
+
+    :param int $maxVal:
 
   .. php:method:: allocateColor (array $color)
 
+    :param array $color:
+
   .. php:method:: deallocateColor (array $color)
+
+    :param array $color:
 
   .. php:staticmethod:: create (int $width, int $height, array $data=null, array $palette=null, int $maxVal=255)
 

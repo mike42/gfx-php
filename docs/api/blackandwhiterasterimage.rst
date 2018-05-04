@@ -1,13 +1,15 @@
 BlackAndWhiteRasterImage
 ========================
 
-.. php:class:: BlackAndWhiteRasterImage
+Small implementation of basic raster operations on PBM files to support creation of placeholder glyphs
 
-  Small implementation of basic raster operations on PBM files to support creation of placeholder glyphs
+.. php:class:: BlackAndWhiteRasterImage
 
   .. php:method:: invert ()
 
+
   .. php:method:: clear ()
+
 
   .. php:method:: getWidth ()
 
@@ -39,6 +41,7 @@ BlackAndWhiteRasterImage
 
   .. php:method:: toString ()
 
+
   .. php:method:: getRasterData ()
 
     Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
@@ -46,6 +49,9 @@ BlackAndWhiteRasterImage
     :returns: string A binary string representation of the raster data for this image.
 
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
+
+    :param int $srcColor:
+    :param $destImage:
 
   .. php:method:: toRgb ()
 

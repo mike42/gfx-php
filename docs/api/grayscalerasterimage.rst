@@ -33,6 +33,7 @@ GrayscaleRasterImage
 
   .. php:method:: getMaxVal ()
 
+
   .. php:method:: getRasterData ()
 
     Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
@@ -40,6 +41,9 @@ GrayscaleRasterImage
     :returns: string A binary string representation of the raster data for this image.
 
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
+
+    :param int $srcColor:
+    :param $destImage:
 
   .. php:method:: toRgb ()
 
