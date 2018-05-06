@@ -56,7 +56,7 @@ Small implementation of basic raster operations on PBM files to support creation
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
 
     :param int $srcColor:
-    :param $destImage:
+    :param :class:`RasterImage` $destImage:
 
   .. php:method:: toRgb ()
 
@@ -82,7 +82,7 @@ Small implementation of basic raster operations on PBM files to support creation
 
     :returns: :class:`IndexedRasterImage` An paletted version of the image.
 
-  .. php:staticmethod:: create ($width, $height, array $data=null)
+  .. php:staticmethod:: create ($width, $height, array $data)
 
     :param $width:
     :param $height:

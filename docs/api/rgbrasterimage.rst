@@ -56,7 +56,7 @@ RgbRasterImage
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
 
     :param int $srcColor:
-    :param $destImage:
+    :param :class:`RasterImage` $destImage:
 
   .. php:method:: toRgb ()
 
@@ -92,7 +92,7 @@ RgbRasterImage
 
     :param $in:
 
-  .. php:staticmethod:: create ($width, $height, array $data=null, $maxVal=255)
+  .. php:staticmethod:: create ($width, $height, array $data, $maxVal)
 
     :param $width:
     :param $height:
@@ -101,9 +101,9 @@ RgbRasterImage
     :param $maxVal:
       Default: ``255``
 
-  .. php:staticmethod:: convertDepth (&$item, $key, array $data)
+  .. php:staticmethod:: convertDepth (& $item, $key, array $data)
 
-    :param :class:`&` $item:
+    :param & $item:
     :param $key:
     :param array $data:
 

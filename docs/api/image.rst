@@ -7,13 +7,13 @@ Image
 
     :param string $filename:
 
-  .. php:staticmethod:: fromBlob (string $blob, string $filename=null)
+  .. php:staticmethod:: fromBlob (string $blob, string $filename)
 
     :param string $blob:
     :param string $filename:
       Default: ``null``
 
-  .. php:method:: create (int $width, int $height, int $impl=self::IMAGE_BLACK_WHITE)
+  .. php:method:: create (int $width, int $height, int $impl)
 
     :param int $width:
     :param int $height:

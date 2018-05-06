@@ -5,12 +5,12 @@ PngCodec
 
   .. php:method:: encode (RasterImage $image, string $format)
 
-    :param $image:
+    :param :class:`RasterImage` $image:
     :param string $format:
 
   .. php:method:: encodeRgb (RgbRasterImage $image)
 
-    :param $image:
+    :param :class:`RgbRasterImage` $image:
 
   .. php:method:: getEncodeFormats ()
 

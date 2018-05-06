@@ -48,7 +48,7 @@ GrayscaleRasterImage
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
 
     :param int $srcColor:
-    :param $destImage:
+    :param :class:`RasterImage` $destImage:
 
   .. php:method:: toRgb ()
 
@@ -74,7 +74,7 @@ GrayscaleRasterImage
 
     :returns: :class:`IndexedRasterImage` An paletted version of the image.
 
-  .. php:staticmethod:: create ($width, $height, array $data=null, $maxVal=255)
+  .. php:staticmethod:: create ($width, $height, array $data, $maxVal)
 
     :param $width:
     :param $height:

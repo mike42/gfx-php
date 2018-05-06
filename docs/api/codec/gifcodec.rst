@@ -5,7 +5,7 @@ GifCodec
 
   .. php:method:: encode (RasterImage $image, string $format)
 
-    :param $image:
+    :param :class:`RasterImage` $image:
     :param string $format:
 
   .. php:method:: getEncodeFormats ()

@@ -127,8 +127,7 @@ def methodXmlToRst(member, methodType):
               doco += paras2rst(argdescPara, "      ")
             documentedParams[argnameName] = doco
     methodName = member.find('definition').text.split("::")[-1]
-    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
-    argsString = member.find('argsstring').text
+    argsString = methodArgsString(member)
     rst += "  .. php:" + methodType + ":: " + methodName + " " + argsString + "\n\n"
     # Member description
     mDetailedDescriptionText = paras2rst(dd).strip();
@@ -153,8 +152,8 @@ def methodXmlToRst(member, methodType):
           # Undocumented param
           paramName = paramKey
           typeEl = arg.find('type')
-          typeStr = "" if typeEl is None else typeEl.text
-          rst += "    :param " + (itsatype(typeStr, False) + " " + paramName).strip() + ":\n"
+          typeStr = "" if typeEl == None else para2rst(typeEl)
+          rst += "    :param " + (typeStr + " " + paramName).strip() + ":\n"
         # Default value description
         if paramDefval != None:
           rst += "      Default: ``" + paramDefval.text + "``\n"
@@ -168,6 +167,31 @@ def methodXmlToRst(member, methodType):
         rst += "\n"
     print("    " +  methodName + " " + argsString)
     return rst
+
+def methodArgsString(member):
+    params = member.iter('param')
+    if params == None:
+        # Main option is to use arg list from doxygen
+        argList = member.find('argsstring').text
+        return "()" if argList == None else argList
+    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
+    requiredParamPart = []
+    optionalParamPart = []
+    for param in params:
+        #xmldebug(param)
+        paramName = param.find('declname').text
+        typeEl = param.find('type')
+        typeStr = "" if typeEl == None else para2rst(typeEl)
+        typeStr = unencapsulate(typeStr)
+        paramStr = (typeStr + " " + paramName).strip()
+        requiredParamPart.append(paramStr);
+    return "(" + ", ".join(requiredParamPart) + ")"
+
+def unencapsulate(typeStr):
+    # TODO extract type w/o RST wrapping
+    if typeStr[0:8] == ":class:`":
+        return (typeStr[8:])[:-1]
+    return typeStr
 
 def retInfo(dd):
     ret = dd.find('*/simplesect')
@@ -185,7 +209,7 @@ def xmldebug(inp):
 
 def para2rst(inp):
     print(inp.tag)
-    ret = "" if inp.text is None else inp.text
+    ret = "" if inp.text == None else inp.text
     for subtag in inp:
         print(subtag.tag)
         txt = subtag.text
@@ -193,7 +217,7 @@ def para2rst(inp):
             continue
         if subtag.tag == "simplesect":
             continue
-        if txt is None:
+        if txt == None:
             continue
         if subtag.tag == "ref":
             txt = ":class:`" + txt + "`"

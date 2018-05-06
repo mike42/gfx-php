@@ -3,7 +3,7 @@ AbstractRasterImage
 
 .. php:class:: AbstractRasterImage
 
-  .. php:method:: rect ($startX, $startY, $width, $height, $filled=false, $outline=1, $fill=1)
+  .. php:method:: rect ($startX, $startY, $width, $height, $filled, $outline, $fill)
 
     Produce a rectangle with the given properties.
 
@@ -44,7 +44,7 @@ AbstractRasterImage
 
   .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
 
-    :param $source:
+    :param :class:`RasterImage` $source:
     :param int $startX:
     :param int $startY:
     :param int $destStartX:

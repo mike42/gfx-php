@@ -83,7 +83,7 @@ IndexedRasterImage
   .. php:method:: getTransparentColor ()
 
 
-  .. php:method:: setTransparentColor (int $color=null)
+  .. php:method:: setTransparentColor (int $color)
 
     :param int $color:
       Default: ``null``
@@ -104,7 +104,7 @@ IndexedRasterImage
 
     :param array $color:
 
-  .. php:staticmethod:: create (int $width, int $height, array $data=null, array $palette=null, int $maxVal=255)
+  .. php:staticmethod:: create (int $width, int $height, array $data, array $palette, int $maxVal)
 
     :param int $width:
     :param int $height:
