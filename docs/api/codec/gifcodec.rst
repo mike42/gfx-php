@@ -13,3 +13,4 @@ GifCodec
 
   .. php:staticmethod:: getInstance ()
 
+

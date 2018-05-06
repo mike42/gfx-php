@@ -79,3 +79,7 @@ Small implementation of basic raster operations on PBM files to support creation
 
   .. php:staticmethod:: create ($width, $height, array $data=null)
 
+    :param $width:
+    :param $height:
+    :param array $data:
+

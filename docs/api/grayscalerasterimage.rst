@@ -71,3 +71,8 @@ GrayscaleRasterImage
 
   .. php:staticmethod:: create ($width, $height, array $data=null, $maxVal=255)
 
+    :param $width:
+    :param $height:
+    :param array $data:
+    :param $maxVal:
+

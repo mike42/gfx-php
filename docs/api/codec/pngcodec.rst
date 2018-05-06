@@ -17,3 +17,4 @@ PngCodec
 
   .. php:staticmethod:: getInstance ()
 
+

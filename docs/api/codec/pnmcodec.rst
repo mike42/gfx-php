@@ -24,3 +24,4 @@ PnmCodec
 
   .. php:staticmethod:: getInstance ()
 
+

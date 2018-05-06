@@ -13,3 +13,4 @@ BmpCodec
 
   .. php:staticmethod:: getInstance ()
 
+

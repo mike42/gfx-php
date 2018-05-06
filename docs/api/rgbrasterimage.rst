@@ -79,9 +79,24 @@ RgbRasterImage
 
   .. php:staticmethod:: rgbToInt (int $r, int $g, int $b)
 
+    :param int $r:
+    :param int $g:
+    :param int $b:
+
   .. php:staticmethod:: intToRgb ($in)
+
+    :param $in:
 
   .. php:staticmethod:: create ($width, $height, array $data=null, $maxVal=255)
 
+    :param $width:
+    :param $height:
+    :param array $data:
+    :param $maxVal:
+
   .. php:staticmethod:: convertDepth (&$item, $key, array $data)
+
+    :param :class:`&` $item:
+    :param $key:
+    :param array $data:
 

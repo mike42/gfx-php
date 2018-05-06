@@ -100,69 +100,64 @@ def classXmlToRst(compounddef, title):
         print("  " + kind)
         if kind == "public-func":
             for member in section.iter('memberdef'):
-                documentedParams = {}
-                dd = member.find('detaileddescription')
-                
-                params = dd.find('*/parameterlist')
-                if params != None:
-                    # Use documented param list if present
-                    for arg in params.iter('parameteritem'):
-                        argname = arg.find('parameternamelist')
-                        argnameType = argname.find('parametertype').text
-                        argnameName = argname.find('parametername').text
-                        argdesc = arg.find('parameterdescription')
-                        argdescPara = argdesc.find('para').text
-                        documentedParams[argnameName] = ("    :param " + itsatype(argnameType)).rstrip() + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
-                         
-            
-            
-                methodName = member.find('definition').text.split("::")[-1]
-                # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
-                argsString = member.find('argsstring').text
-                rst += "  .. php:method:: " + methodName + " " + argsString + "\n\n"
- 
-                # Member description
-                mDetailedDescriptionText = paras2rst(dd).strip();
-                if mDetailedDescriptionText != "":
-                  rst += "    " + mDetailedDescriptionText + "\n\n"
-
-                # Param list from the definition in the code and use
-                # documentation where available, auto-fill where not.
-                params = member.iter('param')
-                if params != None:
-                  for arg in params:
-                    paramKey = arg.find('declname').text
-                    if paramKey in documentedParams:
-                      # TODO apend info about default value
-                      rst += documentedParams[paramKey]
-                    else:
-                      # Undocumented param
-                      paramName = paramKey
-                      xmldebug(arg)
-                      typeEl = arg.find('type')
-                      typeStr = "" if typeEl is None else typeEl.text
-                      rst += "    :param " + (itsatype(typeStr) + " " + paramName).strip() + ":\n"
-
-                ret = dd.find('*/simplesect')
-                if ret != None:
-                    paras = ret.iter('para')
-                    rst += "    :returns: " + paras2rst(paras).strip() + "\n"
-                if (params != None) or (ret != None):
-                    rst += "\n"
-                print("    " +  methodName + " " + argsString)
-            
-            
-
+                rst += methodXmlToRst(member, 'method')
         elif kind == "public-static-func":
-            # TODO member description, arg list more like above.
             for member in section.iter('memberdef'):
-                methodName = member.find('definition').text.split("::")[-1]
-                argsString = member.find('argsstring').text
-                rst += "  .. php:staticmethod:: " + methodName + " " + argsString + "\n\n"
-
-            pass
+                rst += methodXmlToRst(member, 'staticmethod')
         else:
             print("    Skipping, no rules to print this section")
+    return rst
+
+def methodXmlToRst(member, methodType):
+    rst = ""
+    documentedParams = {}
+    dd = member.find('detaileddescription')
+    
+    params = dd.find('*/parameterlist')
+    if params != None:
+        # Use documented param list if present
+        for arg in params.iter('parameteritem'):
+            argname = arg.find('parameternamelist')
+            argnameType = argname.find('parametertype').text
+            argnameName = argname.find('parametername').text
+            argdesc = arg.find('parameterdescription')
+            argdescPara = argdesc.find('para').text
+            documentedParams[argnameName] = ("    :param " + itsatype(argnameType)).rstrip() + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
+
+    methodName = member.find('definition').text.split("::")[-1]
+    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
+    argsString = member.find('argsstring').text
+    rst += "  .. php:" + methodType + ":: " + methodName + " " + argsString + "\n\n"
+
+    # Member description
+    mDetailedDescriptionText = paras2rst(dd).strip();
+    if mDetailedDescriptionText != "":
+      rst += "    " + mDetailedDescriptionText + "\n\n"
+
+    # Param list from the definition in the code and use
+    # documentation where available, auto-fill where not.
+    params = member.iter('param')
+    if params != None:
+      for arg in params:
+        paramKey = arg.find('declname').text
+        if paramKey in documentedParams:
+          # TODO apend info about default value
+          rst += documentedParams[paramKey]
+        else:
+          # Undocumented param
+          paramName = paramKey
+          xmldebug(arg)
+          typeEl = arg.find('type')
+          typeStr = "" if typeEl is None else typeEl.text
+          rst += "    :param " + (itsatype(typeStr) + " " + paramName).strip() + ":\n"
+
+    ret = dd.find('*/simplesect')
+    if ret != None:
+        paras = ret.iter('para')
+        rst += "    :returns: " + paras2rst(paras).strip() + "\n"
+    if (params != None) or (ret != None):
+        rst += "\n"
+    print("    " +  methodName + " " + argsString)
     return rst
 
 def paras2rst(paras):

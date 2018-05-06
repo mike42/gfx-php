@@ -22,3 +22,4 @@ ImageCodec
 
   .. php:staticmethod:: getInstance ()
 
+

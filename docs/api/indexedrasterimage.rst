@@ -100,3 +100,9 @@ IndexedRasterImage
 
   .. php:staticmethod:: create (int $width, int $height, array $data=null, array $palette=null, int $maxVal=255)
 
+    :param int $width:
+    :param int $height:
+    :param array $data:
+    :param array $palette:
+    :param int $maxVal:
+
