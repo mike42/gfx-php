@@ -112,6 +112,7 @@ def methodXmlToRst(member, methodType):
     rst = ""
     documentedParams = {}
     dd = member.find('detaileddescription')
+    returnInfo = retInfo(dd)
     params = dd.find('*/parameterlist')
     if params != None:
         # Use documented param list if present
@@ -129,7 +130,6 @@ def methodXmlToRst(member, methodType):
     # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
     argsString = member.find('argsstring').text
     rst += "  .. php:" + methodType + ":: " + methodName + " " + argsString + "\n\n"
-
     # Member description
     mDetailedDescriptionText = paras2rst(dd).strip();
     if mDetailedDescriptionText != "":
@@ -159,16 +159,23 @@ def methodXmlToRst(member, methodType):
         if paramDefval != None:
           rst += "      Default: ``" + paramDefval.text + "``\n"
     # Return value
-    # TODO load return info into data struct.
-    returnInfo = {}
-    ret = dd.find('*/simplesect')
-    if ret != None:
-        paras = ret.iter('para')
-        rst += "    :returns: " + paras2rst(paras).strip() + "\n"
-    if (params != None) or (ret != None):
+    if returnInfo != None:
+        if returnInfo['returnType'] != None:
+            rst += "    :returns: " + itsatype(returnInfo['returnType']) + " " + returnInfo['returnDesc'] + "\n"
+        else:
+            rst += "    :returns: " + returnInfo['returnDesc'] + "\n"
+    if (params != None) or (returnInfo != None):
         rst += "\n"
     print("    " +  methodName + " " + argsString)
     return rst
+
+def retInfo(dd):
+    ret = dd.find('*/simplesect')
+    if ret == None:
+        return None
+    paras = ret.iter('para')
+    desc = paras2rst(paras).strip()
+    return {'returnType': None, 'returnDesc': desc}
 
 def paras2rst(paras, prefix = ""):
     return "\n".join([prefix + para2rst(x) for x in paras])
