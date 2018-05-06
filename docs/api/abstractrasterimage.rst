@@ -5,26 +5,34 @@ AbstractRasterImage
 
   .. php:method:: rect ($startX, $startY, $width, $height, $filled=false, $outline=1, $fill=1)
 
+    Produce a rectangle with the given properties.
+
     :param $startX:
     :param $startY:
     :param $width:
     :param $height:
     :param $filled:
+      Default: ``false``
     :param $outline:
-    :param $fill:
+      Default: ``1``
+    :param int $fill:
+      Default: ``1``
 
   .. php:method:: write (string $filename)
 
     Write the image to a file. The output format is determined by the file extension.
 
-    :param string $filename: Filename to write to.
+    :param string $filename:
+      Filename to write to.
 
   .. php:method:: scale (int $width, int $height)
 
     Produce a new :class:`RasterImage` based on this one. The new image will be scaled to the requested dimensions via resampling.
 
-    :param int $width: The width of the returned image.
-    :param int $height: The height of the returned image.
+    :param int $width:
+      The width of the returned image.
+    :param int $height:
+      The height of the returned image.
     :returns: :class:`RasterImage` A scaled version of the image.
 
   .. php:method:: subImage (int $startX, int $startY, int $width, int $height)

@@ -112,7 +112,6 @@ def methodXmlToRst(member, methodType):
     rst = ""
     documentedParams = {}
     dd = member.find('detaileddescription')
-    
     params = dd.find('*/parameterlist')
     if params != None:
         # Use documented param list if present
@@ -121,9 +120,11 @@ def methodXmlToRst(member, methodType):
             argnameType = argname.find('parametertype').text
             argnameName = argname.find('parametername').text
             argdesc = arg.find('parameterdescription')
-            argdescPara = argdesc.find('para').text
-            documentedParams[argnameName] = ("    :param " + itsatype(argnameType)).rstrip() + " " + argnameName + ": " + argdescPara.rstrip() + "\n"
-
+            argdescPara = argdesc.iter('para')
+            doco = ("    :param " + itsatype(argnameType, False)).rstrip() + " " + argnameName + ":\n"
+            if argdescPara != None:
+              doco += paras2rst(argdescPara, "      ")
+            documentedParams[argnameName] = doco
     methodName = member.find('definition').text.split("::")[-1]
     # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
     argsString = member.find('argsstring').text
@@ -140,17 +141,26 @@ def methodXmlToRst(member, methodType):
     if params != None:
       for arg in params:
         paramKey = arg.find('declname').text
+        paramDefval = arg.find('defval')
         if paramKey in documentedParams:
-          # TODO apend info about default value
-          rst += documentedParams[paramKey]
+          paramDoc = documentedParams[paramKey].rstrip()
+          # Append a "." if the documentation does not end with one, AND we
+          # need to write about the default value later.
+          if paramDoc[-1] != "." and paramDoc[-1] != ":" and paramDefval != None:
+            paramDoc += "."
+          rst += paramDoc + "\n"
         else:
           # Undocumented param
           paramName = paramKey
-          xmldebug(arg)
           typeEl = arg.find('type')
           typeStr = "" if typeEl is None else typeEl.text
-          rst += "    :param " + (itsatype(typeStr) + " " + paramName).strip() + ":\n"
-
+          rst += "    :param " + (itsatype(typeStr, False) + " " + paramName).strip() + ":\n"
+        # Default value description
+        if paramDefval != None:
+          rst += "      Default: ``" + paramDefval.text + "``\n"
+    # Return value
+    # TODO load return info into data struct.
+    returnInfo = {}
     ret = dd.find('*/simplesect')
     if ret != None:
         paras = ret.iter('para')
@@ -160,8 +170,8 @@ def methodXmlToRst(member, methodType):
     print("    " +  methodName + " " + argsString)
     return rst
 
-def paras2rst(paras):
-    return "\n".join([para2rst(x) for x in paras])
+def paras2rst(paras, prefix = ""):
+    return "\n".join([prefix + para2rst(x) for x in paras])
 
 def xmldebug(inp):
     print(ET.tostring(inp, encoding='utf8', method='xml').decode())
@@ -183,11 +193,16 @@ def para2rst(inp):
         ret += txt + ("" if subtag.tail == None else subtag.tail)
     return ret
 
-def itsatype(inp):
+def itsatype(inp, primitivesAsLiterals = False):
     if inp == None:
         return ""
-    if inp in ["", "int", "string", "array", "float", "double"]:
-        return inp
+    if inp == "":
+        return ""
+    if inp in ["mixed", "int", "string", "array", "float", "double"]:
+        if primitivesAsLiterals:
+          return "``" + inp + "``"
+        else:
+          return inp
     else:
         return ":class:`" + inp + "`"
 

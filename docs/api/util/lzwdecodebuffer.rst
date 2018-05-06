@@ -11,7 +11,8 @@ Treat incoming string as a stream of bits
 
   .. php:method:: read (int $readBits)
 
-    :param int $readBits: Number of bits to read
+    :param int $readBits:
+      Number of bits to read
 
   .. php:method:: readBit (int $i)
 

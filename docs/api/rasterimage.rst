@@ -27,15 +27,18 @@ Generic interface to raster images.
 
     Produce a new :class:`RasterImage` based on this one. The new image will be scaled to the requested dimensions via resampling.
 
-    :param int $width: The width of the returned image.
-    :param int $height: The height of the returned image.
+    :param int $width:
+      The width of the returned image.
+    :param int $height:
+      The height of the returned image.
     :returns: :class:`RasterImage` A scaled version of the image.
 
   .. php:method:: write (string $filename)
 
     Write the image to a file. The output format is determined by the file extension.
 
-    :param string $filename: Filename to write to.
+    :param string $filename:
+      Filename to write to.
 
   .. php:method:: toRgb ()
 
@@ -47,17 +50,22 @@ Generic interface to raster images.
 
     Get the value of a given pixel. The meaning of the integer value of this pixel is implementation-dependent.
 
-    :param int $x: X co-ordinate
-    :param int $y: Y co-ordinate
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
     :returns: int The value of the pixel at ($x, $y).
 
   .. php:method:: setPixel (int $x, int $y, int $value)
 
     Set the value of a given pixel.
 
-    :param int $x: X co-ordinate
-    :param int $y: Y co-ordinate
-    :param int $value: Value to set
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
+    :param int $value:
+      Value to set
 
   .. php:method:: toGrayscale ()
 

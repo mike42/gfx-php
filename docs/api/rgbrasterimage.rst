@@ -28,8 +28,10 @@ RgbRasterImage
 
     Get the value of a given pixel. The meaning of the integer value of this pixel is implementation-dependent.
 
-    :param int $x: X co-ordinate
-    :param int $y: Y co-ordinate
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
     :returns: int The value of the pixel at ($x, $y).
 
   .. php:method:: indexToRgb (int $val)
@@ -44,9 +46,12 @@ RgbRasterImage
 
     Set the value of a given pixel.
 
-    :param int $x: X co-ordinate
-    :param int $y: Y co-ordinate
-    :param int $value: Value to set
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
+    :param int $value:
+      Value to set
 
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
 
@@ -92,7 +97,9 @@ RgbRasterImage
     :param $width:
     :param $height:
     :param array $data:
+      Default: ``null``
     :param $maxVal:
+      Default: ``255``
 
   .. php:staticmethod:: convertDepth (&$item, $key, array $data)
 
