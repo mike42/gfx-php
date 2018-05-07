@@ -1,5 +1,5 @@
 <?php
-namespace Mike42\ImagePhp;
+namespace Mike42\GfxPhp;
 
 class GrayscaleRasterImage extends AbstractRasterImage
 {

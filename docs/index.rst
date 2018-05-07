@@ -1,4 +1,4 @@
-The pure PHP image processing library
+The pure PHP graphics library
 =====================================
 
 This library implements input, output and processing of raster images in pure
@@ -11,7 +11,7 @@ The basic usage is like this:
 .. code-block:: php
    
    <?php
-   use Mike42\ImagePhp\Image;
+   use Mike42\GfxPhp\Image;
    $img = Image::fromFile("colorwheel256.ppm");
    $img -> write("test.gif");
 
@@ -34,8 +34,8 @@ Install image-php by running:
 Contribute
 ----------
 
-- Issue Tracker: https://github.com/mike42/image-php/issues
-- Source Code: https://github.com/mike42/image-php
+- Issue Tracker: https://github.com/mike42/gfx-php/issues
+- Source Code: https://github.com/mike42/gfx-php
 
 Navigation
 ==========

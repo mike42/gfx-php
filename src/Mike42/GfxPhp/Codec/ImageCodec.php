@@ -1,5 +1,5 @@
 <?php
-namespace Mike42\ImagePhp\Codec;
+namespace Mike42\GfxPhp\Codec;
 
 class ImageCodec
 {

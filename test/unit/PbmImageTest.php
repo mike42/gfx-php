@@ -1,5 +1,5 @@
 <?php
-use Mike42\ImagePhp\BlackAndWhiteRasterImage;
+use Mike42\GfxPhp\BlackAndWhiteRasterImage;
 
 use PHPUnit\Framework\TestCase;
 

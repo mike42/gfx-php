@@ -3,10 +3,10 @@
 // See file LICENSE or go to https://github.com/mike42/image-php for full license details
 
 /**
- * Top-level namespace for Mike42\ImagePhp, containing the classes and
+ * Top-level namespace for Mike42\GfxPhp, containing the classes and
  * interfaces that a provide an entry-point into the library.
  */
-namespace Mike42\ImagePhp;
+namespace Mike42\GfxPhp;
 
 /**
  * Generic interface to raster images.

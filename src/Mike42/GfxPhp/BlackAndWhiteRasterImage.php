@@ -1,5 +1,5 @@
 <?php
-namespace Mike42\ImagePhp;
+namespace Mike42\GfxPhp;
 
 /**
  * Small implementation of basic raster operations on PBM files to support

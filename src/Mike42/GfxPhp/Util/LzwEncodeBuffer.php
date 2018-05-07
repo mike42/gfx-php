@@ -1,5 +1,5 @@
 <?php
-namespace Mike42\ImagePhp\Util;
+namespace Mike42\GfxPhp\Util;
 
 /*
  * Write variable-width output in the GIF layout

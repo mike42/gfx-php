@@ -10,7 +10,7 @@ import os
 
 inpDir = 'xml'
 outDir = '.'
-rootNamespace = 'Mike42::ImagePhp'
+rootNamespace = 'Mike42::GfxPhp'
 
 def renderNamespaceByName(tree, namespaceName):
     root = tree.getroot()

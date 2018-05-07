@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . "/../vendor/autoload.php");
 
-use Mike42\ImagePhp\Image;
+use Mike42\GfxPhp\Image;
 
 // Write original back
 $img = Image::fromFile(dirname(__FILE__). "/resources/colorwheel.ppm");

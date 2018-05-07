@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . "/../vendor/autoload.php");
 
-use Mike42\ImagePhp\Image;
+use Mike42\GfxPhp\Image;
 
 // Inputs
 $outFile = "out.pbm";

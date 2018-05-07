@@ -1,7 +1,7 @@
 {
-    "name": "mike42/image-php",
-    "description": "The pure PHP image processing library",
-    "homepage": "https://github.com/mike42/image-php",
+    "name": "mike42/gfx-php",
+    "description": "The pure PHP graphics library",
+    "homepage": "https://github.com/mike42/gfx-php",
     "type": "library",
     "license": "LGPL-2.1-or-later",
     "authors": [

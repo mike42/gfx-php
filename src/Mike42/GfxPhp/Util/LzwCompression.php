@@ -10,7 +10,7 @@
  * - https://www.cs.cmu.edu/~cil/lzw.and.gif.txt
  * - https://rosettacode.org/wiki/LZW_compression
  */
-namespace Mike42\ImagePhp\Util;
+namespace Mike42\GfxPhp\Util;
 
 /**
  * Utility classes to decode or encode entire strings.
