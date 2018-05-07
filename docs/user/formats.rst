@@ -29,14 +29,14 @@ In either case, the input format is determined using the file's `magic number`_.
 Netpbm Formats
 ^^^^^^^^^^^^^^
 
-The Netpbm formats are a series of uncompressed bitmap formats, which can represent most types of image. The formats can be read by ``image-php``.
+The Netpbm formats are a series of uncompressed bitmap formats, which can represent most types of image. The formats can be read by ``gfx-php``.
 
 :PNM: This is a file extension only. Files carrying ``.pnm`` extension can carry any of the below formats.
 :PPM: This is a color raster format. A PPM file is identified by the P6 magic number, and will be loaded into an instance of :class:`RgbRasterImage`.
 :PGM: This is a monochrome raster format. A PGM file is identified by the P5 magic number, and will be loaded instance of :class:`GrayscaleRasterImage`.
 :PBM: This is a 1-bit bitmap format. A PBM file is identified by the P4 header, and loaded into an instance of :class:`BlackAndWhiteRasterImage`.
 
-Each of these formats has both a binary and text encoding. ``image-php`` only supports the binary encodings at this stage.
+Each of these formats has both a binary and text encoding. ``gfx-php`` only supports the binary encodings at this stage.
 
 Output formats
 --------------

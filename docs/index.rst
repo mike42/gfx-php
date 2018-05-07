@@ -25,11 +25,11 @@ Features
 Installation
 ------------
 
-Install image-php by running:
+Install gfx-php by running:
 
 .. code-block:: bash
 
-    composer install mike42/image-php
+    composer install mike42/gfx-php
 
 Contribute
 ----------

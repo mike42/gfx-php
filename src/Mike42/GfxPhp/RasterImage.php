@@ -1,6 +1,6 @@
 <?php
-// This file is part of mike42/image-php, which is released under LGPL-2.1-or-later.
-// See file LICENSE or go to https://github.com/mike42/image-php for full license details
+// This file is part of mike42/gfx-php, which is released under LGPL-2.1-or-later.
+// See file LICENSE or go to https://github.com/mike42/gfx-php for full license details
 
 /**
  * Top-level namespace for Mike42\GfxPhp, containing the classes and

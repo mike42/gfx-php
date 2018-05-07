@@ -1,7 +1,7 @@
 Image types
 ===========
 
-Every raster image in ``image-php`` implements the :class:`RasterImage` interface.
+Every raster image in ``gfx-php`` implements the :class:`RasterImage` interface.
 
 There are several classes that implement this interface, which handle different representations of
 the image data.
