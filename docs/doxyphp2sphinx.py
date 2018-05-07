@@ -122,12 +122,15 @@ def methodXmlToRst(member, methodType):
             argnameName = argname.find('parametername').text
             argdesc = arg.find('parameterdescription')
             argdescPara = argdesc.iter('para')
-            doco = ("    :param " + itsatype(argnameType, False)).rstrip() + " " + argnameName + ":\n"
+            doco = ("    :param " + argnameType).rstrip() + " " + argnameName + ":\n"
             if argdescPara != None:
               doco += paras2rst(argdescPara, "      ")
             documentedParams[argnameName] = doco
     methodName = member.find('definition').text.split("::")[-1]
     argsString = methodArgsString(member)
+
+    if returnInfo != None and returnInfo['returnType'] != None:
+      argsString += " -> " + returnInfo['returnType']
     rst += "  .. php:" + methodType + ":: " + methodName + " " + argsString + "\n\n"
     # Member description
     mDetailedDescriptionText = paras2rst(dd).strip();
@@ -153,14 +156,14 @@ def methodXmlToRst(member, methodType):
           paramName = paramKey
           typeEl = arg.find('type')
           typeStr = "" if typeEl == None else para2rst(typeEl)
-          rst += "    :param " + (typeStr + " " + paramName).strip() + ":\n"
+          rst += "    :param " + (unencapsulate(typeStr) + " " + paramName).strip() + ":\n"
         # Default value description
         if paramDefval != None:
           rst += "      Default: ``" + paramDefval.text + "``\n"
     # Return value
     if returnInfo != None:
         if returnInfo['returnType'] != None:
-            rst += "    :returns: " + itsatype(returnInfo['returnType']) + " " + returnInfo['returnDesc'] + "\n"
+            rst += "    :returns: " + itsatype(returnInfo['returnType'], False) + " -- " + returnInfo['returnDesc'] + "\n"
         else:
             rst += "    :returns: " + returnInfo['returnDesc'] + "\n"
     if (params != None) or (returnInfo != None):
@@ -177,15 +180,34 @@ def methodArgsString(member):
     # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
     requiredParamPart = []
     optionalParamPart = []
+    optionalSwitch = False
     for param in params:
-        #xmldebug(param)
         paramName = param.find('declname').text
         typeEl = param.find('type')
         typeStr = "" if typeEl == None else para2rst(typeEl)
         typeStr = unencapsulate(typeStr)
         paramStr = (typeStr + " " + paramName).strip()
-        requiredParamPart.append(paramStr);
-    return "(" + ", ".join(requiredParamPart) + ")"
+        if param.find('defval') != None:
+            optionalSwitch = True
+        if optionalSwitch:
+            optionalParamPart.append(paramStr);
+        else:
+            requiredParamPart.append(paramStr);
+    # Output arg list as string according to sphinxcontrib-phpdomain format
+    if len(requiredParamPart) > 0:
+        if len(optionalParamPart) > 0:
+            # Both required and optional args
+            return "(" + ", ".join(requiredParamPart) + "[, " + ", ".join(optionalParamPart) + "])"
+        else:
+            # Only required args
+            return "(" + ", ".join(requiredParamPart) + ")"
+    else:
+        if len(optionalParamPart) > 0:
+            # Only optional args
+            return "([" + ", ".join(requiredParamPart) + "])"
+        else:
+            # Empty arg list!
+            return "()"       
 
 def unencapsulate(typeStr):
     # TODO extract type w/o RST wrapping
@@ -193,12 +215,22 @@ def unencapsulate(typeStr):
         return (typeStr[8:])[:-1]
     return typeStr
 
+def allPrimitives():
+    # Scalar type keywords and things you find in documentation (eg. 'mixed')
+    # http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
+    return ["self", "bool", "callable", "iterable", "mixed", "int", "string", "array", "float", "double", "number"]
+
 def retInfo(dd):
     ret = dd.find('*/simplesect')
     if ret == None:
         return None
     paras = ret.iter('para')
     desc = paras2rst(paras).strip()
+    descPart = (desc + " ").split(" ")
+    if descPart[0] in allPrimitives() or descPart[0][0:8] == ":class:`":
+
+        return {'returnType': unencapsulate(descPart[0]), 'returnDesc': " ".join(descPart[1:]).strip()}
+    # No discernable return type
     return {'returnType': None, 'returnDesc': desc}
 
 def paras2rst(paras, prefix = ""):
@@ -208,7 +240,6 @@ def xmldebug(inp):
     print(ET.tostring(inp, encoding='utf8', method='xml').decode())
 
 def para2rst(inp):
-    print(inp.tag)
     ret = "" if inp.text == None else inp.text
     for subtag in inp:
         print(subtag.tag)
@@ -229,7 +260,7 @@ def itsatype(inp, primitivesAsLiterals = False):
         return ""
     if inp == "":
         return ""
-    if inp in ["mixed", "int", "string", "array", "float", "double"]:
+    if inp in allPrimitives():
         if primitivesAsLiterals:
           return "``" + inp + "``"
         else:

@@ -8,6 +8,6 @@ ImageEncoder
 
   .. php:method:: encode (RasterImage $image, string $format)
 
-    :param :class:`RasterImage` $image:
+    :param RasterImage $image:
     :param string $format:
 

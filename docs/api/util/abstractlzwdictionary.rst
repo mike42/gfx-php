@@ -3,13 +3,13 @@ AbstractLzwDictionary
 
 .. php:class:: AbstractLzwDictionary
 
-  .. php:method:: getClearCode ()
+  .. php:method:: getClearCode () -> number
 
-    :returns: number
+    :returns: number -- 
 
-  .. php:method:: getEodCode ()
+  .. php:method:: getEodCode () -> number
 
-    :returns: number
+    :returns: number -- 
 
   .. php:method:: __construct (int $minCodeSize)
 
