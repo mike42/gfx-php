@@ -24,7 +24,7 @@ These only require a ``width`` and ``height``.
 
 .. code-block:: php
 
-   use Mike42\ImagePhp\BlackAndWhiteRasterImage;
+   use Mike42\GfxPhp\BlackAndWhiteRasterImage;
    $image = BlackAndWhiteRasterImage::create(50, 100);
 
 Converting between image types
@@ -34,7 +34,7 @@ You can convert between image types. This is similar to performing a `color-spac
 
 .. code-block:: php
 
-   use Mike42\ImagePhp\Image;
+   use Mike42\GfxPhp\Image;
    $image = Image::load("tux.ppm");
    $image -> toBlackAndWhite();
 
@@ -54,7 +54,7 @@ Some file formats only accept specific types of raster data, so the :meth:`Raste
 
 .. code-block:: php
 
-   use Mike42\ImagePhp\Image;
+   use Mike42\GfxPhp\Image;
    $wheel = Image::load("colorwheel.ppm");
    $wheel -> write("wheel.pbm");
 

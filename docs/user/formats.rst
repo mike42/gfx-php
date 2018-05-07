@@ -11,14 +11,14 @@ Files are read from a file or URL by using the :meth:`Image::fromFile()` functio
 
 .. code-block:: php
   
-  use Mike42\ImagePhp\Image;
+  use Mike42\GfxPhp\Image;
   $tux = Image::fromFile("tux.pbm")
 
 If the your image is not being read from a file, then :meth:`Image::fromBlob()` can load it instead:
 
 .. code-block:: php
 
-  use Mike42\ImagePhp\Image;
+  use Mike42\GfxPhp\Image;
   $tuxStr = "...";
   $tux = Image::fromBlob($tuxStr, "tux.pbm");
 
