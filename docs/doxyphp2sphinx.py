@@ -77,8 +77,22 @@ def classXmlToRst(compounddef, title):
     rst = title + "\n"
     rst += "=" * len(title) + "\n\n"
 
+    # Class description
+    detailedDescriptionXml = compounddef.find('detaileddescription')
+    detailedDescriptionText = paras2rst(detailedDescriptionXml).strip();
+    if detailedDescriptionText != "":
+      rst += detailedDescriptionText + "\n\n"
+
+    # TODO a small table.
+    # Namespace
+    # All implemented interfaces
+    #
+
     # Class name
-    rst += ".. php:class:: " + title + "\n\n"
+    if compounddef.attrib['kind'] == "interface":
+      rst += ".. php:interface:: " + title + "\n\n" 
+    else:
+      rst += ".. php:class:: " + title + "\n\n"
 
     # Methods
     for section in compounddef.iter('sectiondef'):
@@ -86,22 +100,173 @@ def classXmlToRst(compounddef, title):
         print("  " + kind)
         if kind == "public-func":
             for member in section.iter('memberdef'):
-                methodName = member.find('definition').text.split("::")[-1]
-                argsString = member.find('argsstring').text
-                rst += "  .. php:method:: " + methodName + " " + argsString + "\n\n"
+                rst += methodXmlToRst(member, 'method')
         elif kind == "public-static-func":
             for member in section.iter('memberdef'):
-                methodName = member.find('definition').text.split("::")[-1]
-                argsString = member.find('argsstring').text
-                rst += "  .. php:staticmethod:: " + methodName + " " + argsString + "\n\n"
-
-
-            pass
+                rst += methodXmlToRst(member, 'staticmethod')
         else:
             print("    Skipping, no rules to print this section")
-
-    #rst +=  .. php:method:: setDate($year, $month, $day)
     return rst
+
+def methodXmlToRst(member, methodType):
+    rst = ""
+    documentedParams = {}
+    dd = member.find('detaileddescription')
+    returnInfo = retInfo(dd)
+    params = dd.find('*/parameterlist')
+    if params != None:
+        # Use documented param list if present
+        for arg in params.iter('parameteritem'):
+            argname = arg.find('parameternamelist')
+            argnameType = argname.find('parametertype').text
+            argnameName = argname.find('parametername').text
+            argdesc = arg.find('parameterdescription')
+            argdescPara = argdesc.iter('para')
+            doco = ("    :param " + argnameType).rstrip() + " " + argnameName + ":\n"
+            if argdescPara != None:
+              doco += paras2rst(argdescPara, "      ")
+            documentedParams[argnameName] = doco
+    methodName = member.find('definition').text.split("::")[-1]
+    argsString = methodArgsString(member)
+
+    if returnInfo != None and returnInfo['returnType'] != None:
+      argsString += " -> " + returnInfo['returnType']
+    rst += "  .. php:" + methodType + ":: " + methodName + " " + argsString + "\n\n"
+    # Member description
+    mDetailedDescriptionText = paras2rst(dd).strip();
+    if mDetailedDescriptionText != "":
+      rst += "    " + mDetailedDescriptionText + "\n\n"
+
+    # Param list from the definition in the code and use
+    # documentation where available, auto-fill where not.
+    params = member.iter('param')
+    if params != None:
+      for arg in params:
+        paramKey = arg.find('declname').text
+        paramDefval = arg.find('defval')
+        if paramKey in documentedParams:
+          paramDoc = documentedParams[paramKey].rstrip()
+          # Append a "." if the documentation does not end with one, AND we
+          # need to write about the default value later.
+          if paramDoc[-1] != "." and paramDoc[-1] != ":" and paramDefval != None:
+            paramDoc += "."
+          rst += paramDoc + "\n"
+        else:
+          # Undocumented param
+          paramName = paramKey
+          typeEl = arg.find('type')
+          typeStr = "" if typeEl == None else para2rst(typeEl)
+          rst += "    :param " + (unencapsulate(typeStr) + " " + paramName).strip() + ":\n"
+        # Default value description
+        if paramDefval != None:
+          rst += "      Default: ``" + paramDefval.text + "``\n"
+    # Return value
+    if returnInfo != None:
+        if returnInfo['returnType'] != None:
+            rst += "    :returns: " + itsatype(returnInfo['returnType'], False) + " -- " + returnInfo['returnDesc'] + "\n"
+        else:
+            rst += "    :returns: " + returnInfo['returnDesc'] + "\n"
+    if (params != None) or (returnInfo != None):
+        rst += "\n"
+    print("    " +  methodName + " " + argsString)
+    return rst
+
+def methodArgsString(member):
+    params = member.iter('param')
+    if params == None:
+        # Main option is to use arg list from doxygen
+        argList = member.find('argsstring').text
+        return "()" if argList == None else argList
+    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
+    requiredParamPart = []
+    optionalParamPart = []
+    optionalSwitch = False
+    for param in params:
+        paramName = param.find('declname').text
+        typeEl = param.find('type')
+        typeStr = "" if typeEl == None else para2rst(typeEl)
+        typeStr = unencapsulate(typeStr)
+        paramStr = (typeStr + " " + paramName).strip()
+        if param.find('defval') != None:
+            optionalSwitch = True
+        if optionalSwitch:
+            optionalParamPart.append(paramStr);
+        else:
+            requiredParamPart.append(paramStr);
+    # Output arg list as string according to sphinxcontrib-phpdomain format
+    if len(requiredParamPart) > 0:
+        if len(optionalParamPart) > 0:
+            # Both required and optional args
+            return "(" + ", ".join(requiredParamPart) + "[, " + ", ".join(optionalParamPart) + "])"
+        else:
+            # Only required args
+            return "(" + ", ".join(requiredParamPart) + ")"
+    else:
+        if len(optionalParamPart) > 0:
+            # Only optional args
+            return "([" + ", ".join(requiredParamPart) + "])"
+        else:
+            # Empty arg list!
+            return "()"       
+
+def unencapsulate(typeStr):
+    # TODO extract type w/o RST wrapping
+    if typeStr[0:8] == ":class:`":
+        return (typeStr[8:])[:-1]
+    return typeStr
+
+def allPrimitives():
+    # Scalar type keywords and things you find in documentation (eg. 'mixed')
+    # http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
+    return ["self", "bool", "callable", "iterable", "mixed", "int", "string", "array", "float", "double", "number"]
+
+def retInfo(dd):
+    ret = dd.find('*/simplesect')
+    if ret == None:
+        return None
+    paras = ret.iter('para')
+    desc = paras2rst(paras).strip()
+    descPart = (desc + " ").split(" ")
+    if descPart[0] in allPrimitives() or descPart[0][0:8] == ":class:`":
+
+        return {'returnType': unencapsulate(descPart[0]), 'returnDesc': " ".join(descPart[1:]).strip()}
+    # No discernable return type
+    return {'returnType': None, 'returnDesc': desc}
+
+def paras2rst(paras, prefix = ""):
+    return "\n".join([prefix + para2rst(x) for x in paras])
+
+def xmldebug(inp):
+    print(ET.tostring(inp, encoding='utf8', method='xml').decode())
+
+def para2rst(inp):
+    ret = "" if inp.text == None else inp.text
+    for subtag in inp:
+        print(subtag.tag)
+        txt = subtag.text
+        if subtag.tag == "parameterlist":
+            continue
+        if subtag.tag == "simplesect":
+            continue
+        if txt == None:
+            continue
+        if subtag.tag == "ref":
+            txt = ":class:`" + txt + "`"
+        ret += txt + ("" if subtag.tail == None else subtag.tail)
+    return ret
+
+def itsatype(inp, primitivesAsLiterals = False):
+    if inp == None:
+        return ""
+    if inp == "":
+        return ""
+    if inp in allPrimitives():
+        if primitivesAsLiterals:
+          return "``" + inp + "``"
+        else:
+          return inp
+    else:
+        return ":class:`" + inp + "`"
 
 def renderClassByRefId(classRefId, name):
     print("Processing class " + name)

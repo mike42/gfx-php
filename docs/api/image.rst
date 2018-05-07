@@ -5,7 +5,18 @@ Image
 
   .. php:staticmethod:: fromFile (string $filename)
 
-  .. php:staticmethod:: fromBlob (string $blob, string $filename=null)
+    :param string $filename:
 
-  .. php:method:: create (int $width, int $height, int $impl=self::IMAGE_BLACK_WHITE)
+  .. php:staticmethod:: fromBlob (string $blob[, string $filename])
+
+    :param string $blob:
+    :param string $filename:
+      Default: ``null``
+
+  .. php:staticmethod:: create (int $width, int $height[, int $impl])
+
+    :param int $width:
+    :param int $height:
+    :param int $impl:
+      Default: ``self::IMAGE_BLACK_WHITE``
 

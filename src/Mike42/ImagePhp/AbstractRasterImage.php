@@ -6,6 +6,11 @@ use Mike42\ImagePhp\Codec\ImageCodec;
 
 abstract class AbstractRasterImage implements RasterImage
 {
+    /**
+     * Produce a rectangle with the given properties.
+     *
+     * @param int $fill
+     */
     public function rect($startX, $startY, $width, $height, $filled = false, $outline = 1, $fill = 1)
     {
         $this -> horizontalLine($startY, $startX, $startX + $width - 1, $outline);

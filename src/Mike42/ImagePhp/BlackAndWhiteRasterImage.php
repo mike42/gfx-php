@@ -65,7 +65,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
     }
 
-    public function getPixel(int $x, int $y)
+    public function getPixel(int $x, int $y) : int
     {
         if ($x < 0 || $x >= $this -> width) {
             return 0;

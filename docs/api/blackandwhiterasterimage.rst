@@ -1,33 +1,91 @@
 BlackAndWhiteRasterImage
 ========================
 
+Small implementation of basic raster operations on PBM files to support creation of placeholder glyphs
+
 .. php:class:: BlackAndWhiteRasterImage
 
   .. php:method:: invert ()
 
+
   .. php:method:: clear ()
 
-  .. php:method:: getWidth ()
 
-  .. php:method:: getHeight ()
+  .. php:method:: getWidth () -> int
+
+    Get the width of the image in pixels.
+
+    :returns: int -- The width of the image in pixels.
+
+  .. php:method:: getHeight () -> int
+
+    Get the height of the image in pixels.
+
+    :returns: int -- The height of the image in pixels.
 
   .. php:method:: setPixel (int $x, int $y, int $value)
 
-  .. php:method:: getPixel (int $x, int $y)
+    Set the value of a given pixel.
+
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
+    :param int $value:
+      Value to set
+
+  .. php:method:: getPixel (int $x, int $y) -> int
+
+    Get the value of a given pixel. The meaning of the integer value of this pixel is implementation-dependent.
+
+    :param int $x:
+      X co-ordinate
+    :param int $y:
+      Y co-ordinate
+    :returns: int -- The value of the pixel at ($x, $y).
 
   .. php:method:: toString ()
 
-  .. php:method:: getRasterData ()
+
+  .. php:method:: getRasterData () -> string
+
+    Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
+
+    :returns: string -- A binary string representation of the raster data for this image.
 
   .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
 
-  .. php:method:: toRgb ()
+    :param int $srcColor:
+    :param RasterImage $destImage:
 
-  .. php:method:: toGrayscale ()
+  .. php:method:: toRgb () -> RgbRasterImage
 
-  .. php:method:: toBlackAndWhite ()
+    Produce a copy of this :class:`RasterImage` in the RGB colorspace.
 
-  .. php:method:: toIndexed ()
+    :returns: :class:`RgbRasterImage` -- An RGB version of the image.
 
-  .. php:staticmethod:: create ($width, $height, array $data=null)
+  .. php:method:: toGrayscale () -> GrayscaleRasterImage
+
+    Produce a copy of this :class:`RasterImage` in a monochrome colorspace.
+
+    :returns: :class:`GrayscaleRasterImage` -- A monochrome version of the image.
+
+  .. php:method:: toBlackAndWhite () -> BlackAndWhiteRasterImage
+
+    Produce a copy of this :class:`RasterImage` in a pure black-and-white colorspace.
+
+    :returns: :class:`BlackAndWhiteRasterImage` -- a black and white version of the image.
+
+  .. php:method:: toIndexed () -> IndexedRasterImage
+
+    Produce a copy of this :class:`RasterImage` as an indexed image with an associated palette of unique colors.
+
+    :returns: :class:`IndexedRasterImage` -- An paletted version of the image.
+
+  .. php:staticmethod:: create ($width, $height[, array $data])
+
+    :param $width:
+    :param $height:
+    :param array $data:
+      Default: ``null``
 

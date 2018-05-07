@@ -39,7 +39,7 @@ class Image
         return $decoder -> decode($blob);
     }
     
-    public function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE)
+    public static function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE)
     {
         return BlackAndWhiteRasterImage::create($width, $height);
     }
