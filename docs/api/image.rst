@@ -13,7 +13,7 @@ Image
     :param string $filename:
       Default: ``null``
 
-  .. php:method:: create (int $width, int $height[, int $impl])
+  .. php:staticmethod:: create (int $width, int $height[, int $impl])
 
     :param int $width:
     :param int $height:
