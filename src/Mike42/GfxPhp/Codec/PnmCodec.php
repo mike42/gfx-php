@@ -1,11 +1,11 @@
 <?php
 
-namespace Mike42\ImagePhp\Codec;
+namespace Mike42\GfxPhp\Codec;
 
-use Mike42\ImagePhp\BlackAndWhiteRasterImage;
-use Mike42\ImagePhp\GrayscaleRasterImage;
-use Mike42\ImagePhp\RasterImage;
-use Mike42\ImagePhp\RgbRasterImage;
+use Mike42\GfxPhp\BlackAndWhiteRasterImage;
+use Mike42\GfxPhp\GrayscaleRasterImage;
+use Mike42\GfxPhp\RasterImage;
+use Mike42\GfxPhp\RgbRasterImage;
 use Exception;
 
 class PnmCodec implements ImageDecoder, ImageEncoder

@@ -1,8 +1,8 @@
 <?php
 
-namespace Mike42\ImagePhp;
+namespace Mike42\GfxPhp;
 
-use Mike42\ImagePhp\Codec\ImageCodec;
+use Mike42\GfxPhp\Codec\ImageCodec;
 
 abstract class AbstractRasterImage implements RasterImage
 {

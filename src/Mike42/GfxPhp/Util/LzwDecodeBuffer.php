@@ -1,6 +1,6 @@
 <?php
 
-namespace Mike42\ImagePhp\Util;
+namespace Mike42\GfxPhp\Util;
 
 /**
  * Treat incoming string as a stream of bits

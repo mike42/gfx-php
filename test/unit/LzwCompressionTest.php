@@ -1,6 +1,6 @@
 <?php
-use Mike42\ImagePhp\Util\LzwCompression;
-use Mike42\ImagePhp\Util\LzwDecodeBuffer;
+use Mike42\GfxPhp\Util\LzwCompression;
+use Mike42\GfxPhp\Util\LzwDecodeBuffer;
 
 use PHPUnit\Framework\TestCase;
 

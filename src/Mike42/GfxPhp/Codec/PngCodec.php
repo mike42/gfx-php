@@ -1,8 +1,8 @@
 <?php
-namespace Mike42\ImagePhp\Codec;
+namespace Mike42\GfxPhp\Codec;
 
-use Mike42\ImagePhp\RasterImage;
-use Mike42\ImagePhp\RgbRasterImage;
+use Mike42\GfxPhp\RasterImage;
+use Mike42\GfxPhp\RgbRasterImage;
 
 class PngCodec implements ImageEncoder
 {
