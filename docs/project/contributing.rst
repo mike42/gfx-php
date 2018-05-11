@@ -12,7 +12,7 @@ If your question is incomplete or not specific to this project, then it will be 
 
 The StackOverflow help page `How do I ask a good question?`_ contains advice about writing complete questions.
 
-_`How do I ask a good question?`: https://stackoverflow.com/help/how-to-ask
+.. _`How do I ask a good question?`: https://stackoverflow.com/help/how-to-ask
 
 How to report a bug
 ^^^^^^^^^^^^^^^^^^^
@@ -30,8 +30,8 @@ Bug reports will stay open as long as they are actionable. Generally, this means
 
 The title and tags on your bug may be edited so that it can be distinguished from other bugs.
 
-      _`code block`: https://help.github.com/articles/creating-and-highlighting-code-blocks/
-      _`gfx-php issue tracker`: https://github.com/mike42/gfx-php/issues
+.. _`code block`: https://help.github.com/articles/creating-and-highlighting-code-blocks/
+.. _`gfx-php issue tracker`: https://github.com/mike42/gfx-php/issues
 
 Feature requests
 ^^^^^^^^^^^^^^^^
