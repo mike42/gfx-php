@@ -76,6 +76,10 @@ def renderNamespaceByRefId(namespaceRefId, name):
 
 # Walk the XML and extract all members of the given 'kind'
 def classMemberList(compounddef, memberKind):
+    return classMemberDict(compounddef, memberKind).values()
+
+def classMemberDict(compounddef, memberKind):
+    # Find items declared on this class
     ret = OrderedDict()
     for section in compounddef.iter('sectiondef'):
         kind = section.attrib['kind']
@@ -84,7 +88,16 @@ def classMemberList(compounddef, memberKind):
         for member in section.iter('memberdef'):
             methodName = member.find('definition').text.split("::")[-1]
             ret[methodName] = member
-    return ret.values()
+    # Follow-up with items from base classes
+    if ("private" in memberKind) or ("static" in memberKind):
+        # Private methods are not accessible, and static methods should be
+        # called on the class which defines them.
+        return ret
+    for baseClass in compounddef.iter('basecompoundref'):
+        # TODO load XML and recurse
+        compoundRef = baseClass.text
+        #print(compoundRef)
+    return ret
 
 def classXmlToRst(compounddef, title):
     rst = title + "\n"
@@ -282,13 +295,16 @@ def itsatype(inp, primitivesAsLiterals = False):
     else:
         return ":class:`" + inp + "`"
 
+def compounddefByRefId(classRefId):
+    xmlFilename = inpDir + '/' + classRefId + '.xml'
+    #print("  Opening " + xmlFilename)
+    cl = ET.parse(xmlFilename)
+    return cl.getroot().find('compounddef')
+
 def renderClassByRefId(classRefId, name):
     print("Processing class " + name)
     print("  refid is " + classRefId)
-    xmlFilename = inpDir + '/' + classRefId + '.xml'
-    print("  Opening " + xmlFilename)
-    cl = ET.parse(xmlFilename)
-    compounddef = cl.getroot().find('compounddef')
+    compounddef = compounddefByRefId(classRefId)
     prefix = rootNamespace + "::"
     parts = name[len(prefix):].split("::")
     shortname = "api/" + "/".join(parts).lower()
