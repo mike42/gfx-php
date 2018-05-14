@@ -5,6 +5,7 @@ and generates reStructuredText suitable for rendering with the sphinx PHP
 domain.
 """
 
+from collections import OrderedDict
 import xml.etree.ElementTree as ET
 import os
 
@@ -73,6 +74,18 @@ def renderNamespaceByRefId(namespaceRefId, name):
         nsName = node.text
         renderNamespaceByRefId(nsId, nsName)
 
+# Walk the XML and extract all members of the given 'kind'
+def classMemberList(compounddef, memberKind):
+    ret = OrderedDict()
+    for section in compounddef.iter('sectiondef'):
+        kind = section.attrib['kind']
+        if kind != memberKind:
+            continue
+        for member in section.iter('memberdef'):
+            methodName = member.find('definition').text.split("::")[-1]
+            ret[methodName] = member
+    return ret.values()
+
 def classXmlToRst(compounddef, title):
     rst = title + "\n"
     rst += "=" * len(title) + "\n\n"
@@ -85,8 +98,9 @@ def classXmlToRst(compounddef, title):
 
     # TODO a small table.
     # Namespace
+    # Base class
     # All implemented interfaces
-    #
+    # All known sub-classes
 
     # Class name
     if compounddef.attrib['kind'] == "interface":
@@ -95,17 +109,17 @@ def classXmlToRst(compounddef, title):
       rst += ".. php:class:: " + title + "\n\n"
 
     # Methods
-    for section in compounddef.iter('sectiondef'):
-        kind = section.attrib['kind']
-        print("  " + kind)
-        if kind == "public-func":
-            for member in section.iter('memberdef'):
-                rst += methodXmlToRst(member, 'method')
-        elif kind == "public-static-func":
-            for member in section.iter('memberdef'):
-                rst += methodXmlToRst(member, 'staticmethod')
-        else:
-            print("    Skipping, no rules to print this section")
+    methods = classMemberList(compounddef, 'public-func')
+    print("  methods:")
+    for method in methods:
+        rst += methodXmlToRst(method, 'method')
+
+    # Static methods
+    methods = classMemberList(compounddef, 'public-static-func')
+    print("  static methods:")
+    for method in methods:
+        rst += methodXmlToRst(method, 'staticmethod')
+
     return rst
 
 def methodXmlToRst(member, methodType):
