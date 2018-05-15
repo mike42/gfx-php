@@ -3,9 +3,12 @@ Image
 
 .. php:class:: Image
 
-  .. php:staticmethod:: fromFile (string $filename)
+  .. php:staticmethod:: create (int $width, int $height[, int $impl])
 
-    :param string $filename:
+    :param int $width:
+    :param int $height:
+    :param int $impl:
+      Default: ``self::IMAGE_BLACK_WHITE``
 
   .. php:staticmethod:: fromBlob (string $blob[, string $filename])
 
@@ -13,10 +16,7 @@ Image
     :param string $filename:
       Default: ``null``
 
-  .. php:staticmethod:: create (int $width, int $height[, int $impl])
+  .. php:staticmethod:: fromFile (string $filename)
 
-    :param int $width:
-    :param int $height:
-    :param int $impl:
-      Default: ``self::IMAGE_BLACK_WHITE``
+    :param string $filename:
 

@@ -3,23 +3,21 @@ RgbRasterImage
 
 .. php:class:: RgbRasterImage
 
-  .. php:method:: getWidth () -> int
+  .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
 
-    Get the width of the image in pixels.
-
-    :returns: int -- The width of the image in pixels.
+    :param RasterImage $source:
+    :param int $startX:
+    :param int $startY:
+    :param int $destStartX:
+    :param int $destStartY:
+    :param int $width:
+    :param int $height:
 
   .. php:method:: getHeight () -> int
 
     Get the height of the image in pixels.
 
     :returns: int -- The height of the image in pixels.
-
-  .. php:method:: getRasterData () -> string
-
-    Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
-
-    :returns: string -- A binary string representation of the raster data for this image.
 
   .. php:method:: getMaxVal ()
 
@@ -34,13 +32,55 @@ RgbRasterImage
       Y co-ordinate
     :returns: int -- The value of the pixel at ($x, $y).
 
+  .. php:method:: getRasterData () -> string
+
+    Get a binary string representing the underlying image data. The formatting of this data is implementation-dependent.
+
+    :returns: string -- A binary string representation of the raster data for this image.
+
+  .. php:method:: getWidth () -> int
+
+    Get the width of the image in pixels.
+
+    :returns: int -- The width of the image in pixels.
+
   .. php:method:: indexToRgb (int $val)
 
     :param int $val:
 
+  .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
+
+    :param int $srcColor:
+    :param RasterImage $destImage:
+
+  .. php:method:: rect ($startX, $startY, $width, $height[, $filled, $outline, $fill])
+
+    Produce a rectangle with the given properties.
+
+    :param $startX:
+    :param $startY:
+    :param $width:
+    :param $height:
+    :param $filled:
+      Default: ``false``
+    :param $outline:
+      Default: ``1``
+    :param int $fill:
+      Default: ``1``
+
   .. php:method:: rgbToIndex (array $val)
 
     :param array $val:
+
+  .. php:method:: scale (int $width, int $height) -> RasterImage
+
+    Produce a new :class:`RasterImage` based on this one. The new image will be scaled to the requested dimensions via resampling.
+
+    :param int $width:
+      The width of the returned image.
+    :param int $height:
+      The height of the returned image.
+    :returns: :class:`RasterImage` -- A scaled version of the image.
 
   .. php:method:: setPixel (int $x, int $y, int $value)
 
@@ -53,22 +93,12 @@ RgbRasterImage
     :param int $value:
       Value to set
 
-  .. php:method:: mapColor (int $srcColor, RasterImage $destImage)
+  .. php:method:: subImage (int $startX, int $startY, int $width, int $height)
 
-    :param int $srcColor:
-    :param RasterImage $destImage:
-
-  .. php:method:: toRgb () -> RgbRasterImage
-
-    Produce a copy of this :class:`RasterImage` in the RGB colorspace.
-
-    :returns: :class:`RgbRasterImage` -- An RGB version of the image.
-
-  .. php:method:: toGrayscale () -> GrayscaleRasterImage
-
-    Produce a copy of this :class:`RasterImage` in a monochrome colorspace.
-
-    :returns: :class:`GrayscaleRasterImage` -- A monochrome version of the image.
+    :param int $startX:
+    :param int $startY:
+    :param int $width:
+    :param int $height:
 
   .. php:method:: toBlackAndWhite () -> BlackAndWhiteRasterImage
 
@@ -76,21 +106,36 @@ RgbRasterImage
 
     :returns: :class:`BlackAndWhiteRasterImage` -- a black and white version of the image.
 
+  .. php:method:: toGrayscale () -> GrayscaleRasterImage
+
+    Produce a copy of this :class:`RasterImage` in a monochrome colorspace.
+
+    :returns: :class:`GrayscaleRasterImage` -- A monochrome version of the image.
+
   .. php:method:: toIndexed () -> IndexedRasterImage
 
     Produce a copy of this :class:`RasterImage` as an indexed image with an associated palette of unique colors.
 
     :returns: :class:`IndexedRasterImage` -- An paletted version of the image.
 
-  .. php:staticmethod:: rgbToInt (int $r, int $g, int $b)
+  .. php:method:: toRgb () -> RgbRasterImage
 
-    :param int $r:
-    :param int $g:
-    :param int $b:
+    Produce a copy of this :class:`RasterImage` in the RGB colorspace.
 
-  .. php:staticmethod:: intToRgb ($in)
+    :returns: :class:`RgbRasterImage` -- An RGB version of the image.
 
-    :param $in:
+  .. php:method:: write (string $filename)
+
+    Write the image to a file. The output format is determined by the file extension.
+
+    :param string $filename:
+      Filename to write to.
+
+  .. php:staticmethod:: convertDepth (& $item, $key, array $data)
+
+    :param & $item:
+    :param $key:
+    :param array $data:
 
   .. php:staticmethod:: create ($width, $height[, array $data, $maxVal])
 
@@ -101,9 +146,13 @@ RgbRasterImage
     :param $maxVal:
       Default: ``255``
 
-  .. php:staticmethod:: convertDepth (& $item, $key, array $data)
+  .. php:staticmethod:: intToRgb ($in)
 
-    :param & $item:
-    :param $key:
-    :param array $data:
+    :param $in:
+
+  .. php:staticmethod:: rgbToInt (int $r, int $g, int $b)
+
+    :param int $r:
+    :param int $g:
+    :param int $b:
 

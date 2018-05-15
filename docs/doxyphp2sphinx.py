@@ -76,7 +76,9 @@ def renderNamespaceByRefId(namespaceRefId, name):
 
 # Walk the XML and extract all members of the given 'kind'
 def classMemberList(compounddef, memberKind):
-    return classMemberDict(compounddef, memberKind).values()
+    res = classMemberDict(compounddef, memberKind)
+    return OrderedDict(sorted(res.items())).values()
+    
 
 def classMemberDict(compounddef, memberKind):
     # Find items declared on this class
@@ -95,8 +97,12 @@ def classMemberDict(compounddef, memberKind):
         return ret
     for baseClass in compounddef.iter('basecompoundref'):
         # TODO load XML and recurse
-        compoundRef = baseClass.text
-        #print(compoundRef)
+        refid = baseClass.attrib['refid']
+        baseCompoundDef = compounddefByRefId(refid)
+        inherited = classMemberDict(baseCompoundDef, memberKind)
+        for key, value in inherited.items():
+          if key not in ret:
+              ret[key] = value
     return ret
 
 def classXmlToRst(compounddef, title):
@@ -297,7 +303,6 @@ def itsatype(inp, primitivesAsLiterals = False):
 
 def compounddefByRefId(classRefId):
     xmlFilename = inpDir + '/' + classRefId + '.xml'
-    #print("  Opening " + xmlFilename)
     cl = ET.parse(xmlFilename)
     return cl.getroot().find('compounddef')
 

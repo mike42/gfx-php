@@ -3,6 +3,17 @@ AbstractLzwDictionary
 
 .. php:class:: AbstractLzwDictionary
 
+  .. php:method:: __construct (int $minCodeSize)
+
+    :param int $minCodeSize:
+
+  .. php:method:: add (string $entry)
+
+    :param string $entry:
+
+  .. php:method:: clear ()
+
+
   .. php:method:: getClearCode () -> number
 
     :returns: number -- 
@@ -11,17 +22,6 @@ AbstractLzwDictionary
 
     :returns: number -- 
 
-  .. php:method:: __construct (int $minCodeSize)
-
-    :param int $minCodeSize:
-
   .. php:method:: getSize ()
 
-
-  .. php:method:: clear ()
-
-
-  .. php:method:: add (string $entry)
-
-    :param string $entry:
 
