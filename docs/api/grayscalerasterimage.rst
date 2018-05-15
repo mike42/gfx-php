@@ -1,6 +1,9 @@
 GrayscaleRasterImage
 ====================
 
+:Qualified name: ``Mike42\GfxPhp\GrayscaleRasterImage``
+:Extends: :class:`AbstractRasterImage`
+
 .. php:class:: GrayscaleRasterImage
 
   .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)

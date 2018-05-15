@@ -3,6 +3,8 @@ RasterImage
 
 Generic interface to raster images.
 
+:Qualified name: ``Mike42\GfxPhp\RasterImage``
+
 .. php:interface:: RasterImage
 
   .. php:method:: getHeight () -> int

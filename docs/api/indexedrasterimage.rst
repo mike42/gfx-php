@@ -1,6 +1,9 @@
 IndexedRasterImage
 ==================
 
+:Qualified name: ``Mike42\GfxPhp\IndexedRasterImage``
+:Extends: :class:`AbstractRasterImage`
+
 .. php:class:: IndexedRasterImage
 
   .. php:method:: allocateColor (array $color)

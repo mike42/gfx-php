@@ -115,11 +115,39 @@ def classXmlToRst(compounddef, title):
     if detailedDescriptionText != "":
       rst += detailedDescriptionText + "\n\n"
 
+    # Look up base classes
+    extends = []
+    implements = []
+    for baseClass in compounddef.iter('basecompoundref'):
+        baserefid = baseClass.attrib['refid']
+        baseCompoundDef = compounddefByRefId(baserefid)
+        if(baseCompoundDef.attrib['kind'] == "class"):
+            extends.append(baseCompoundDef)
+        else:
+            implements.append(baseCompoundDef)
+
     # TODO a small table.
+    #  <compoundname>Mike42::GfxPhp::Codec::GifCodec</compoundname>
     # Namespace
     # Base class
     # All implemented interfaces
-    # All known sub-classes
+    # <basecompoundref refid="interfaceMike42_1_1GfxPhp_1_1Codec_1_1ImageEncoder" prot="public" virt="non-virtual">Mike42\GfxPhp\Codec\ImageEncoder</basecompoundref>
+    # All known sub-classes]
+    qualifiedName = compounddef.find('compoundname').text.replace("::", "\\")
+    rst += ":Qualified name: ``" + qualifiedName + "``\n"
+    if len(extends) > 0:
+        extendsLinks = []
+        for baseClass in extends:
+            baseClassName = baseClass.find('compoundname').text.split("::")[-1]
+            extendsLinks.append(":class:`" + baseClassName + "`")
+        rst += ":Extends: " + ", ".join(extendsLinks) + "\n"  
+    if len(implements) > 0:
+        implementsLinks = []
+        for baseInterface in implements:
+            baseInterfaceName = baseInterface.find('compoundname').text.split("::")[-1]
+            implementsLinks.append(":interface:`" + baseInterfaceName + "`")
+        rst += ":Implements: " + ", ".join(implementsLinks) + "\n" 
+    rst += "\n"
 
     # Class name
     if compounddef.attrib['kind'] == "interface":
@@ -210,7 +238,6 @@ def methodArgsString(member):
         # Main option is to use arg list from doxygen
         argList = member.find('argsstring').text
         return "()" if argList == None else argList
-    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
     requiredParamPart = []
     optionalParamPart = []
     optionalSwitch = False
@@ -275,7 +302,6 @@ def xmldebug(inp):
 def para2rst(inp):
     ret = "" if inp.text == None else inp.text
     for subtag in inp:
-        print(subtag.tag)
         txt = subtag.text
         if subtag.tag == "parameterlist":
             continue

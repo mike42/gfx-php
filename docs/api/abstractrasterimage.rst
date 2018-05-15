@@ -1,6 +1,9 @@
 AbstractRasterImage
 ===================
 
+:Qualified name: ``Mike42\GfxPhp\AbstractRasterImage``
+:Implements: :interface:`RasterImage`
+
 .. php:class:: AbstractRasterImage
 
   .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)

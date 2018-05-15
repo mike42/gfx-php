@@ -3,6 +3,8 @@ LzwDecodeBuffer
 
 Treat incoming string as a stream of bits
 
+:Qualified name: ``Mike42\GfxPhp\Util\LzwDecodeBuffer``
+
 .. php:class:: LzwDecodeBuffer
 
   .. php:method:: __construct (string $contents)

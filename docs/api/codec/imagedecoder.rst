@@ -1,6 +1,8 @@
 ImageDecoder
 ============
 
+:Qualified name: ``Mike42\GfxPhp\Codec\ImageDecoder``
+
 .. php:interface:: ImageDecoder
 
   .. php:method:: decode (string $blob)

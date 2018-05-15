@@ -1,6 +1,9 @@
 LzwEncodeDictionary
 ===================
 
+:Qualified name: ``Mike42\GfxPhp\Util\LzwEncodeDictionary``
+:Extends: :class:`AbstractLzwDictionary`
+
 .. php:class:: LzwEncodeDictionary
 
   .. php:method:: __construct (int $minCodeSize)

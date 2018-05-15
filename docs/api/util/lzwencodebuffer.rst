@@ -1,6 +1,8 @@
 LzwEncodeBuffer
 ===============
 
+:Qualified name: ``Mike42\GfxPhp\Util\LzwEncodeBuffer``
+
 .. php:class:: LzwEncodeBuffer
 
   .. php:method:: __construct ()

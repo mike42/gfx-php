@@ -1,6 +1,9 @@
 RgbRasterImage
 ==============
 
+:Qualified name: ``Mike42\GfxPhp\RgbRasterImage``
+:Extends: :class:`AbstractRasterImage`
+
 .. php:class:: RgbRasterImage
 
   .. php:method:: compose (RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)

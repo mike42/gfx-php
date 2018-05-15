@@ -1,6 +1,8 @@
 AbstractLzwDictionary
 =====================
 
+:Qualified name: ``Mike42\GfxPhp\Util\AbstractLzwDictionary``
+
 .. php:class:: AbstractLzwDictionary
 
   .. php:method:: __construct (int $minCodeSize)

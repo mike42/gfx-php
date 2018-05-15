@@ -1,6 +1,8 @@
 ImageCodec
 ==========
 
+:Qualified name: ``Mike42\GfxPhp\Codec\ImageCodec``
+
 .. php:class:: ImageCodec
 
   .. php:method:: __construct (array $encoders, array $decoders)

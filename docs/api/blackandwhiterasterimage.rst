@@ -3,6 +3,9 @@ BlackAndWhiteRasterImage
 
 Small implementation of basic raster operations on PBM files to support creation of placeholder glyphs
 
+:Qualified name: ``Mike42\GfxPhp\BlackAndWhiteRasterImage``
+:Extends: :class:`AbstractRasterImage`
+
 .. php:class:: BlackAndWhiteRasterImage
 
   .. php:method:: clear ()

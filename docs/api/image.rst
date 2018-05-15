@@ -1,6 +1,8 @@
 Image
 =====
 
+:Qualified name: ``Mike42\GfxPhp\Image``
+
 .. php:class:: Image
 
   .. php:staticmethod:: create (int $width, int $height[, int $impl])

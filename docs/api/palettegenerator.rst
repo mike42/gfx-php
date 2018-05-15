@@ -1,6 +1,8 @@
 PaletteGenerator
 ================
 
+:Qualified name: ``Mike42\GfxPhp\PaletteGenerator``
+
 .. php:class:: PaletteGenerator
 
   .. php:staticmethod:: blackAndWhitePalette ()

@@ -1,6 +1,9 @@
 PnmCodec
 ========
 
+:Qualified name: ``Mike42\GfxPhp\Codec\PnmCodec``
+:Implements: :interface:`ImageDecoder`, :interface:`ImageEncoder`
+
 .. php:class:: PnmCodec
 
   .. php:method:: decode (string $blob)
