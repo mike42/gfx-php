@@ -5,6 +5,7 @@ and generates reStructuredText suitable for rendering with the sphinx PHP
 domain.
 """
 
+from collections import OrderedDict
 import xml.etree.ElementTree as ET
 import os
 
@@ -73,6 +74,37 @@ def renderNamespaceByRefId(namespaceRefId, name):
         nsName = node.text
         renderNamespaceByRefId(nsId, nsName)
 
+# Walk the XML and extract all members of the given 'kind'
+def classMemberList(compounddef, memberKind):
+    res = classMemberDict(compounddef, memberKind)
+    return OrderedDict(sorted(res.items())).values()
+    
+
+def classMemberDict(compounddef, memberKind):
+    # Find items declared on this class
+    ret = OrderedDict()
+    for section in compounddef.iter('sectiondef'):
+        kind = section.attrib['kind']
+        if kind != memberKind:
+            continue
+        for member in section.iter('memberdef'):
+            methodName = member.find('definition').text.split("::")[-1]
+            ret[methodName] = member
+    # Follow-up with items from base classes
+    if ("private" in memberKind) or ("static" in memberKind):
+        # Private methods are not accessible, and static methods should be
+        # called on the class which defines them.
+        return ret
+    for baseClass in compounddef.iter('basecompoundref'):
+        # TODO load XML and recurse
+        refid = baseClass.attrib['refid']
+        baseCompoundDef = compounddefByRefId(refid)
+        inherited = classMemberDict(baseCompoundDef, memberKind)
+        for key, value in inherited.items():
+          if key not in ret:
+              ret[key] = value
+    return ret
+
 def classXmlToRst(compounddef, title):
     rst = title + "\n"
     rst += "=" * len(title) + "\n\n"
@@ -83,10 +115,39 @@ def classXmlToRst(compounddef, title):
     if detailedDescriptionText != "":
       rst += detailedDescriptionText + "\n\n"
 
+    # Look up base classes
+    extends = []
+    implements = []
+    for baseClass in compounddef.iter('basecompoundref'):
+        baserefid = baseClass.attrib['refid']
+        baseCompoundDef = compounddefByRefId(baserefid)
+        if(baseCompoundDef.attrib['kind'] == "class"):
+            extends.append(baseCompoundDef)
+        else:
+            implements.append(baseCompoundDef)
+
     # TODO a small table.
+    #  <compoundname>Mike42::GfxPhp::Codec::GifCodec</compoundname>
     # Namespace
+    # Base class
     # All implemented interfaces
-    #
+    # <basecompoundref refid="interfaceMike42_1_1GfxPhp_1_1Codec_1_1ImageEncoder" prot="public" virt="non-virtual">Mike42\GfxPhp\Codec\ImageEncoder</basecompoundref>
+    # All known sub-classes]
+    qualifiedName = compounddef.find('compoundname').text.replace("::", "\\")
+    rst += ":Qualified name: ``" + qualifiedName + "``\n"
+    if len(extends) > 0:
+        extendsLinks = []
+        for baseClass in extends:
+            baseClassName = baseClass.find('compoundname').text.split("::")[-1]
+            extendsLinks.append(":class:`" + baseClassName + "`")
+        rst += ":Extends: " + ", ".join(extendsLinks) + "\n"  
+    if len(implements) > 0:
+        implementsLinks = []
+        for baseInterface in implements:
+            baseInterfaceName = baseInterface.find('compoundname').text.split("::")[-1]
+            implementsLinks.append(":interface:`" + baseInterfaceName + "`")
+        rst += ":Implements: " + ", ".join(implementsLinks) + "\n" 
+    rst += "\n"
 
     # Class name
     if compounddef.attrib['kind'] == "interface":
@@ -95,17 +156,17 @@ def classXmlToRst(compounddef, title):
       rst += ".. php:class:: " + title + "\n\n"
 
     # Methods
-    for section in compounddef.iter('sectiondef'):
-        kind = section.attrib['kind']
-        print("  " + kind)
-        if kind == "public-func":
-            for member in section.iter('memberdef'):
-                rst += methodXmlToRst(member, 'method')
-        elif kind == "public-static-func":
-            for member in section.iter('memberdef'):
-                rst += methodXmlToRst(member, 'staticmethod')
-        else:
-            print("    Skipping, no rules to print this section")
+    methods = classMemberList(compounddef, 'public-func')
+    print("  methods:")
+    for method in methods:
+        rst += methodXmlToRst(method, 'method')
+
+    # Static methods
+    methods = classMemberList(compounddef, 'public-static-func')
+    print("  static methods:")
+    for method in methods:
+        rst += methodXmlToRst(method, 'staticmethod')
+
     return rst
 
 def methodXmlToRst(member, methodType):
@@ -177,7 +238,6 @@ def methodArgsString(member):
         # Main option is to use arg list from doxygen
         argList = member.find('argsstring').text
         return "()" if argList == None else argList
-    # TODO re-write argsString so that ", $foo = bar" shows as  " [, $foo]", and return type is included
     requiredParamPart = []
     optionalParamPart = []
     optionalSwitch = False
@@ -242,7 +302,6 @@ def xmldebug(inp):
 def para2rst(inp):
     ret = "" if inp.text == None else inp.text
     for subtag in inp:
-        print(subtag.tag)
         txt = subtag.text
         if subtag.tag == "parameterlist":
             continue
@@ -268,13 +327,15 @@ def itsatype(inp, primitivesAsLiterals = False):
     else:
         return ":class:`" + inp + "`"
 
+def compounddefByRefId(classRefId):
+    xmlFilename = inpDir + '/' + classRefId + '.xml'
+    cl = ET.parse(xmlFilename)
+    return cl.getroot().find('compounddef')
+
 def renderClassByRefId(classRefId, name):
     print("Processing class " + name)
     print("  refid is " + classRefId)
-    xmlFilename = inpDir + '/' + classRefId + '.xml'
-    print("  Opening " + xmlFilename)
-    cl = ET.parse(xmlFilename)
-    compounddef = cl.getroot().find('compounddef')
+    compounddef = compounddefByRefId(classRefId)
     prefix = rootNamespace + "::"
     parts = name[len(prefix):].split("::")
     shortname = "api/" + "/".join(parts).lower()

@@ -1,6 +1,9 @@
 PngCodec
 ========
 
+:Qualified name: ``Mike42\GfxPhp\Codec\PngCodec``
+:Implements: :interface:`ImageEncoder`
+
 .. php:class:: PngCodec
 
   .. php:method:: encode (RasterImage $image, string $format)
