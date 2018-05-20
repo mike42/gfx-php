@@ -163,3 +163,11 @@ lexers["php-annotations"] = PhpLexer(startinline=True, linenos=1)
 
 # Set domain
 primary_domain = "php"
+
+# Regenerate API docs via doxygen + doxyphp2sphinx
+import subprocess, os
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+if read_the_docs_build:
+    subprocess.call(['doxygen', 'Doxyfile'])
+    subprocess.call(['doxyphp2sphinx', 'Mike42::GfxPhp'])
+
