@@ -28,8 +28,9 @@ class DataBlobInputStream implements DataInputStream {
         if($chunk === false) {
             throw new Exception("End of file reached, cannot retrieve more data.");
         }
-        if(strlen($chunk) !== $bytes) {
-            throw new Exception("Unexpected end of file, needed $bytes but read $bytes");
+        $read = strlen($chunk);
+        if($read !== $bytes) {
+            throw new Exception("Unexpected end of file, needed $read but read $bytes");
         }
         return $chunk;
     }
@@ -116,7 +117,7 @@ class PngChunk {
       $crc = unpack("N", $crcData)[1];
       $chunk = new PngChunk($type, $data);
       if($crc != $chunk -> getCrc()) {
-          // Refuse to return chunk
+          // Refuse to return chunk with bad checksum
           throw new Exception("CRC did not match on $type chunk");
       }      
       return $chunk;
@@ -124,6 +125,57 @@ class PngChunk {
   
   public function toString() {
       return $this -> type . " chunk";
+  }
+}
+
+class PngHeader {
+  const HEADER_SIZE = 13;
+  const COLOR_TYPE_MONOCHROME = 0;
+  const COLOR_TYPE_RGB = 2;
+  const COLOR_TYPE_INDEXED = 3;
+  const COLOR_TYPE_MONOCHROME_ALPHA = 4;
+  const COLOR_TYPE_RGBA = 6;
+
+  public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compresssion, int $filter, int $interlace) {
+    // TODO fully validate.
+    $this -> width = $width;
+    $this -> height = $height;
+    $this -> bitDepth = $bitDepth;
+    $this -> colorType = $colorType;
+    $this -> compression = $compresssion;
+    $this -> filter = $filter;
+    $this -> interlace = $interlace;
+  }
+
+  public static function fromChunk(PngChunk $chunk) {
+    $chunkData = $chunk -> getData();
+    $chunkLen = strlen($chunkData);
+    if($chunkLen !== PngHeader::HEADER_SIZE) {
+      throw new Exception("Header must be " . PngHeader::HEADER_SIZE . " bytes, but got $chunkLen bytes.");
+    }
+    // Unpack binary
+    $dataItems = unpack("Nwidth/Nheight/CbitDepth/CcolorType/Ccompression/Cfilter/Cinterlace", $chunkData);
+    // Construct
+    return new PngHeader($dataItems['width'], $dataItems['height'], $dataItems['bitDepth'],$dataItems['colorType'], $dataItems['compression'], $dataItems['filter'], $dataItems['interlace']);
+  }
+
+  public function toString() {
+      return "Image dimensions " . $this -> width . " x " . $this -> height .
+          ", bitDepth " . $this -> bitDepth .
+          ", colorType " . $this -> colorType .
+          ", compression " . $this -> compression .
+          ", filter " . $this -> filter .
+          ", interlace " . $this -> interlace; 
+  }
+
+  public function allowsPalette() {
+      return $this -> requiresPalette() ||
+          $this -> colorType === PngHeader::COLOR_TYPE_RGB ||
+          $this -> colorType === PngHeader::COLOR_TYPE_RGBA;
+  }
+
+  public function requiresPalette() {
+      return $this -> colorType === PngHeader::COLOR_TYPE_INDEXED;
   }
 }
 
@@ -142,19 +194,43 @@ if($signature != PNG_SIGNATURE) {
 
 // Iterate chunks
 $chunk_header = PngChunk::fromBin($data);
+$header = PngHeader::fromChunk($chunk_header);
 if($chunk_header == null || $chunk_header -> getType() !== "IHDR") {
     throw new Exception("File does not begin with IHDR chunk");
 }
+echo $chunk_header -> toString() . "\n";
+echo $header -> toString() . "\n";
 $chunk_palette = null;
-//$chunk_data = [];
+$chunk_data = [];
 $chunk_end = null;
 
 while(( $chunk = PngChunk::fromBin($data) ) !== null) {
+    echo $chunk -> toString() . "\n";
     if($chunk -> getType() === "IEND") {
         $chunk_end = $chunk;
         break;
     }
-    echo $chunk -> toString() . "\n";
+    if($chunk -> getType() === "PLTE") {
+        if(!$header -> allowsPalette()) {
+            throw new Exception("Palette not allowed for this image type");
+        } else if($chunk_palette !== null) {
+            throw new Exception("Multiple palette entries");
+        } else if(count($chunk_data) > 0) {
+            throw new Exception("Palette must be issued before first data chunk");
+        }
+        $chunk_palette = $chunk;
+    }
+    if($chunk -> getType() === "IDAT") {
+        $chunk_data[] = $chunk;
+    }
+}
+
+if($header -> requiresPalette() && $chunk_palette === null) {
+    throw new Exception("Missing palette, required for this image type");
+}
+
+if(count($chunk_data) === 0) {
+    throw new Exception("No data received");
 }
 
 if($chunk_end === null) {
@@ -164,4 +240,6 @@ if($chunk_end === null) {
 if(!$data -> isEof()) {
     throw new Exception("Data extends past end of file");
 }
+
+
 
