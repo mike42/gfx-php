@@ -1,5 +1,68 @@
 <?php
 
+require_once("../vendor/autoload.php");
+
+use Mike42\GfxPhp\BlackAndWhiteRasterImage;
+use Mike42\GfxPhp\GrayscaleRasterImage;
+use Mike42\GfxPhp\RgbRasterImage;
+
+function paethPredictor(int $a, int $b, int $c) {
+    // Nearest-neighbor, based on pseudocode from the PNG spec.
+    $p = $a + $b - $c;
+    $pa = abs($p - $a);
+    $pb = abs($p - $b);
+    $pc = abs($p - $c);
+    if($pa <= $pb && $pa <= $pc) {
+        return $a;
+    } else if($pb <= $pc) {
+        return $b;
+    }
+    return $c;
+}
+
+function unfilter(array $currentFiltered, array $prior, int $filterType, int $bpp) {
+  $lw = count($currentFiltered);
+  if($filterType === 0) {
+      // None
+      return $currentFiltered;
+  } elseif($filterType === 1) {
+      $ret = array_fill(0, $lw, 128);
+      for($i = 0; $i < $lw; $i++) {
+          $rawLeft = ($i < $bpp ? 0 : $ret[$i-$bpp]);
+          $subX = $currentFiltered[$i];
+          $ret[$i] = ($subX + $rawLeft) % 256;
+      }
+      return $ret;
+  } elseif($filterType === 2) {
+      $ret = array_fill(0, $lw, 0);
+      for($i = 0; $i < $lw; $i++) {
+          $ret[$i] = ($currentFiltered[$i] + $prior[$i]) % 256;
+      }
+      return $ret;
+  } elseif($filterType === 3) {
+      $ret = array_fill(0, $lw, 0);
+      
+      for($i = 0; $i < $lw; $i++) {
+          $prevX = $i < $bpp ? 0 : $ret[$i-$bpp];
+          $priorX = $prior[$i];
+          $avgX = intdiv($prevX + $priorX, 2);
+          $prediction = $currentFiltered[$i] - $avgX;
+          $ret[$i] = ($avgX + $currentFiltered[$i]) % 256;
+      }
+      return $ret;
+  } elseif($filterType === 4) {
+      $ret = array_fill(0, $lw, 0);
+      for($i = 0; $i < $lw; $i++) {
+          $upperLeft = $i < $bpp ? 0 : $prior[$i-$bpp];
+          $left = $i < $bpp ? 0 : $ret[$i-$bpp];
+          $upper = $prior[$i];
+          $ret[$i] = (paethPredictor($left, $upper, $upperLeft) + $currentFiltered[$i]) % 256;
+      }
+      return $ret;
+  }
+  throw new Exception("Filter type $filterType not valid");
+}
+
 interface DataInputStream {
     public function read(int $bytes);
     public function isEof();
@@ -91,7 +154,7 @@ class PngChunk {
 
   public static function isValidChunkName(string $name) {
       if(array_search($name, ["IHDR", "IDAT", "PLTE", "IEND"], true) !== false) {
-          // Critical chunks
+          // Critical chunks defined as of PNG 1.2
           return true;
       } else if(preg_match("/[a-z][a-zA-Z]{3}/", $name)) {
           // Ancillary chunks
@@ -136,14 +199,46 @@ class PngHeader {
   const COLOR_TYPE_MONOCHROME_ALPHA = 4;
   const COLOR_TYPE_RGBA = 6;
 
-  public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compresssion, int $filter, int $interlace) {
-    // TODO fully validate.
+  const COMPRESSION_DEFLATE = 0;
+
+  const INTERLACE_NONE = 0;
+  const INTERLACE_ADAM7 = 1;
+
+  private $width;
+  private $height;
+  private $bitDepth;
+  private $colorType;
+  private $compression;
+  private $filter;
+  private $interlace;
+
+  public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace) {
+    // Image dimensions
+    if($width < 1 || $width > 2147483647 ||
+      $height < 1 || $height > 2147483647) {
+        throw new Exception("Invalid image dimensions");
+    }
     $this -> width = $width;
     $this -> height = $height;
+    // Color type & bit depth    
+    // - Only some combinations of bit depth and colorType are valid
     $this -> bitDepth = $bitDepth;
     $this -> colorType = $colorType;
-    $this -> compression = $compresssion;
+    // Compression
+    if($compression != PngHeader::COMPRESSION_DEFLATE) {
+        throw new Exception("Compression type not supported");
+    }
+    $this -> compression = $compression;
+    // Filter type set
+    if($filter != 0) {
+        throw new Exception("Filter type set not supported");
+    }
     $this -> filter = $filter;
+    // Interlace method
+    if($interlace != PngHeader::INTERLACE_NONE && 
+        $interlace != PngHeader::INTERLACE_ADAM7) {
+        throw new Exception("Interlace method not supported");
+    }
     $this -> interlace = $interlace;
   }
 
@@ -176,6 +271,34 @@ class PngHeader {
 
   public function requiresPalette() {
       return $this -> colorType === PngHeader::COLOR_TYPE_INDEXED;
+  }
+
+  public function getWidth() {
+    return $this -> width;
+  }
+
+  public function getHeight() {
+    return $this -> height;
+  }
+
+  public function getBitDepth() {
+    return $this -> bitDepth;
+  }
+
+  public function getColorType() {
+    return $this -> colorType;
+  }
+
+  public function getCompresssion() {
+    return $this -> compresssion;
+  }
+
+  public function getFilter() {
+    return $this -> filter;
+  }
+
+  public function getInterlace() {
+    return $this -> interlace;
   }
 }
 
@@ -241,5 +364,104 @@ if(!$data -> isEof()) {
     throw new Exception("Data extends past end of file");
 }
 
+// Extract, decompress and join chunks
+$binData = '';
+foreach($chunk_data as $chunk) {
+    // TODO maximum decoded data size can be determined from image size and bit
+    // depth
+    $chunkDataDecompressed = zlib_decode($chunk -> getData());
+    if($chunkDataDecompressed === false) {
+        throw new Exception("DEFLATE decompression failed");
+    }
+    $binData .= $chunkDataDecompressed;
+}
 
+// Note ADAM7 interlace alters the length, making this next step invalid
+if($header -> getInterlace() !== PngHeader::INTERLACE_NONE) {
+    throw new Exception("Interlace not implemented.");
+}
+
+// Turn into array of scan-lines based on filtering
+$bitDepth = $header -> getBitDepth();
+$width = $header -> getWidth();
+$height = $header -> getHeight();
+$channelLookup = [
+    PngHeader::COLOR_TYPE_MONOCHROME => 1,
+    PngHeader::COLOR_TYPE_RGB => 3,
+    PngHeader::COLOR_TYPE_INDEXED => 1,
+    PngHeader::COLOR_TYPE_MONOCHROME_ALPHA => 2,
+    PngHeader::COLOR_TYPE_RGBA => 4,
+];
+$channels = $channelLookup[$header -> getColorType()];
+$scanlineBytes = intdiv($width * $bitDepth + 7, 8) * $channels;
+
+// Extract filtered data
+$scanlinesWithFiltering = str_split($binData, $scanlineBytes  + 1);
+$filterType = [];
+$filteredData = [];
+foreach($scanlinesWithFiltering as $scanline) {
+    $filterType[] = ord($scanline[0]);
+    $filteredData[] = array_values(unpack("C*", substr($scanline, 1)));
+}
+
+// Transform back to raw data
+$rawData = [];
+$bytesPerPixel = intdiv($bitDepth + 7, 8) * $channels;
+$prior = array_fill(0, $scanlineBytes, 0);
+foreach($filteredData as $key => $currentFiltered) {
+    $current = unfilter($currentFiltered, $prior, $filterType[$key], $bytesPerPixel);
+    $imgScanlineData[] = $current;
+    $prior = $current;
+}
+$imageData = array_merge(...$imgScanlineData);
+
+// Further processing depends on image type
+switch($header -> getColorType()) {
+    case PngHeader::COLOR_TYPE_MONOCHROME:
+        switch($bitDepth) {
+            case 1:
+                $im = BlackAndWhiteRasterImage::create($width, $height, $imageData);
+                break;
+            case 2:
+              // TODO split out each value to 4 values, rejoin, form grayscale image.
+              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+            case 4:
+              // TODO split out each value to 3 values, rejoin, form grayscale image.
+              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+            case 8:
+              $im = GrayscaleRasterImage::create($width, $height, $imageData);
+              break;
+            case 16:
+              // TODO join two values together, form grayscale image.
+              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+            default:
+              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not supported");
+        }
+        break;
+    case PngHeader::COLOR_TYPE_RGB:
+        switch($bitDepth) {
+            case 8:
+              $im = RgbRasterImage::create($width, $height, $imageData);
+              break;
+            case 16:
+              // TODO join two values together, form RGB image.
+              throw new Exception("COLOR_TYPE_RGB at bit depth $bitDepth not implemented");
+            default:
+              throw new Exception("COLOR_TYPE_RGB at bit depth $bitDepth not supported");
+        }
+        break;
+    case PngHeader::COLOR_TYPE_INDEXED:
+        throw new Exception("COLOR_TYPE_INDEXED not implemented");
+    case PngHeader::COLOR_TYPE_MONOCHROME_ALPHA:
+        throw new Exception("COLOR_TYPE_MONOCHROME_ALPHA not implemented");
+    case PngHeader::COLOR_TYPE_RGBA:
+        throw new Exception("COLOR_TYPE_RGBA not implemented");
+    default:
+         throw new Exception("Unsupported image type");
+}
+
+$im -> write('out/' . basename($argv[1], '.png') . ".ppm");
+exit(0);
+
+#echo $im -> toBlackAndWhite() -> toString() . "\n";
 
