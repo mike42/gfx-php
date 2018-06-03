@@ -6,6 +6,57 @@ use Mike42\GfxPhp\BlackAndWhiteRasterImage;
 use Mike42\GfxPhp\GrayscaleRasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
 
+
+/**
+ * Takes 8-bit samples, and produces four times as many 2-bit samples
+ */
+function expand_bytes_2bpp(array $in) {
+    $res =  [];
+    foreach($in as $byte) {
+        $res[] = ($byte >> 6) & 0x03;
+        $res[] = ($byte >> 4) & 0x03;
+        $res[] = ($byte >> 2) & 0x03;
+        $res[] = ($byte) & 0x03;
+    }
+    return $res;
+}
+
+/**
+ * Takes 8-bit samples, and produces twice as many 4-bit samples
+ */
+function expand_bytes_4bpp(array $in) {
+    $res =  [];
+    foreach($in as $byte) {
+        $res[] = ($byte >> 4) & 0x0F;
+        $res[] = ($byte & 0x0F);
+    }
+    return $res;
+}
+
+/**
+ * Takes 8-bit samples, and produces half as many 16-bit samples.
+ */
+function combine_bytes(array $in) {
+    $data = array_values(unpack("n*", pack("C*", ...$in)));
+    return $data;
+}
+
+/**
+ * We'll use this to mix with a background color.
+ */
+function alphaMix(array $data, $chunkSize, $maxVal) {
+    // Will need to change to "alphaMixPixel" to [$this, "alphaMixPixel"] once we are in a class.
+    $noAlphaPixels = array_map("alphaMixPixel", array_chunk($data, $chunkSize, false));
+    return array_merge(...$noAlphaPixels);
+}
+
+function alphaMixPixel(array $pixels) {
+    // Just drop Alpha completely for now.
+    // TODO we need the maxVal and a background color in-scope here.
+    array_pop($pixels);
+    return $pixels;
+}
+
 function paethPredictor(int $a, int $b, int $c) {
     // Nearest-neighbor, based on pseudocode from the PNG spec.
     $p = $a + $b - $c;
@@ -421,19 +472,26 @@ switch($header -> getColorType()) {
         switch($bitDepth) {
             case 1:
                 $im = BlackAndWhiteRasterImage::create($width, $height, $imageData);
+                $im -> invert(); // Difference in meaning for set/unset pixels.
                 break;
             case 2:
-              // TODO split out each value to 4 values, rejoin, form grayscale image.
-              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+              // Re-interpret data with lower depth (2 bits per sample);
+              $combinedData = expand_bytes_2bpp($imageData);
+              $im = GrayscaleRasterImage::create($width, $height, $combinedData, 0x03);
+              break;
             case 4:
-              // TODO split out each value to 3 values, rejoin, form grayscale image.
-              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+              // Re-interpret data with lower depth (4 bits per sample);
+              $combinedData = expand_bytes_4bpp($imageData);
+              $im = GrayscaleRasterImage::create($width, $height, $combinedData, 0x0F);
+              break;
             case 8:
               $im = GrayscaleRasterImage::create($width, $height, $imageData);
               break;
             case 16:
-              // TODO join two values together, form grayscale image.
-              throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not implemented");
+              // Re-interpret data with higher depth.
+              $combinedData = combine_bytes($imageData);
+              $im = GrayscaleRasterImage::create($width, $height, $combinedData, 65535);
+              break;
             default:
               throw new Exception("COLOR_TYPE_MONOCHROME at bit depth $bitDepth not supported");
         }
@@ -444,8 +502,10 @@ switch($header -> getColorType()) {
               $im = RgbRasterImage::create($width, $height, $imageData);
               break;
             case 16:
-              // TODO join two values together, form RGB image.
-              throw new Exception("COLOR_TYPE_RGB at bit depth $bitDepth not implemented");
+              // Re-interpret data with higher depth.
+              $combinedData = combine_bytes($imageData);
+              $im = RgbRasterImage::create($width, $height, $combinedData, 0xFFFF);
+              break;
             default:
               throw new Exception("COLOR_TYPE_RGB at bit depth $bitDepth not supported");
         }
@@ -453,13 +513,38 @@ switch($header -> getColorType()) {
     case PngHeader::COLOR_TYPE_INDEXED:
         throw new Exception("COLOR_TYPE_INDEXED not implemented");
     case PngHeader::COLOR_TYPE_MONOCHROME_ALPHA:
-        throw new Exception("COLOR_TYPE_MONOCHROME_ALPHA not implemented");
+        // Mix out Alpha and load as Grayscale.
+        switch($bitDepth) {
+            case 8:
+              $mixedData = alphaMix($imageData, 2, 0xFF);
+              $im = GrayscaleRasterImage::create($width, $height, $mixedData, 0xFF);
+              break;
+            case 16:
+              $mixedData = alphaMix(combine_bytes($imageData), 2, 0xFFFF);
+              $im = GrayscaleRasterImage::create($width, $height, $mixedData, 0xFFFF);
+              break;
+            default:
+              throw new Exception("COLOR_TYPE_MONOCHROME_ALPHA at bit depth $bitDepth not supported");
+        }
+        break;
     case PngHeader::COLOR_TYPE_RGBA:
-        throw new Exception("COLOR_TYPE_RGBA not implemented");
+        // Mix out Alpha and load as RGB.
+        switch($bitDepth) {
+            case 8:
+              $mixedData = alphaMix($imageData, 4, 0xFF);
+              $im = RgbRasterImage::create($width, $height, $mixedData, 0xFF);
+              break;
+            case 16:
+              $mixedData = alphaMix(combine_bytes($imageData), 4, 0xFFFF);
+              $im = RgbRasterImage::create($width, $height, $mixedData, 0xFFFF);
+              break;
+            default:
+              throw new Exception("COLOR_TYPE_RGBA at bit depth $bitDepth not supported");
+        }
+        break;
     default:
          throw new Exception("Unsupported image type");
 }
-
 $im -> write('out/' . basename($argv[1], '.png') . ".ppm");
 exit(0);
 
