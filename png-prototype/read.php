@@ -8,45 +8,58 @@ use Mike42\GfxPhp\RgbRasterImage;
 use Mike42\GfxPhp\IndexedRasterImage;
 
 /**
- * Takes 8-bit samples, and produces eight times as many 1-bit samples
+ * Takes 8-bit samples, and produces eight times as many 1-bit samples,
+ * dropping padding bits along the way.
  */
-function expand_bytes_1bpp(array $in) {
+function expand_bytes_1bpp(array $in, int $width) {
     $res =  [];
-    foreach($in as $byte) {
-        $res[] = ($byte >> 7) & 0x01;
-        $res[] = ($byte >> 6) & 0x01;
-        $res[] = ($byte >> 5) & 0x01;
-        $res[] = ($byte >> 4) & 0x01;
-        $res[] = ($byte >> 3) & 0x01;
-        $res[] = ($byte >> 2) & 0x01;
-        $res[] = ($byte >> 1) & 0x01;
-        $res[] = $byte & 0x01;
+    $scanlineBytes = intdiv($width + 7, 8);
+    $scanlines = array_chunk($in, $scanlineBytes);
+    foreach($scanlines as $line) {
+      for($x = 0; $x < $width; $x++) {
+          $srcByte = intdiv($x, 8);
+          $part = $x % 8;
+          $shift = 7 - $part;
+          $res[] = ($line[$srcByte] >> $shift) & 0x01;
+      }
     }
     return $res;
 }
 
 /**
- * Takes 8-bit samples, and produces four times as many 2-bit samples
+ * Takes 8-bit samples, and produces four times as many 2-bit samples,
+ * dropping padding bits along the way.
  */
-function expand_bytes_2bpp(array $in) {
+function expand_bytes_2bpp(array $in, int $width) {
     $res =  [];
-    foreach($in as $byte) {
-        $res[] = ($byte >> 6) & 0x03;
-        $res[] = ($byte >> 4) & 0x03;
-        $res[] = ($byte >> 2) & 0x03;
-        $res[] = ($byte) & 0x03;
+    $scanlineBytes = intdiv($width + 3, 4);
+    $scanlines = array_chunk($in, $scanlineBytes);
+    foreach($scanlines as $line) {
+      for($x = 0; $x < $width; $x++) {
+          $srcByte = intdiv($x, 4);
+          $part = $x % 4;
+          $shift = 6 - (2 * $part);
+          $res[] = ($line[$srcByte] >> $shift) & 0x03;
+      }
     }
     return $res;
 }
 
 /**
- * Takes 8-bit samples, and produces twice as many 4-bit samples
+ * Takes 8-bit samples, and produces twice as many 4-bit samples,
+ * dropping padding bits along the way.
  */
-function expand_bytes_4bpp(array $in) {
-    $res =  [];
-    foreach($in as $byte) {
-        $res[] = ($byte >> 4) & 0x0F;
-        $res[] = ($byte & 0x0F);
+function expand_bytes_4bpp(array $in, int $width) {
+    $scanlineBytes = intdiv($width + 1, 2);
+    $scanlines = array_chunk($in, $scanlineBytes);
+    $res = [];
+    foreach($scanlines as $line) {
+      for($x = 0; $x < $width; $x++) {
+          $srcByte = intdiv($x, 2);
+          $part = $x % 2;
+          $shift = 4 - (4 * $part);
+          $res[] = ($line[$srcByte] >> $shift) & 0x0F;
+      }
     }
     return $res;
 }
@@ -437,16 +450,16 @@ if(!$data -> isEof()) {
     throw new Exception("Data extends past end of file");
 }
 
-// Extract, decompress and join chunks
-$binData = '';
+// Extract, join and decompress chunks
+$imageDataCompressed = '';
 foreach($chunk_data as $chunk) {
     // TODO maximum decoded data size can be determined from image size and bit
     // depth
-    $chunkDataDecompressed = zlib_decode($chunk -> getData());
-    if($chunkDataDecompressed === false) {
-        throw new Exception("DEFLATE decompression failed");
-    }
-    $binData .= $chunkDataDecompressed;
+    $imageDataCompressed .= $chunk -> getData();
+}
+$binData = zlib_decode($imageDataCompressed);
+if($binData === false) {
+    throw new Exception("DEFLATE decompression failed");
 }
 
 // Note ADAM7 interlace alters the length, making this next step invalid
@@ -498,12 +511,12 @@ switch($header -> getColorType()) {
                 break;
             case 2:
               // Re-interpret data with lower depth (2 bits per sample);
-              $expandedData = expand_bytes_2bpp($imageData);
+              $expandedData = expand_bytes_2bpp($imageData, $width);
               $im = GrayscaleRasterImage::create($width, $height, $expandedData, 0x03);
               break;
             case 4:
               // Re-interpret data with lower depth (4 bits per sample);
-              $expandedData = expand_bytes_4bpp($imageData);
+              $expandedData = expand_bytes_4bpp($imageData, $width);
               $im = GrayscaleRasterImage::create($width, $height, $expandedData, 0x0F);
               break;
             case 8:
@@ -535,13 +548,13 @@ switch($header -> getColorType()) {
     case PngHeader::COLOR_TYPE_INDEXED:
         switch($bitDepth) {
             case 1:
-              $imageData = expand_bytes_1bpp($imageData);
+              $imageData = expand_bytes_1bpp($imageData, $width);
               break;
             case 2:
-              $imageData = expand_bytes_2bpp($imageData);
+              $imageData = expand_bytes_2bpp($imageData, $width);
               break;
             case 4:
-              $imageData = expand_bytes_4bpp($imageData);
+              $imageData = expand_bytes_4bpp($imageData, $width);
               break;
             case 8:
               // Data is all good.
