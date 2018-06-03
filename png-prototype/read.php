@@ -102,6 +102,34 @@ function paethPredictor(int $a, int $b, int $c) {
     return $c;
 }
 
+/*
+ * Unfilter entire image, or a pass of an interlaced image.
+ */
+function unfilterImage(string $binData, int $scanlineBytes, int $channels, int $bitDepth) {
+    // Extract filtered data
+    $scanlinesWithFiltering = str_split($binData, $scanlineBytes + 1);
+    $filterType = [];
+    $filteredData = [];
+    foreach($scanlinesWithFiltering as $scanline) {
+        $filterType[] = ord($scanline[0]);
+        $filteredData[] = array_values(unpack("C*", substr($scanline, 1)));
+    }
+
+    // Transform back to raw data
+    $rawData = [];
+    $bytesPerPixel = intdiv($bitDepth + 7, 8) * $channels;
+    $prior = array_fill(0, $scanlineBytes, 0);
+    foreach($filteredData as $key => $currentFiltered) {
+        $current = unfilter($currentFiltered, $prior, $filterType[$key], $bytesPerPixel);
+        $imgScanlineData[] = $current;
+        $prior = $current;
+    }
+    return array_merge(...$imgScanlineData);
+}
+
+/**
+ * Unfilter an individual scanline
+ */
 function unfilter(array $currentFiltered, array $prior, int $filterType, int $bpp) {
   $lw = count($currentFiltered);
   if($filterType === 0) {
@@ -453,18 +481,12 @@ if(!$data -> isEof()) {
 // Extract, join and decompress chunks
 $imageDataCompressed = '';
 foreach($chunk_data as $chunk) {
-    // TODO maximum decoded data size can be determined from image size and bit
-    // depth
     $imageDataCompressed .= $chunk -> getData();
 }
+// TODO maximum decoded data size can be determined from image size and bit depth
 $binData = zlib_decode($imageDataCompressed);
 if($binData === false) {
     throw new Exception("DEFLATE decompression failed");
-}
-
-// Note ADAM7 interlace alters the length, making this next step invalid
-if($header -> getInterlace() !== PngHeader::INTERLACE_NONE) {
-    throw new Exception("Interlace not implemented.");
 }
 
 // Turn into array of scan-lines based on filtering
@@ -481,25 +503,66 @@ $channelLookup = [
 $channels = $channelLookup[$header -> getColorType()];
 $scanlineBytes = intdiv($width * $bitDepth + 7, 8) * $channels;
 
-// Extract filtered data
-$scanlinesWithFiltering = str_split($binData, $scanlineBytes  + 1);
-$filterType = [];
-$filteredData = [];
-foreach($scanlinesWithFiltering as $scanline) {
-    $filterType[] = ord($scanline[0]);
-    $filteredData[] = array_values(unpack("C*", substr($scanline, 1)));
+if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
+    // No interlacing!
+    $imageData = unfilterImage($binData, $scanlineBytes, $channels, $bitDepth);
+} else if ($header -> getInterlace() === PngHeader::INTERLACE_ADAM7) {
+    // ADAM7 interlace.
+    // Calculate properties of the seven sub-images.
+    $passes = [
+        [
+            "width" => intdiv($width + 7, 8),
+            "height" => intdiv($height + 7, 8)
+        ],
+        [
+            "width" => intdiv($width + 3, 8),
+            "height" => intdiv($height + 7, 8)
+        ],
+        [
+            "width" => intdiv($width + 3, 4),
+            "height" => intdiv($height + 3, 8)
+        ],
+        [
+            "width" => intdiv($width + 1, 4),
+            "height" => intdiv($height + 3, 4)
+        ],
+        [
+            "width" => intdiv($width + 1, 2),
+            "height" => intdiv($height + 1, 4)
+        ],
+        [
+            "width" => intdiv($width, 2),
+            "height" => intdiv($height + 1, 2)
+        ],
+        [
+            "width" => $width,
+            "height" => intdiv($height, 2)
+        ],
+    ];
+    // Extract and unfilter each pass
+    $position = 0;
+    $imageData = array_fill(0, $scanlineBytes * $height, 0);
+    foreach($passes as $passId => $pass) {
+        if($pass['width'] == 0) {
+            continue;
+        }
+        $passScanlineWidth = intdiv($pass['width'] * $bitDepth + 7, 8) * $channels;
+        $len = ($passScanlineWidth + 1) * $pass['height'];
+        // Extract and de-filter scanlines in this pass.
+        $passScanlines = [];
+        $passUnfiltered = substr($binData, $position, $len);
+        if($passUnfiltered === false || strlen($passUnfiltered) !== $len) {
+            throw new Exception("Incomplete image detected.");
+        }
+        $passData = unfilterImage($passUnfiltered, $passScanlineWidth, $channels, $bitDepth);
+        $position += $len;
+        // TODO Paste unfiltered image data onto the canvas
+        echo "Got " . count($passData) . " bytes from pass " . ($passId + 1) . "\n";
+        throw new Exception("Interlace not implemented");
+    }
+} else {
+    throw new Exception("Unknown interlace type");
 }
-
-// Transform back to raw data
-$rawData = [];
-$bytesPerPixel = intdiv($bitDepth + 7, 8) * $channels;
-$prior = array_fill(0, $scanlineBytes, 0);
-foreach($filteredData as $key => $currentFiltered) {
-    $current = unfilter($currentFiltered, $prior, $filterType[$key], $bytesPerPixel);
-    $imgScanlineData[] = $current;
-    $prior = $current;
-}
-$imageData = array_merge(...$imgScanlineData);
 
 // Further processing depends on image type
 switch($header -> getColorType()) {
