@@ -5,7 +5,25 @@ require_once("../vendor/autoload.php");
 use Mike42\GfxPhp\BlackAndWhiteRasterImage;
 use Mike42\GfxPhp\GrayscaleRasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
+use Mike42\GfxPhp\IndexedRasterImage;
 
+/**
+ * Takes 8-bit samples, and produces eight times as many 1-bit samples
+ */
+function expand_bytes_1bpp(array $in) {
+    $res =  [];
+    foreach($in as $byte) {
+        $res[] = ($byte >> 7) & 0x01;
+        $res[] = ($byte >> 6) & 0x01;
+        $res[] = ($byte >> 5) & 0x01;
+        $res[] = ($byte >> 4) & 0x01;
+        $res[] = ($byte >> 3) & 0x01;
+        $res[] = ($byte >> 2) & 0x01;
+        $res[] = ($byte >> 1) & 0x01;
+        $res[] = $byte & 0x01;
+    }
+    return $res;
+}
 
 /**
  * Takes 8-bit samples, and produces four times as many 2-bit samples
@@ -392,6 +410,10 @@ while(( $chunk = PngChunk::fromBin($data) ) !== null) {
         } else if(count($chunk_data) > 0) {
             throw new Exception("Palette must be issued before first data chunk");
         }
+        $paletteLen = strlen($chunk -> getData());
+        if($paletteLen === 0 || $paletteLen > (256 * 3) || $paletteLen % 3 !== 0) {
+            throw new Exception("Palette length is invalid");
+        }
         $chunk_palette = $chunk;
     }
     if($chunk -> getType() === "IDAT") {
@@ -476,13 +498,13 @@ switch($header -> getColorType()) {
                 break;
             case 2:
               // Re-interpret data with lower depth (2 bits per sample);
-              $combinedData = expand_bytes_2bpp($imageData);
-              $im = GrayscaleRasterImage::create($width, $height, $combinedData, 0x03);
+              $expandedData = expand_bytes_2bpp($imageData);
+              $im = GrayscaleRasterImage::create($width, $height, $expandedData, 0x03);
               break;
             case 4:
               // Re-interpret data with lower depth (4 bits per sample);
-              $combinedData = expand_bytes_4bpp($imageData);
-              $im = GrayscaleRasterImage::create($width, $height, $combinedData, 0x0F);
+              $expandedData = expand_bytes_4bpp($imageData);
+              $im = GrayscaleRasterImage::create($width, $height, $expandedData, 0x0F);
               break;
             case 8:
               $im = GrayscaleRasterImage::create($width, $height, $imageData);
@@ -511,7 +533,26 @@ switch($header -> getColorType()) {
         }
         break;
     case PngHeader::COLOR_TYPE_INDEXED:
-        throw new Exception("COLOR_TYPE_INDEXED not implemented");
+        switch($bitDepth) {
+            case 1:
+              $imageData = expand_bytes_1bpp($imageData);
+              break;
+            case 2:
+              $imageData = expand_bytes_2bpp($imageData);
+              break;
+            case 4:
+              $imageData = expand_bytes_4bpp($imageData);
+              break;
+            case 8:
+              // Data is all good.
+              break;
+            default:
+              throw new Exception("COLOR_TYPE_INDEXED at bit depth $bitDepth not supported");
+        }
+        $paletteArr = array_values(unpack("C*", $chunk_palette -> getData()));
+        $palette = array_chunk($paletteArr, 3);
+        $im = IndexedRasterImage::create($width, $height, $imageData, $palette, 0xFF);
+        break;
     case PngHeader::COLOR_TYPE_MONOCHROME_ALPHA:
         // Mix out Alpha and load as Grayscale.
         switch($bitDepth) {
@@ -546,7 +587,6 @@ switch($header -> getColorType()) {
          throw new Exception("Unsupported image type");
 }
 $im -> write('out/' . basename($argv[1], '.png') . ".ppm");
+echo $im -> toBlackAndWhite() -> toString() . "\n";
 exit(0);
-
-#echo $im -> toBlackAndWhite() -> toString() . "\n";
 
