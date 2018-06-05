@@ -508,6 +508,16 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
     $imageData = unfilterImage($binData, $scanlineBytes, $channels, $bitDepth);
 } else if ($header -> getInterlace() === PngHeader::INTERLACE_ADAM7) {
     // ADAM7 interlace.
+    // Params for laying out pixels (startX, stepX, startY, stepY)
+    $passParams = [
+      [0, 8, 0, 8],
+      [4, 8, 0, 8],
+      [0, 4, 4, 8],
+      [2, 4, 0, 4],
+      [0, 2, 2, 4],
+      [1, 2, 0, 2],
+      [0, 1, 1, 2]
+      ];
     // Calculate properties of the seven sub-images.
     $passes = [
         [
@@ -543,6 +553,7 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
     $position = 0;
     $imageData = array_fill(0, $scanlineBytes * $height, 0);
     foreach($passes as $passId => $pass) {
+        // TODO passWidth and passHeight variable,
         if($pass['width'] == 0) {
             continue;
         }
@@ -556,9 +567,35 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
         }
         $passData = unfilterImage($passUnfiltered, $passScanlineWidth, $channels, $bitDepth);
         $position += $len;
-        // TODO Paste unfiltered image data onto the canvas
         echo "Got " . count($passData) . " bytes from pass " . ($passId + 1) . "\n";
-        throw new Exception("Interlace not implemented");
+        # TODO this does not handle bit depths below 8 yet.
+        if($bitDepth < 8) {
+            throw new Exception("Low bit-depth interlace not implemented");
+        }
+        # Paste this pass data over the original image.
+        if(!isset($passParams[$passId])) {
+            break;
+        }
+        $startX = $passParams[$passId][0];
+        $stepX = $passParams[$passId][1];
+        $startY = $passParams[$passId][2];
+        $stepY = $passParams[$passId][3];
+        $pixelBytes = intdiv($bitDepth + 1, 8) * $channels;
+        for($srcY = 0; $srcY < $pass['height']; $srcY++) {
+            for($srcX = 0; $srcX < $pass['width']; $srcX++) {
+                $destX = $startX + $stepX * $srcX;
+                $destY = $startY + $stepY * $srcY;
+                echo "  ($srcX, $srcY) -> ($destX, $destY)\n";
+                for($i = 0; $i < $pixelBytes; $i++) {
+                    # Map byte in pixel
+                    $srcByte = $srcY * $pass['width'] * $pixelBytes + $srcX * $pixelBytes + $i;
+                    $destByte = $destY * $width * $pixelBytes + $destX * $pixelBytes + $i;
+                    echo "    $srcByte -> $destByte\n";
+                    $imageData[$destByte] = $passData[$srcByte];
+                }
+            }        
+        }
+        #throw new Exception("Interlace not implemented");
     }
 } else {
     throw new Exception("Unknown interlace type");
