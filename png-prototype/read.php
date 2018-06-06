@@ -508,7 +508,8 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
     $imageData = unfilterImage($binData, $scanlineBytes, $channels, $bitDepth);
 } else if ($header -> getInterlace() === PngHeader::INTERLACE_ADAM7) {
     // ADAM7 interlace.
-    // Params for laying out pixels (startX, stepX, startY, stepY)
+    // Params for laying out pixels in each pass
+    // (startX, stepX, startY, stepY)
     $passParams = [
       [0, 8, 0, 8],
       [4, 8, 0, 8],
@@ -518,7 +519,8 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
       [1, 2, 0, 2],
       [0, 1, 1, 2]
       ];
-    // Calculate properties of the seven sub-images.
+    // Calculate width and height of each of the seven
+    // sub-images.
     $passes = [
         [
             "width" => intdiv($width + 7, 8),
@@ -553,12 +555,13 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
     $position = 0;
     $imageData = array_fill(0, $scanlineBytes * $height, 0);
     foreach($passes as $passId => $pass) {
-        // TODO passWidth and passHeight variable,
-        if($pass['width'] == 0) {
+        $passWidth = $pass['width'];
+        $passHeight = $pass['height'];
+        if($passWidth == 0) {
             continue;
         }
-        $passScanlineWidth = intdiv($pass['width'] * $bitDepth + 7, 8) * $channels;
-        $len = ($passScanlineWidth + 1) * $pass['height'];
+        $passScanlineWidth = intdiv($passWidth * $bitDepth + 7, 8) * $channels;
+        $len = ($passScanlineWidth + 1) * $passHeight;
         // Extract and de-filter scanlines in this pass.
         $passScanlines = [];
         $passUnfiltered = substr($binData, $position, $len);
@@ -568,34 +571,54 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
         $passData = unfilterImage($passUnfiltered, $passScanlineWidth, $channels, $bitDepth);
         $position += $len;
         echo "Got " . count($passData) . " bytes from pass " . ($passId + 1) . "\n";
-        # TODO this does not handle bit depths below 8 yet.
-        if($bitDepth < 8) {
-            throw new Exception("Low bit-depth interlace not implemented");
-        }
-        # Paste this pass data over the original image.
-        if(!isset($passParams[$passId])) {
-            break;
-        }
+        // Paste this pass data over the original image.
         $startX = $passParams[$passId][0];
         $stepX = $passParams[$passId][1];
         $startY = $passParams[$passId][2];
         $stepY = $passParams[$passId][3];
-        $pixelBytes = intdiv($bitDepth + 1, 8) * $channels;
-        for($srcY = 0; $srcY < $pass['height']; $srcY++) {
-            for($srcX = 0; $srcX < $pass['width']; $srcX++) {
-                $destX = $startX + $stepX * $srcX;
-                $destY = $startY + $stepY * $srcY;
-                echo "  ($srcX, $srcY) -> ($destX, $destY)\n";
-                for($i = 0; $i < $pixelBytes; $i++) {
-                    # Map byte in pixel
-                    $srcByte = $srcY * $pass['width'] * $pixelBytes + $srcX * $pixelBytes + $i;
-                    $destByte = $destY * $width * $pixelBytes + $destX * $pixelBytes + $i;
-                    echo "    $srcByte -> $destByte\n";
-                    $imageData[$destByte] = $passData[$srcByte];
+        if(($bitDepth * $channels) % 8 == 0) {
+            // Simple case: the pixels fill bytes and never cross byte boundaries.
+            $pixelBytes = intdiv($bitDepth + 1, 8) * $channels;
+            for($srcY = 0; $srcY < $passHeight; $srcY++) {
+                for($srcX = 0; $srcX < $passWidth; $srcX++) {
+                    $destX = $startX + $stepX * $srcX;
+                    $destY = $startY + $stepY * $srcY;
+                    echo "  ($srcX, $srcY) -> ($destX, $destY)\n";
+                    for($i = 0; $i < $pixelBytes; $i++) {
+                        // Map byte within pixel (eg. RGBA pixel can be 4 bytes).
+                        $srcByte = $srcY * $passWidth * $pixelBytes + $srcX * $pixelBytes + $i;
+                        $destByte = $destY * $width * $pixelBytes + $destX * $pixelBytes + $i;
+                        echo "    $srcByte -> $destByte\n";
+                        $imageData[$destByte] = $passData[$srcByte];
+                    }
+                }        
+            }
+        } else {
+            throw new Exception("De-interlace for low bit-depth images not implemented");
+            // More complex case: The pixels are 1, 2, or 4 bits wide
+            // TODO debug this, the output is corrupted on 1-bit images
+            $pixelBits = $bitDepth * $channels;
+            for($srcY = 0; $srcY < $passHeight; $srcY++) {
+                for($srcX = 0; $srcX < $passWidth; $srcX++) {
+                    $destX = $startX + $stepX * $srcX;
+                    $destY = $startY + $stepY * $srcY;
+                    echo "  ($srcX, $srcY) -> ($destX, $destY)\n";
+                    $srcBit = ($srcY * $passWidth + $srcX) * $pixelBits;
+                    $destBit = ($destY * $passWidth + $destX) * $pixelBits;
+                    $srcByte = intdiv($srcBit, 8);
+                    $destByte = intdiv($destBit, 8);
+                    $srcOffset = $srcBit % 8;
+                    $destOffset = $destBit % 8;
+                    echo "     $srcByte, $srcOffset -> $destByte, $destOffset (width $pixelBits)\n";
+                    $srcVal = (($passData[$srcByte] << $srcOffset) & 0xFF) >> (8 - $pixelBits);
+                    $destVal = ($srcVal << (8 - $pixelBits - $destOffset));
+                    // Just testing, we should be able to "|= destVal", but not all dest bytes are being covered.
+                    // Safe to assume something above this is incorrect.
+                    $imageData[$destByte] = 255;
+                    echo "     $srcVal, $destVal\n";
                 }
-            }        
+            }
         }
-        #throw new Exception("Interlace not implemented");
     }
 } else {
     throw new Exception("Unknown interlace type");
