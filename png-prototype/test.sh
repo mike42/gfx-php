@@ -61,10 +61,10 @@ function expect_success {
 }
 
 function test_commands {
-    for i in $(find pngsuite/ -type f | sort | grep -v ^pngsuite/x); do
+    for i in $(find pngsuite/ -type f -name '*.png' | sort | grep -v ^pngsuite/x); do
         echo $0 expect_success "$i" php read.php "$i"
     done
-    for i in $(find pngsuite/ -type f | sort | grep pngsuite/x); do
+    for i in $(find pngsuite/ -type f -name '*.png' | sort | grep pngsuite/x); do
         echo $0 expect_failure "$i" php read.php "$i"&
     done
 }
