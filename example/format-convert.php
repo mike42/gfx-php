@@ -29,3 +29,12 @@ $img -> write("font.pbm");
 $img -> write("font.pgm");
 $img -> write("font.png");
 $img -> write("font.ppm");
+
+// Write abc.png out as each supported format
+$img = Image::fromFile(dirname(__FILE__). "/resources/abc.png");
+$img -> write("abc.bmp");
+$img -> write("abc.gif");
+$img -> write("abc.pbm");
+$img -> write("abc.pgm");
+$img -> write("abc.png");
+$img -> write("abc.ppm");
