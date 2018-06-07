@@ -4,8 +4,10 @@ namespace Mike42\GfxPhp\Codec;
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
 
-class PngCodec implements ImageEncoder
+class PngCodec implements ImageEncoder, ImageDecoder
 {
+    const PNG_SIGNATURE="\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
+
     protected static $instance = null;
 
     public function encode(RasterImage $image, string $format): string
@@ -16,11 +18,24 @@ class PngCodec implements ImageEncoder
         }
         return $this -> encodeRgb($image);
     }
+    
+    public function identify(string $blob): string
+    {
+        if (substr($blob, 0, 8) == PngCodec::PNG_SIGNATURE) {
+            return "png";
+        }
+        return "";
+    }
 
+    public function decode(string $blob): RasterImage
+    {
+        throw new \Exception("PNG decode not implemented");
+    }
+    
     public function encodeRgb(RgbRasterImage $image)
     {
         // PNG signature
-        $signature = pack("c8", 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+        $signature = PngCodec::PNG_SIGNATURE;
         // Header chunk
         $width = $image -> getWidth();
         $height = $image -> getHeight();
@@ -48,6 +63,11 @@ class PngCodec implements ImageEncoder
         return ["png"];
     }
 
+    public function getDecodeFormats(): array
+    {
+        return ["png"];
+    }
+    
     public static function getInstance()
     {
         if (self::$instance === null) {

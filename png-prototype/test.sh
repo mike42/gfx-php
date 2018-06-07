@@ -61,16 +61,18 @@ function expect_success {
 }
 
 function test_commands {
-    for i in $(find pngsuite/ -type f -name '*.png' | sort | grep -v ^pngsuite/x); do
-        echo $0 expect_success "$i" php read.php "$i"
+    PNGSUITE="../test/resources/pngsuite/"
+    for i in $(find $PNGSUITE -type f -name '*.png' | sort | grep -v pngsuite/x); do
+        echo $0 expect_success "$(basename $i)" php read.php "$i"
     done
-    for i in $(find pngsuite/ -type f -name '*.png' | sort | grep pngsuite/x); do
-        echo $0 expect_failure "$i" php read.php "$i"&
+    for i in $(find $PNGSUITE -type f -name '*.png' | sort | grep pngsuite/x); do
+        echo $0 expect_failure "$(basename $i)" php read.php "$i"&
     done
 }
 
 if [ $# -eq 0 ]; then
     set -u -o pipefail
+    mkdir -p out/
     test_start
     test_commands | parallel --no-notice
     test_end $?

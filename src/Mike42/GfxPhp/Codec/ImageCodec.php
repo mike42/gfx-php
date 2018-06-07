@@ -19,11 +19,11 @@ class ImageCodec
     {
         foreach ($this -> decoders as $decoder) {
             $identity = $decoder -> identify($blob);
-            if ($identity !== null) {
+            if ($identity !== '') {
                 return $identity;
             }
         }
-        return null;
+        return '';
     }
 
     public function getDecoderForFormat(string $format) : ImageDecoder
@@ -58,6 +58,7 @@ class ImageCodec
                 GifCodec::getInstance()
             ];
             $decoders = [
+                PngCodec::getInstance(),
                 PnmCodec::getInstance()
             ];
             self::$instance = new ImageCodec($encoders, $decoders);

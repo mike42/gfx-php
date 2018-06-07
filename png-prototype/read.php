@@ -6,6 +6,8 @@ use Mike42\GfxPhp\BlackAndWhiteRasterImage;
 use Mike42\GfxPhp\GrayscaleRasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
 use Mike42\GfxPhp\IndexedRasterImage;
+use Mike42\GfxPhp\Codec\Common\DataInputStream;
+use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
 
 /**
  * Takes 8-bit samples, and produces eight times as many 1-bit samples,
@@ -180,67 +182,6 @@ function unfilter(array $currentFiltered, array $prior, int $filterType, int $bp
         return $ret;
     }
     throw new Exception("Filter type $filterType not valid");
-}
-
-interface DataInputStream
-{
-    public function read(int $bytes);
-    public function isEof();
-    public function peek(int $bytes);
-    public function advance(int $bytes);
-}
-
-class DataBlobInputStream implements DataInputStream
-{
-    public function __construct(string $data)
-    {
-        $this -> data = $data;
-        $this -> offset = 0;
-    }
-
-    public function read(int $bytes)
-    {
-        $chunk = $this -> peek($bytes);
-        $this -> advance($bytes);
-        return $chunk;
-    }
-
-    public function advance(int $bytes)
-    {
-        $this -> offset += $bytes;
-    }
-
-    public function peek(int $bytes)
-    {
-        $chunk = substr($this -> data, $this -> offset, $bytes);
-        if ($chunk === false) {
-            throw new Exception("End of file reached, cannot retrieve more data.");
-        }
-        $read = strlen($chunk);
-        if ($read !== $bytes) {
-            throw new Exception("Unexpected end of file, needed $read but read $bytes");
-        }
-        return $chunk;
-    }
-
-    public function isEof()
-    {
-        return $this -> offset >= strlen($this -> data);
-    }
- 
-    public static function fromBlob(string $blob)
-    {
-        return new DataBlobInputStream($blob);
-    }
-    
-    public static function fromFilename(string $filename)
-    {
-        $blob = file_get_contents($filename);
-        if ($blob === false) {
-            throw new Exception($filename);
-        }
-        return self::fromBlob($blob);
-    }
 }
 
 /**
