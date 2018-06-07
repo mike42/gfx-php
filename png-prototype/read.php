@@ -594,17 +594,15 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
                 }        
             }
         } else {
-            throw new Exception("De-interlace for low bit-depth images not implemented");
             // More complex case: The pixels are 1, 2, or 4 bits wide
-            // TODO debug this, the output is corrupted on 1-bit images
             $pixelBits = $bitDepth * $channels;
             for($srcY = 0; $srcY < $passHeight; $srcY++) {
                 for($srcX = 0; $srcX < $passWidth; $srcX++) {
                     $destX = $startX + $stepX * $srcX;
                     $destY = $startY + $stepY * $srcY;
-                    echo "  ($srcX, $srcY) -> ($destX, $destY)\n";
-                    $srcBit = ($srcY * $passWidth + $srcX) * $pixelBits;
-                    $destBit = ($destY * $passWidth + $destX) * $pixelBits;
+                    echo "  ($srcX, $srcY) -> ($destX, $destY) $passScanlineWidth\n";
+                    $srcBit = $srcY * $passScanlineWidth * 8 + $srcX * $pixelBits;
+                    $destBit = ($destY * $width + $destX) * $bitDepth * $channels;
                     $srcByte = intdiv($srcBit, 8);
                     $destByte = intdiv($destBit, 8);
                     $srcOffset = $srcBit % 8;
@@ -612,10 +610,8 @@ if($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
                     echo "     $srcByte, $srcOffset -> $destByte, $destOffset (width $pixelBits)\n";
                     $srcVal = (($passData[$srcByte] << $srcOffset) & 0xFF) >> (8 - $pixelBits);
                     $destVal = ($srcVal << (8 - $pixelBits - $destOffset));
-                    // Just testing, we should be able to "|= destVal", but not all dest bytes are being covered.
-                    // Safe to assume something above this is incorrect.
-                    $imageData[$destByte] = 255;
-                    echo "     $srcVal, $destVal\n";
+                    // Logical OR the relevant bits in
+                    $imageData[$destByte] |= $destVal;
                 }
             }
         }
