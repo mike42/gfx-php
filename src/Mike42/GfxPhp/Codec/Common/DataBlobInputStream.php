@@ -26,11 +26,11 @@ class DataBlobInputStream implements DataInputStream
     {
         $chunk = substr($this -> data, $this -> offset, $bytes);
         if ($chunk === false) {
-            throw new Exception("End of file reached, cannot retrieve more data.");
+            throw new \Exception("End of file reached, cannot retrieve more data.");
         }
         $read = strlen($chunk);
         if ($read !== $bytes) {
-            throw new Exception("Unexpected end of file, needed $read but read $bytes");
+            throw new \Exception("Unexpected end of file, needed $read but read $bytes");
         }
         return $chunk;
     }
@@ -49,7 +49,7 @@ class DataBlobInputStream implements DataInputStream
     {
         $blob = file_get_contents($filename);
         if ($blob === false) {
-            throw new Exception($filename);
+            throw new \Exception($filename);
         }
         return self::fromBlob($blob);
     }
