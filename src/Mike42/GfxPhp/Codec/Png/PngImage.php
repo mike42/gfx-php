@@ -37,14 +37,11 @@ class PngImage
         if ($chunk_header == null || $chunk_header -> getType() !== "IHDR") {
             throw new \Exception("File does not begin with IHDR chunk");
         }
-        echo $chunk_header -> toString() . "\n";
-        echo $header -> toString() . "\n";
         $chunk_palette = null;
         $chunk_data = [];
         $chunk_end = null;
         
         while (( $chunk = PngChunk::fromBin($data) ) !== null) {
-            echo $chunk -> toString() . "\n";
             if ($chunk -> getType() === "IEND") {
                 $chunk_end = $chunk;
                 break;

@@ -61,7 +61,7 @@ function expect_success {
 }
 
 function test_commands {
-    PNGSUITE="../test/resources/pngsuite/"
+    PNGSUITE="../resources/pngsuite/"
     for i in $(find $PNGSUITE -type f -name '*.png' | sort | grep -v pngsuite/x); do
         echo $0 expect_success "$(basename $i)" php read.php "$i"
     done
@@ -70,8 +70,9 @@ function test_commands {
     done
 }
 
+set -u -o pipefail
 if [ $# -eq 0 ]; then
-    set -u -o pipefail
+
     mkdir -p out/
     test_start
     test_commands | parallel --no-notice

@@ -8,8 +8,6 @@ use Mike42\GfxPhp\Codec\Png\PngImage;
 
 class PngCodec implements ImageEncoder, ImageDecoder
 {
-    const PNG_SIGNATURE="\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
-
     protected static $instance = null;
 
     public function encode(RasterImage $image, string $format): string
@@ -23,7 +21,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
     
     public function identify(string $blob): string
     {
-        if (substr($blob, 0, 8) == PngCodec::PNG_SIGNATURE) {
+        if (substr($blob, 0, 8) == PngImage::PNG_SIGNATURE) {
             return "png";
         }
         return "";
@@ -39,7 +37,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
     public function encodeRgb(RgbRasterImage $image)
     {
         // PNG signature
-        $signature = PngCodec::PNG_SIGNATURE;
+        $signature = PngImage::PNG_SIGNATURE;
         // Header chunk
         $width = $image -> getWidth();
         $height = $image -> getHeight();
