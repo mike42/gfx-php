@@ -292,8 +292,7 @@ class PngImage
         $maxLevel = 2 ** $this -> header -> getBitDepth() - 1;
         $backGround = $maxLevel;
         $alpha = array_pop($channels) / $maxLevel;
-        foreach($channels as $id => $channel)
-        {
+        foreach ($channels as $id => $channel) {
             $pixels[$id] = ($maxLevel - ($maxLevel - $channel) * $alpha);
         }
         return $pixels;
