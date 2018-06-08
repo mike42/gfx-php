@@ -175,11 +175,11 @@ class PngImage
                 // Mix out Alpha and load as Grayscale.
                 switch ($bitDepth) {
                     case 8:
-                        $mixedData = $this -> alphaMix($imageData, 2, 0xFF);
+                        $mixedData = $this -> alphaMix($imageData, 2);
                         $im = GrayscaleRasterImage::create($width, $height, $mixedData, 0xFF);
                         break;
                     case 16:
-                        $mixedData = $this -> alphaMix(self::combineBytes16Bpp($imageData), 2, 0xFFFF);
+                        $mixedData = $this -> alphaMix(self::combineBytes16Bpp($imageData), 2);
                         $im = GrayscaleRasterImage::create($width, $height, $mixedData, 0xFFFF);
                         break;
                     default:
@@ -190,11 +190,11 @@ class PngImage
                 // Mix out Alpha and load as RGB.
                 switch ($bitDepth) {
                     case 8:
-                        $mixedData = $this -> alphaMix($imageData, 4, 0xFF);
+                        $mixedData = $this -> alphaMix($imageData, 4);
                         $im = RgbRasterImage::create($width, $height, $mixedData, 0xFF);
                         break;
                     case 16:
-                        $mixedData = $this -> alphaMix(self::combineBytes16Bpp($imageData), 4, 0xFFFF);
+                        $mixedData = $this -> alphaMix(self::combineBytes16Bpp($imageData), 4);
                         $im = RgbRasterImage::create($width, $height, $mixedData, 0xFFFF);
                         break;
                     default:
@@ -279,18 +279,23 @@ class PngImage
     /**
      * We'll use this to mix with a background color.
      */
-    private function alphaMix(array $data, $chunkSize, $maxVal)
+    private function alphaMix(array $data, $chunkSize)
     {
         // Will need to change to "alphaMixPixel" to [$this, "alphaMixPixel"] once we are in a class.
         $noAlphaPixels = array_map([$this, "alphaMixPixel"], array_chunk($data, $chunkSize, false));
         return array_merge(...$noAlphaPixels);
     }
     
-    private function alphaMixPixel(array $pixels)
+    private function alphaMixPixel(array $channels)
     {
-        // Just drop Alpha completely for now.
-        // TODO we need the maxVal and a background color in-scope here.
-        array_pop($pixels);
+        // Mix alpha to white
+        $maxLevel = 2 ** $this -> header -> getBitDepth() - 1;
+        $backGround = $maxLevel;
+        $alpha = array_pop($channels) / $maxLevel;
+        foreach($channels as $id => $channel)
+        {
+            $pixels[$id] = ($maxLevel - ($maxLevel - $channel) * $alpha);
+        }
         return $pixels;
     }
 }
