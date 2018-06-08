@@ -3,6 +3,8 @@ namespace Mike42\GfxPhp\Codec;
 
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
+use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
+use Mike42\GfxPhp\Codec\Png\PngImage;
 
 class PngCodec implements ImageEncoder, ImageDecoder
 {
@@ -29,7 +31,9 @@ class PngCodec implements ImageEncoder, ImageDecoder
 
     public function decode(string $blob): RasterImage
     {
-        throw new \Exception("PNG decode not implemented");
+        $data = DataBlobInputStream::fromBlob($blob);
+        $png = PngImage::fromBinary($data);
+        return $png -> toRasterImage();
     }
     
     public function encodeRgb(RgbRasterImage $image)
