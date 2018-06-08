@@ -116,6 +116,19 @@ class PngHeader
         return $this -> compresssion;
     }
     
+    public function getChannels()
+    {
+        // Return number of channels
+        $channelLookup = [
+            PngHeader::COLOR_TYPE_MONOCHROME => 1,
+            PngHeader::COLOR_TYPE_RGB => 3,
+            PngHeader::COLOR_TYPE_INDEXED => 1,
+            PngHeader::COLOR_TYPE_MONOCHROME_ALPHA => 2,
+            PngHeader::COLOR_TYPE_RGBA => 4,
+        ];
+        return $channelLookup[$this -> getColorType()];
+    }
+    
     public function getFilter()
     {
         return $this -> filter;
