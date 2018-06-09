@@ -12,24 +12,38 @@ Files are read from a file or URL by using the :meth:`Image::fromFile()` functio
 .. code-block:: php
   
   use Mike42\GfxPhp\Image;
-  $tux = Image::fromFile("tux.pbm")
+  $tux = Image::fromFile("tux.png")
 
-If the your image is not being read from a file, then :meth:`Image::fromBlob()` can load it instead:
+If the your image is not being read from a file, then :meth:`Image::fromBlob()` can load it from a binary string:
 
 .. code-block:: php
 
   use Mike42\GfxPhp\Image;
   $tuxStr = "...";
-  $tux = Image::fromBlob($tuxStr, "tux.pbm");
+  $tux = Image::fromBlob($tuxStr, "tux.png");
 
 In either case, the input format is determined using the file's `magic number`_.
 
 .. _magic number: https://en.wikipedia.org/wiki/Magic_number_(programming)
 
+PNG
+^^^
+
+The PNG codec is used where the input has the ``png`` file extension.
+
+All valid PNG files can be read, including:
+
+- RGB or RGBA images
+- Indexed images
+- Monochrome images, from 1 to 16 bits per pixel
+- Interlaced images
+
+This library currently has limited support for transparency, and will discard any alpha channel from a PNG file when it is loaded.
+
 Netpbm Formats
 ^^^^^^^^^^^^^^
 
-The Netpbm formats are a series of uncompressed bitmap formats, which can represent most types of image. The formats can be read by ``gfx-php``.
+The Netpbm formats are a series of uncompressed bitmap formats, which can represent most types of image. These formats can be read by ``gfx-php``:
 
 :PNM: This is a file extension only. Files carrying ``.pnm`` extension can carry any of the below formats.
 :PPM: This is a color raster format. A PPM file is identified by the P6 magic number, and will be loaded into an instance of :class:`RgbRasterImage`.

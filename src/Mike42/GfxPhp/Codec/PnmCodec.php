@@ -25,7 +25,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
             // Portable PixMap
             return "ppm";
         }
-        return null;
+        return "";
     }
 
     public function decode(string $blob): RasterImage

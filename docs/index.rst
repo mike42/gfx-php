@@ -12,7 +12,7 @@ The basic usage is like this:
    
    <?php
    use Mike42\GfxPhp\Image;
-   $img = Image::fromFile("colorwheel256.ppm");
+   $img = Image::fromFile("colorwheel256.png");
    $img -> write("test.gif");
 
 Features

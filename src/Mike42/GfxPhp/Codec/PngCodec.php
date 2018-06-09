@@ -3,8 +3,10 @@ namespace Mike42\GfxPhp\Codec;
 
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
+use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
+use Mike42\GfxPhp\Codec\Png\PngImage;
 
-class PngCodec implements ImageEncoder
+class PngCodec implements ImageEncoder, ImageDecoder
 {
     protected static $instance = null;
 
@@ -16,11 +18,26 @@ class PngCodec implements ImageEncoder
         }
         return $this -> encodeRgb($image);
     }
+    
+    public function identify(string $blob): string
+    {
+        if (substr($blob, 0, 8) == PngImage::PNG_SIGNATURE) {
+            return "png";
+        }
+        return "";
+    }
 
+    public function decode(string $blob): RasterImage
+    {
+        $data = DataBlobInputStream::fromBlob($blob);
+        $png = PngImage::fromBinary($data);
+        return $png -> toRasterImage();
+    }
+    
     public function encodeRgb(RgbRasterImage $image)
     {
         // PNG signature
-        $signature = pack("c8", 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+        $signature = PngImage::PNG_SIGNATURE;
         // Header chunk
         $width = $image -> getWidth();
         $height = $image -> getHeight();
@@ -48,6 +65,11 @@ class PngCodec implements ImageEncoder
         return ["png"];
     }
 
+    public function getDecodeFormats(): array
+    {
+        return ["png"];
+    }
+    
     public static function getInstance()
     {
         if (self::$instance === null) {
