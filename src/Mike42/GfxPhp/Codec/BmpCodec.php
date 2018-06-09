@@ -17,13 +17,14 @@ class BmpCodec implements ImageEncoder
         }
         // Output uncompressed 24 bit BMP file
         $header = pack(
-            "C2V3",
+            "C2Vv2V",
             0x42,
             0x4d, // 'BM' magic number
             0, // File size
             0, // Reserved
-            0
-        ); // Offset
+            0, // Reserved
+            54 // Offset
+        );
         $width = $image -> getWidth();
         $height = $image -> getHeight();
         $infoHeader = pack(
@@ -58,6 +59,7 @@ class BmpCodec implements ImageEncoder
 
     protected function transformRevString(&$item, $key)
     {
+        // Convert RGB to BGR
         $item = strrev($item);
     }
     
