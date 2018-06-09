@@ -3,7 +3,7 @@ use Mike42\GfxPhp\BlackAndWhiteRasterImage;
 
 use PHPUnit\Framework\TestCase;
 
-class PbmImageTest extends TestCase
+class BlackAndWhiteRasterImageTest extends TestCase
 {
 
     public function testCreate()
