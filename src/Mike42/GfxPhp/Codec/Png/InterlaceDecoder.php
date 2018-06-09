@@ -121,7 +121,7 @@ class InterlaceDecoder
                         $destX = $startX + $stepX * $srcX;
                         $destY = $startY + $stepY * $srcY;
                         $srcBit = $srcY * $passScanlineWidth * 8 + $srcX * $pixelBits;
-                        $destBit = ($destY * $width + $destX) * $bitDepth * $channels;
+                        $destBit = $destY * $scanlineBytes * 8 + $destX * $pixelBits;
                         $srcByte = intdiv($srcBit, 8);
                         $destByte = intdiv($destBit, 8);
                         $srcOffset = $srcBit % 8;
