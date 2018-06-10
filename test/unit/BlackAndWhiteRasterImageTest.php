@@ -74,6 +74,16 @@ class BlackAndWhiteRasterImageTest extends TestCase
         $this -> assertEquals($expected, $img -> toString());
     }
     
+    public function testSubImageEmpty()
+    {
+        $img = BlackAndWhiteRasterImage::create(5, 5);
+        $img -> rect(1, 1, 3, 3);
+        $img = $img -> subImage(1, 1, 3, 3);
+        $expected = "█▀█\n" .
+                    "▀▀▀\n";
+        $this -> assertEquals($expected, $img -> toString());
+    }
+    
     public function testRectFilled()
     {
         $img = BlackAndWhiteRasterImage::create(5, 5);
