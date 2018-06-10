@@ -56,7 +56,7 @@ class BmpCodec implements ImageEncoder
             0, // Reserved
             0, // Reserved
             self::INFO_HEADER_SIZE + self::FILE_HEADER_SIZE // Offset
-            );
+        );
         return $header . $infoHeader . $colorTable . $pixelData;
     }
 
