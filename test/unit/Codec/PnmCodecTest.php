@@ -1,6 +1,4 @@
 <?php
-namespace test\unit\Codec;
-
 use PHPUnit\Framework\TestCase;
 use Mike42\GfxPhp\RgbRasterImage;
 use Mike42\GfxPhp\Codec\PngCodec;

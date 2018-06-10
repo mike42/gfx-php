@@ -1,6 +1,4 @@
 <?php
-namespace test\unit;
-
 use Mike42\GfxPhp\Image;
 use PHPUnit\Framework\TestCase;
 use Mike42\GfxPhp\RgbRasterImage;
