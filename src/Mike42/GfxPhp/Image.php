@@ -20,7 +20,7 @@ class Image
         if ($blob === false) {
             throw new \Exception("Could not retrieve image data from '$filename'. Check that the file exists and can be read.");
         }
-        return self::fromBlob($blob);
+        return self::fromBlob($blob, $filename);
     }
 
     public static function fromBlob(string $blob, string $filename = null) : RasterImage
@@ -29,11 +29,11 @@ class Image
             self::$codecs = ImageCodec::getInstance();
         }
         $format = self::$codecs -> identify($blob);
-        if ($format == null) {
+        if ($format === null) {
             throw new \Exception("Unknown format for image '$filename'.");
         }
         $decoder = self::$codecs ->getDecoderForFormat($format);
-        if ($decoder == null) {
+        if ($decoder === null) {
             throw new \Exception("Format $format not supported, reading '$filename'.");
         }
         return $decoder -> decode($blob);

@@ -11,12 +11,12 @@ class PngHeader
     const COLOR_TYPE_INDEXED = 3;
     const COLOR_TYPE_MONOCHROME_ALPHA = 4;
     const COLOR_TYPE_RGBA = 6;
-    
+
     const COMPRESSION_DEFLATE = 0;
-    
+
     const INTERLACE_NONE = 0;
     const INTERLACE_ADAM7 = 1;
-    
+
     private $width;
     private $height;
     private $bitDepth;
@@ -32,13 +32,29 @@ class PngHeader
             $height < 1 || $height > 2147483647) {
                 throw new \Exception("Invalid image dimensions");
         }
-            $this -> width = $width;
-            $this -> height = $height;
-            // Color type & bit depth
-            // - Only some combinations of bit depth and colorType are valid
+        $this -> width = $width;
+        $this -> height = $height;
+        // Color type & bit depth - Only some combinations of bit depth and colorType are valid.
+        // I'm sure you could abbreviate this code, but it's written for comparison with the PNG standard.
+        if ($colorType === 0 && ($bitDepth === 1 || $bitDepth === 2 || $bitDepth === 4 || $bitDepth === 8 || $bitDepth === 16)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
-            // Compression
+        } else if ($colorType === 2 && ($bitDepth === 8 || $bitDepth === 16)) {
+            $this -> bitDepth = $bitDepth;
+            $this -> colorType = $colorType;
+        } else if ($colorType === 3 && ($bitDepth === 1 || $bitDepth === 2 || $bitDepth === 4 || $bitDepth === 8)) {
+            $this -> bitDepth = $bitDepth;
+            $this -> colorType = $colorType;
+        } else if ($colorType === 4 && ($bitDepth === 8 || $bitDepth === 16)) {
+            $this -> bitDepth = $bitDepth;
+            $this -> colorType = $colorType;
+        } else if ($colorType === 6 && ($bitDepth === 8 || $bitDepth === 16)) {
+            $this -> bitDepth = $bitDepth;
+            $this -> colorType = $colorType;
+        } else {
+            throw new \Exception("Invalid color type / bit depth combination.");
+        }
+        // Compression
         if ($compression != PngHeader::COMPRESSION_DEFLATE) {
             throw new \Exception("Compression type not supported");
         }

@@ -80,7 +80,8 @@ class InterlaceDecoder
         foreach ($passes as $passId => $pass) {
             $passWidth = $pass['width'];
             $passHeight = $pass['height'];
-            if ($passWidth == 0) {
+            if ($passWidth == 0 || $passHeight == 0) {
+                // No data in this scanline, proceed.
                 continue;
             }
             $passScanlineWidth = intdiv($passWidth * $bitDepth + 7, 8) * $channels;
