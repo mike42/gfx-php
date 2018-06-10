@@ -8,6 +8,8 @@ use Mike42\GfxPhp\RgbRasterImage;
 class BmpCodec implements ImageEncoder
 {
     protected static $instance = null;
+    const INFO_HEADER_SIZE = 40;
+    const FILE_HEADER_SIZE = 14;
 
     public function encode(RasterImage $image, string $format): string
     {
@@ -15,20 +17,11 @@ class BmpCodec implements ImageEncoder
             // Convert if necessary
             $image = $image -> toRgb();
         }
-        // Output uncompressed 24 bit BMP file
-        $header = pack(
-            "C2V3",
-            0x42,
-            0x4d, // 'BM' magic number
-            0, // File size
-            0, // Reserved
-            0
-        ); // Offset
         $width = $image -> getWidth();
         $height = $image -> getHeight();
         $infoHeader = pack(
             "V3v2V6",
-            40,
+            self::INFO_HEADER_SIZE,
             $width, // Width
             $height, // Height
             1, // Planes
@@ -38,8 +31,8 @@ class BmpCodec implements ImageEncoder
             1, // Horizontal res
             1, // Vertical res
             0, // Number of colors
-            0
-        ); // Number of important colors
+            0 // Number of important colors
+        );
         $colorTable = "";
         // Transform RGB ordering to BGR ordering
         $pixels = str_split($image -> getRasterData(), 3);
@@ -51,13 +44,25 @@ class BmpCodec implements ImageEncoder
         $padding = str_repeat("\x00", $paddingLength);
         $lines = str_split($rasterData, $originalWidth);
         $lines = array_reverse($lines, false);
+        // Uncompressed 24 bit BMP file
         $pixelData = implode($padding, $lines) . $padding;
         // Return bitmap & header
+        $fileSize = strlen($pixelData) + strlen($colorTable) + self::INFO_HEADER_SIZE + self::FILE_HEADER_SIZE;
+        $header = pack(
+            "C2Vv2V",
+            0x42, // 'BM' magic number
+            0x4d,
+            $fileSize, // file size
+            0, // Reserved
+            0, // Reserved
+            self::INFO_HEADER_SIZE + self::FILE_HEADER_SIZE // Offset
+        );
         return $header . $infoHeader . $colorTable . $pixelData;
     }
 
     protected function transformRevString(&$item, $key)
     {
+        // Convert RGB to BGR
         $item = strrev($item);
     }
     
