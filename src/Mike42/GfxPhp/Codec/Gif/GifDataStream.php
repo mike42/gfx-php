@@ -3,9 +3,7 @@ namespace Mike42\GfxPhp\Codec\Gif;
 
 use Mike42\GfxPhp\Codec\Common\DataInputStream;
 use Mike42\GfxPhp\IndexedRasterImage;
-use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\Util\LzwCompression;
-use mysql_xdevapi\Exception;
 
 class GifDataStream
 {
@@ -72,11 +70,39 @@ class GifDataStream
         if ($width == 0 || $height == 0) {
             throw new \Exception("GIF contains no pixels. Loading this type of file is not supported.");
         }
-       // De-compress the actual image data
+        // De-compress the actual image data
         $compressedData = join($tableBasedImage ->getDataSubBlocks());
         $decompressedData = LzwCompression::decompress($compressedData, $tableBasedImage -> getLzqMinSize());
-       // Array of ints for IndexedRasterImage
+        if($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
+            $decompressedData = self::deinterlace($width, $decompressedData);
+        }
+        // Array of ints for IndexedRasterImage
         $dataArr = array_values(unpack("C*", $decompressedData));
         return IndexedRasterImage::create($width, $height, $dataArr, $colorTable -> getPalette());
+    }
+
+    private static function deinterlace(int $width, string $data) : string {
+        // Four-pass GIF de-interlace. Reads input in order.
+        $old = str_split($data, $width);
+        $height = count($old);
+        $new = array_fill(0, $height, "");
+        $j = 0;
+        for($i = 0; $i < $height; $i += 8) {
+            $new[$i] = $old[$j];
+            $j++;
+        }
+        for($i = 4; $i < $height; $i += 8) {
+            $new[$i] = $old[$j];
+            $j++;
+        }
+        for($i = 2; $i < $height; $i += 4) {
+            $new[$i] = $old[$j];
+            $j++;
+        }
+        for($i = 1; $i < $height; $i += 2) {
+            $new[$i] = $old[$j];
+            $j++;
+        }
+        return join($new);
     }
 }

@@ -18,7 +18,7 @@ class GifData
     private $specialPurposeBlock;
     private $unrecognisedBlock;
 
-    public function __construct(GifGraphicsBlock $graphicsBlock = null, GifSpecialPurposeBlock $specialPurposeBlock = null, GifUnrecognisedExt $unrecognisedBlock = null)
+    public function __construct(GifGraphicsBlock $graphicsBlock = null, GifSpecialPurposeBlock $specialPurposeBlock = null, GifUnknownExt $unrecognisedBlock = null)
     {
         $this->graphicsBlock = $graphicsBlock;
         $this->specialPurposeBlock = $specialPurposeBlock;
@@ -59,7 +59,7 @@ class GifData
         }
         // Unknown extension blocks
         if ($blockId == GifData::GIF_EXTENSION && $extensionId != GifData::GIF_EXTENSION_GRAPHIC_CONTROL &&  $extensionId != GifData::GIF_EXTENSION_PLAINTEXT) {
-            $unrecognisedBlock = GifUnrecognisedExt::fromBin($in);
+            $unrecognisedBlock = GifUnknownExt::fromBin($in);
             return new GifData(null, null, $unrecognisedBlock);
         }
         $graphicsBlock = GifGraphicsBlock::fromBin($in);

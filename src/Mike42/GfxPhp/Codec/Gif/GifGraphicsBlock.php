@@ -3,6 +3,7 @@
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
+
 use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifGraphicsBlock
@@ -18,17 +19,17 @@ class GifGraphicsBlock
         $this->plaintextExt = $plaintextExt;
     }
 
-    public function getGraphicControlExt(): GifGraphicControlExt
+    public function getGraphicControlExt()
     {
         return $this->graphicControlExt;
     }
 
-    public function getTableBasedImage(): GifTableBasedImage
+    public function getTableBasedImage()
     {
         return $this->tableBasedImage;
     }
 
-    public function getPlaintextExt(): GifPlaintextExt
+    public function getPlaintextExt()
     {
         return $this->plaintextExt;
     }
@@ -40,7 +41,7 @@ class GifGraphicsBlock
         $extensionId = $peek[1];
         // Could have a graphic control extension before it
         $graphicControlExtension = null;
-        if ($blockId == GifData::GIF_EXTENSION && $extensionId == GifData::GIF_EXTENSION_GRAPHIC_CONTROL) {
+        if($blockId == GifData::GIF_EXTENSION && $extensionId == GifData::GIF_EXTENSION_GRAPHIC_CONTROL) {
             // Optional graphic control extension
             $graphicControlExtension = GifGraphicControlExt::fromBin($in);
             // Re-populate for next block
@@ -52,7 +53,7 @@ class GifGraphicsBlock
             // Plain text
             $plaintextExtension = GifPlaintextExt::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, null, $plaintextExtension);
-        } else if ($blockId == GifData::GIF_IMAGE_SEPARATOR) {
+        } else if($blockId == GifData::GIF_IMAGE_SEPARATOR) {
             // Table-based image
             $tableBasedImage = GifTableBasedImage::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, $tableBasedImage, null);
