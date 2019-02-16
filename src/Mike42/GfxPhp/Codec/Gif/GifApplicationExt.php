@@ -42,7 +42,7 @@ class GifApplicationExt
         }
         $lenData = $in->read(1);
         $len = unpack("C", $lenData)[1];
-        if($len != 11) {
+        if ($len != 11) {
             throw new \Exception("Incorrect size on application extension block");
         }
         $appIdentifier = $in->read(8);

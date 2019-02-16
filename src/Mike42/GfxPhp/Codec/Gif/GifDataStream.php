@@ -73,7 +73,7 @@ class GifDataStream
         // De-compress the actual image data
         $compressedData = join($tableBasedImage ->getDataSubBlocks());
         $decompressedData = LzwCompression::decompress($compressedData, $tableBasedImage -> getLzqMinSize());
-        if($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
+        if ($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
             $decompressedData = self::deinterlace($width, $decompressedData);
         }
         // Array of ints for IndexedRasterImage
@@ -81,25 +81,26 @@ class GifDataStream
         return IndexedRasterImage::create($width, $height, $dataArr, $colorTable -> getPalette());
     }
 
-    private static function deinterlace(int $width, string $data) : string {
+    private static function deinterlace(int $width, string $data) : string
+    {
         // Four-pass GIF de-interlace. Reads input in order.
         $old = str_split($data, $width);
         $height = count($old);
         $new = array_fill(0, $height, "");
         $j = 0;
-        for($i = 0; $i < $height; $i += 8) {
+        for ($i = 0; $i < $height; $i += 8) {
             $new[$i] = $old[$j];
             $j++;
         }
-        for($i = 4; $i < $height; $i += 8) {
+        for ($i = 4; $i < $height; $i += 8) {
             $new[$i] = $old[$j];
             $j++;
         }
-        for($i = 2; $i < $height; $i += 4) {
+        for ($i = 2; $i < $height; $i += 4) {
             $new[$i] = $old[$j];
             $j++;
         }
-        for($i = 1; $i < $height; $i += 2) {
+        for ($i = 1; $i < $height; $i += 2) {
             $new[$i] = $old[$j];
             $j++;
         }
