@@ -40,6 +40,16 @@ All valid PNG files can be read, including:
 
 This library currently has limited support for transparency, and will discard any alpha channel from a PNG file when it is loaded.
 
+GIF
+^^^
+
+The GIF codec is used where the input has the ``gif`` file extension. Any well-formed GIF file can be read, but there are some limitations:
+
+- If a GIF file contains multiple images, then only the first one will be loaded
+- Information about transparency is currently not used
+
+A GIF image will alwasys be loaded into an isntance of :class:`IndexedRasterImage`, which makes palette information available.
+
 Netpbm Formats
 ^^^^^^^^^^^^^^
 

@@ -50,7 +50,7 @@ class PngCodecTest extends TestCase
         $interlacedImage = Image::fromFile(__DIR__ . "/../../resources/pngsuite/basi0g01.png");
         $interlacedResult = $interlacedImage -> toString();
         $nonInterlacedImage = Image::fromFile(__DIR__ . "/../../resources/pngsuite/basn0g01.png");
-        $nonInterlacedResult = $interlacedImage -> toString();
+        $nonInterlacedResult = $nonInterlacedImage -> toString();
         // These should both match the expected output
         $this -> assertEquals($expected, $interlacedResult);
         $this -> assertEquals($expected, $nonInterlacedResult);
