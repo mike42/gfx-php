@@ -69,7 +69,7 @@ class GifGraphicControlExt
         $transparentColorIndexData = $in -> read(1);
         $transparentColorIndex = unpack("C", $transparentColorIndexData)[1];
         $end = $in -> read(1);
-        if($end != "\x00") {
+        if ($end != "\x00") {
             throw new \Exception("GIF graphic control block not correctly terminated");
         }
         return new GifGraphicControlExt($disposalMethod, $hasUserInputFlag, $hasTransparentColor, $delayTime, $transparentColorIndex);

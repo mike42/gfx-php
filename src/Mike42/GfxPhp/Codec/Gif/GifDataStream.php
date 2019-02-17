@@ -79,8 +79,7 @@ class GifDataStream
         $expectedLen = $width * $height;
         if ($actualLen > $expectedLen) {
             $decompressedData = substr($decompressedData, 0, $expectedLen);
-        } else if($actualLen < $expectedLen)
-        {
+        } else if ($actualLen < $expectedLen) {
             throw new \Exception("GIF corrupt or truncated. Expexted $expectedLen pixels for $width x $height image, but only $actualLen pixels were encoded.");
         }
         if ($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
@@ -90,7 +89,7 @@ class GifDataStream
         $dataArr = array_values(unpack("C*", $decompressedData));
         $image = IndexedRasterImage::create($width, $height, $dataArr, $colorTable -> getPalette());
         // Lastly, transparency handling
-        if($graphicControlExt != null && $graphicControlExt -> hasTransparentColor()) {
+        if ($graphicControlExt != null && $graphicControlExt -> hasTransparentColor()) {
             $image -> setTransparentColor($graphicControlExt -> getTransparentColorIndex());
         }
         return $image;

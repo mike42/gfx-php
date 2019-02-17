@@ -127,7 +127,7 @@ class IndexedRasterImage extends AbstractRasterImage
 
     public function indexToRgb(int $index)
     {
-        if($index == $this -> transparentColor) {
+        if ($index == $this -> transparentColor) {
             // White
             return [255, 255, 255];
         }
