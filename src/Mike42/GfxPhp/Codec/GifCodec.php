@@ -1,11 +1,13 @@
 <?php
 namespace Mike42\GfxPhp\Codec;
 
+use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
+use Mike42\GfxPhp\Codec\Gif\GifDataStream;
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\Util\LzwCompression;
 use Mike42\GfxPhp\IndexedRasterImage;
 
-class GifCodec implements ImageEncoder
+class GifCodec implements ImageEncoder, ImageDecoder
 {
     protected static $instance = null;
 
@@ -73,6 +75,29 @@ class GifCodec implements ImageEncoder
          $imageData .= chr(0);
         $terminator = pack("C", 0x3B);
         return $signature . $header . $gct . $gce . $imageDescriptor . $imageData . $terminator;
+    }
+
+    public function getDecodeFormats(): array
+    {
+        return ["gif"];
+    }
+
+    public function identify(string $blob): string
+    {
+        if (substr($blob, 0, 6) == GifDataStream::GIF87_SIGNATURE) {
+            return "gif";
+        }
+        if (substr($blob, 0, 6) == GifDataStream::GIF89_SIGNATURE) {
+            return "gif";
+        }
+        return "";
+    }
+
+    public function decode(string $blob): RasterImage
+    {
+        $data = DataBlobInputStream::fromBlob($blob);
+        $gif = GifDataStream::fromBinary($data);
+        return $gif -> toRasterImage();
     }
 
     public function getEncodeFormats(): array

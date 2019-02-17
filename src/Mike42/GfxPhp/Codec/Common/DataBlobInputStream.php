@@ -30,7 +30,7 @@ class DataBlobInputStream implements DataInputStream
         }
         $read = strlen($chunk);
         if ($read !== $bytes) {
-            throw new \Exception("Unexpected end of file, needed $read but read $bytes");
+            throw new \Exception("Unexpected end of file, needed $bytes but read $read");
         }
         return $chunk;
     }

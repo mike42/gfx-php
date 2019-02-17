@@ -9,60 +9,62 @@ processing extensions (Gd, Imagick) are not required.
 
 This allows developers to eliminate some portability issues from their applications.
 
-## Requirements
+### Features
+
+- Format support includes PNG, GIF, BMP and the Netpbm formats (See docs: [File formats](https://gfx-php.readthedocs.io/en/latest/user/formats.html)).
+- Support for scaling, cropping, format conversion and colorspace transformations (See docs: [Image operations](https://gfx-php.readthedocs.io/en/latest/user/operations.html)).
+- Pure PHP: This library does not require Gd, ImageMagick or GraphicsMagick extensions.
+
+## Quick start
+
+### Requirements
 
 - PHP 7.0 or newer.
-- zlib extension, for reading PNG files.
+- `zlib` extension, for reading PNG files.
 
-## Get started
+### Installation
 
-- Have a read of the documentation at [gfx-php.readthedocs.io](https://gfx-php.readthedocs.io/)
+Install `gfx-php` with composer:
+
+```bash
+composer install mike42/gfx-php
+```
+
+### Basic usage
+
+The basic usage is like this:
+
+```php
+<?php
+use Mike42\GfxPhp\Image;
+$img = Image::fromFile("colorwheel256.png");
+$img -> write("test.gif");
+```
+
+### Further reading
+
+- Read of the documentation at [gfx-php.readthedocs.io](https://gfx-php.readthedocs.io/)
 - See the `examples/` sub-folder for snippets.
 
-## Status & scope
+## Contributing
 
-Currently, we are implementing basic raster operations on select file formats.
+This project is open to all kinds of contributions, including suggestions, documentation fixes, examples, formats and image processing algorithms.
 
-See related documentation for:
+Some ideas for improvement listed in [the issue tracker](https://travis-ci.org/mike42/gfx-php). Code contributions must be releasable under the LGPLv3 or later.
 
-- [Available input file formats](https://gfx-php.readthedocs.io/en/latest/user/formats.html#input-formats).
-- [Available output file formats](https://gfx-php.readthedocs.io/en/latest/user/formats.html#output-formats).
-- [Available image operations](https://gfx-php.readthedocs.io/en/latest/user/operations.html).
+### Scope
 
-If you're interested in image processing algorithms, then please consider contributing an implementation.
+As a small project, we can't do everything. In particular, `gfx-php` is not likely to ever perform non-raster operations:
 
-For algorithms, it appears feasable to implement:
+- vector image formats (PDF, SVG, EPS, etc).
+- anything involving vector fonts
 
-- Rotate
-- Layered operations
-- Affine transformations
-- Lines, arcs, circles, and rectangles.
+### Acknowledgements
 
-And sill on the roadmap for format support:
+This repository uses test files from other projects:
 
-- BMP input, which involves RLE decompression (BMP output is already available).
-- GIF input, which involves LZW decompression (GIF output is already available).
-- TIFF input and output, which also involves LZW (de)compression.
-
-In the interests of getting the basic features working first, there is no current plan to attempt lossy compression, or formats that are not common on either the web or for printing, eg:
-
-- JPEG
-- MNG
-- PAM format
-- XPM
-- .. etc.
-
-Also, as we don't have the luxury of pulling in dependencies, I'm considering anything that is not a raster operation out-of-scope:
-
-- All vector image formats (PDF, SVG, EPS, etc).
-- Anything involving vector fonts
-
-### Test data sets
-
-- [imagetestsuite](https://code.google.com/archive/p/imagetestsuite/)
-- [bmpsuite](http://entropymine.com/jason/bmpsuite/)
-- [pngsuite](http://www.schaik.com/pngsuite/)
-- [jburkardt's data sets](https://people.sc.fsu.edu/~jburkardt/data/)
+- [PyGIF](https://github.com/robert-ancell/pygif) test suite by Robert Ancell.
+- [pngsuite](http://www.schaik.com/pngsuite/) by Willem van Schaik.
 
 ## Similar projects
 
