@@ -185,7 +185,6 @@ class GifsuiteTest extends TestCase
     }
 
     function test_extra_pixels() {
-        $this -> markTestSkipped("Known bug: Extra pixels not correctly discarded");
         $img = $this -> loadImage("extra-pixels.gif");
         $this -> assertEquals(1, $img -> getWidth());
         $this -> assertEquals(1, $img -> getHeight());

@@ -48,6 +48,14 @@ class GifGraphicsBlock
             $blockId = $peek[0];
             $extensionId = $peek[1];
         }
+        if($blockId == GifData::GIF_EXTENSION && $extensionId == GifData::GIF_EXTENSION_APPLICATION) {
+            // ImageMagick drops an 'application' block here, which we can discard.
+            // We would need a slight re-structure to record this correctly.
+            $application = GifApplicationExt::fromBin($in);
+            $peek = $in -> peek(2);
+            $blockId = $peek[0];
+            $extensionId = $peek[1];
+        }
         if ($blockId == GifData::GIF_EXTENSION && $extensionId == GifData::GIF_EXTENSION_PLAINTEXT) {
             // Plain text
             $plaintextExtension = GifPlaintextExt::fromBin($in);

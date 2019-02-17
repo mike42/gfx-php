@@ -46,9 +46,9 @@ GIF
 The GIF codec is used where the input has the ``gif`` file extension. Any well-formed GIF file can be read, but there are some limitations:
 
 - If a GIF file contains multiple images, then only the first one will be loaded
-- Information about transparency is currently not used
+- If a transparent color is present, then this will be mixed to white
 
-A GIF image will alwasys be loaded into an isntance of :class:`IndexedRasterImage`, which makes palette information available.
+A GIF image will always be loaded into an omstamce of :class:`IndexedRasterImage`, which makes palette information available.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^

@@ -51,7 +51,7 @@ class GifDataStream
             if ($dataBlock -> getGraphicsBlock() !== null && $dataBlock -> getGraphicsBlock() -> getTableBasedImage() != null) {
                 // This is a raster image
                 if ($currentIndex == $imageIndex) {
-                    return GifDataStream::extractImage($this -> logicalScreen, $dataBlock -> getGraphicsBlock() -> getTableBasedImage());
+                    return GifDataStream::extractImage($this -> logicalScreen, $dataBlock -> getGraphicsBlock() -> getTableBasedImage(), $dataBlock -> getGraphicsBlock() -> getGraphicControlExt());
                 }
                 $currentIndex++;
             }
@@ -59,11 +59,12 @@ class GifDataStream
         throw new \Exception("Could not find image #$imageIndex in GIF file");
     }
 
-    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage) : IndexedRasterImage
+    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage, GifGraphicControlExt $graphicControlExt = null) : IndexedRasterImage
     {
-        $width = $tableBasedImage -> getImageDescriptor() -> getWidth();
-        $height = $tableBasedImage -> getImageDescriptor() -> getHeight();
-        $colorTable = $tableBasedImage -> getLocalColorTable() == null ? $logicalScreen -> getGlobalColorTable() : $tableBasedImage -> getLocalColorTable();
+
+        $width = $tableBasedImage->getImageDescriptor()->getWidth();
+        $height = $tableBasedImage->getImageDescriptor()->getHeight();
+        $colorTable = $tableBasedImage->getLocalColorTable() == null ? $logicalScreen->getGlobalColorTable() : $tableBasedImage->getLocalColorTable();
         if ($colorTable == null) {
             throw new \Exception("GIF contains no color table for the image. Loading this type of file is not supported.");
         }
@@ -71,14 +72,28 @@ class GifDataStream
             throw new \Exception("GIF contains no pixels. Loading this type of file is not supported.");
         }
         // De-compress the actual image data
-        $compressedData = join($tableBasedImage ->getDataSubBlocks());
-        $decompressedData = LzwCompression::decompress($compressedData, $tableBasedImage -> getLzqMinSize());
+        $compressedData = join($tableBasedImage->getDataSubBlocks());
+        $decompressedData = LzwCompression::decompress($compressedData, $tableBasedImage->getLzqMinSize());
+        // Discard extra bytes here, since IndexedRasterImage will reject it
+        $actualLen = strlen($decompressedData);
+        $expectedLen = $width * $height;
+        if ($actualLen > $expectedLen) {
+            $decompressedData = substr($decompressedData, 0, $expectedLen);
+        } else if($actualLen < $expectedLen)
+        {
+            throw new \Exception("GIF corrupt or truncated. Expexted $expectedLen pixels for $width x $height image, but only $actualLen pixels were encoded.");
+        }
         if ($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
             $decompressedData = self::deinterlace($width, $decompressedData);
         }
         // Array of ints for IndexedRasterImage
         $dataArr = array_values(unpack("C*", $decompressedData));
-        return IndexedRasterImage::create($width, $height, $dataArr, $colorTable -> getPalette());
+        $image = IndexedRasterImage::create($width, $height, $dataArr, $colorTable -> getPalette());
+        // Lastly, transparency handling
+        if($graphicControlExt != null && $graphicControlExt -> hasTransparentColor()) {
+            $image -> setTransparentColor($graphicControlExt -> getTransparentColorIndex());
+        }
+        return $image;
     }
 
     private static function deinterlace(int $width, string $data) : string
