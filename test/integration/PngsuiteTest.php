@@ -10,7 +10,7 @@ use Mike42\GfxPhp\IndexedRasterImage;
  * Simple check that all files in pngsuite are correctly accepted or rejected, and contain
  * correct width.
  */
-class Pngsuite extends TestCase
+class PngsuiteTest extends TestCase
 {
     function loadImage(string $filename) {
         return Image::fromFile(__DIR__ . "/../resources/pngsuite/$filename");

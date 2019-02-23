@@ -50,7 +50,7 @@ class GifCodec implements ImageEncoder, ImageDecoder
         // Transparent color for graphic control
         $transparentColorFlag = 0x00;
         $transparentColor = 0;
-        if ($image -> getTransparentColor() !== null) {
+        if ($image -> getTransparentColor() >= 0) {
             $transparentColor = $image -> getTransparentColor() & 0xFF;
             $transparentColorFlag = 0x01;
         }
