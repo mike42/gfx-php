@@ -50,10 +50,10 @@ class GifGraphicsBlock
         }
         while ($blockId == GifData::GIF_EXTENSION && $extensionId != GifData::GIF_EXTENSION_PLAINTEXT) {
             // We would need a slight re-structure to record these blocks correctly.
-            if($extensionId == GifData::GIF_EXTENSION_APPLICATION) {
+            if ($extensionId == GifData::GIF_EXTENSION_APPLICATION) {
                 // ImageMagick drops an 'application' block here, which we can discard (gfx-php does not use it at this stage)
                 GifApplicationExt::fromBin($in);
-            } else if($extensionId == GifData::GIF_EXTENSION_COMMENT) {
+            } else if ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
                 // Also GIMP places a 'comment' block here.
                 GifCommentExt::fromBin($in);
             } else {
