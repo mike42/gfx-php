@@ -48,10 +48,18 @@ class GifGraphicsBlock
             $blockId = $peek[0];
             $extensionId = $peek[1];
         }
-        if ($blockId == GifData::GIF_EXTENSION && $extensionId == GifData::GIF_EXTENSION_APPLICATION) {
-            // ImageMagick drops an 'application' block here, which we can discard.
-            // We would need a slight re-structure to record this correctly.
-            $application = GifApplicationExt::fromBin($in);
+        while ($blockId == GifData::GIF_EXTENSION && $extensionId != GifData::GIF_EXTENSION_PLAINTEXT) {
+            // We would need a slight re-structure to record these blocks correctly.
+            if($extensionId == GifData::GIF_EXTENSION_APPLICATION) {
+                // ImageMagick drops an 'application' block here, which we can discard (gfx-php does not use it at this stage)
+                GifApplicationExt::fromBin($in);
+            } else if($extensionId == GifData::GIF_EXTENSION_COMMENT) {
+                // Also GIMP places a 'comment' block here.
+                GifCommentExt::fromBin($in);
+            } else {
+                // And who knows what else we will have to skip. This should cover it anyway.
+                GifUnknownExt::fromBin($in);
+            }
             $peek = $in -> peek(2);
             $blockId = $peek[0];
             $extensionId = $peek[1];

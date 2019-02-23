@@ -13,7 +13,7 @@ class IndexedRasterImage extends AbstractRasterImage
     
     protected $palette;
     
-    protected $transparentColor = null;
+    protected $transparentColor = -1;
     
     protected function __construct($width, $height, array $data, int $maxVal, array $palette)
     {
@@ -127,7 +127,7 @@ class IndexedRasterImage extends AbstractRasterImage
 
     public function indexToRgb(int $index)
     {
-        if ($index == $this -> transparentColor) {
+        if ($index === $this -> transparentColor) {
             // White
             return [255, 255, 255];
         }
@@ -150,12 +150,12 @@ class IndexedRasterImage extends AbstractRasterImage
         return 0;
     }
 
-    public function getTransparentColor()
+    public function getTransparentColor() : int
     {
         return $this -> transparentColor;
     }
 
-    public function setTransparentColor(int $color = null)
+    public function setTransparentColor(int $color)
     {
         $this -> transparentColor = $color;
     }
