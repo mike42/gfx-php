@@ -16,9 +16,13 @@ class Image
     
     public static function fromFile(string $filename) : RasterImage
     {
-        $blob = file_get_contents($filename);
+        // Attempt to catch the cause of any errors
+        error_clear_last();
+        $blob = @file_get_contents($filename);
         if ($blob === false) {
-            throw new \Exception("Could not retrieve image data from '$filename'. Check that the file exists and can be read.");
+            $e = error_get_last();
+            $error = (isset($e) && isset($e['message']) && $e['message'] != "") ? $e['message'] : "Check that the file exists and can be read.";
+            throw new \Exception("Could not retrieve image data from '$filename'. $error");
         }
         return self::fromBlob($blob, $filename);
     }
