@@ -17,11 +17,10 @@ class Image
     public static function fromFile(string $filename) : RasterImage
     {
         // Attempt to catch the cause of any errors
-        error_clear_last();
+        self::clearLastError();
         $blob = @file_get_contents($filename);
         if ($blob === false) {
-            $e = error_get_last();
-            $error = (isset($e) && isset($e['message']) && $e['message'] != "") ? $e['message'] : "Check that the file exists and can be read.";
+            $error = self::getLastErrorOrDefault("Check that the file exists and can be read.");
             throw new \Exception("Could not retrieve image data from '$filename'. $error");
         }
         return self::fromBlob($blob, $filename);
@@ -46,5 +45,30 @@ class Image
     public static function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE)
     {
         return BlackAndWhiteRasterImage::create($width, $height);
+    }
+
+    /**
+     * Call error_clear_last() if it exists. This is dependent on which PHP runtime is used.
+     */
+    private static function clearLastError()
+    {
+        if (function_exists('error_clear_last')) {
+            error_clear_last();
+        }
+    }
+
+    /**
+     * Retrieve the message from error_get_last() if possible. This is very useful for debugging, but it will not
+     * always exist or return anything useful.
+     */
+    private static function getLastErrorOrDefault(string $default)
+    {
+        if (function_exists('error_clear_last')) {
+            $e = error_get_last();
+            if (isset($e) && isset($e['message']) && $e['message'] != "") {
+                return $e['message'];
+            }
+        }
+        return $default;
     }
 }
