@@ -55,12 +55,14 @@ class ImageCodec
                 PnmCodec::getInstance(),
                 BmpCodec::getInstance(),
                 PngCodec::getInstance(),
-                GifCodec::getInstance()
+                GifCodec::getInstance(),
+                WbmpCodec::getInstance()
             ];
             $decoders = [
                 PngCodec::getInstance(),
                 GifCodec::getInstance(),
-                PnmCodec::getInstance()
+                PnmCodec::getInstance(),
+                WbmpCodec::getInstance()
             ];
             self::$instance = new ImageCodec($encoders, $decoders);
         }
