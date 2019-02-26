@@ -24,33 +24,26 @@ class LzwDecodeBuffer
      */
     public function read(int $readBits)
     {
-        //echo "\n read($readBits)\n";
-        //echo "  pointer is " . $this -> ptr . "\n";
         $num = 0;
         $firstBit = $this -> ptr - $readBits + 1;
         $lastBit = $this -> ptr;
         if ($firstBit < 0) {
             return false;
         }
-        //echo "  firstBit = $firstBit, lastBit = $lastBit\n";
         $val = 0;
         for ($i = $firstBit; $i <= $lastBit; $i++) {
             $bit = $this -> readBit($i);
             $val = ($val << 1) | $bit;
         }
         $this -> ptr -= $readBits;
-        //echo "\n  returning $val\n";
         return $val;
     }
 
     public function readBit(int $i)
     {
-        //echo "  readBit($i)\n";
         $byte = intdiv($i, 8);
-        //echo "   byte is $byte\n";
         $bit = $i % 8;
         $rightIgnore = 7 - $bit;
-        //echo "   bit is is $bit ($rightIgnore bits to the right to remove)\n";
         return (($this -> contents[$byte]) >> $rightIgnore) & 1;
     }
 }

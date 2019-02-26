@@ -34,9 +34,6 @@ class LzwEncodeDictionary extends AbstractLzwDictionary
         if ($this -> size == self::MAX_SIZE) {
             throw new \Exception("LZW code table overflow");
         }
-        //$hexVal = bin2hex($entry);
-        //$l = strlen($entry);
-        //echo "LzwEncodeDictionary ADDING 0x$hexVal (len=$l) to dict @ position " . $this -> size ."\n";
         $this -> encodeDict[$entry] = $this -> size;
         $this -> size++;
     }
