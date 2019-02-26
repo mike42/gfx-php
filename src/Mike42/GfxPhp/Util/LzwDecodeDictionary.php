@@ -10,15 +10,11 @@ class LzwDecodeDictionary extends AbstractLzwDictionary
     {
         $count = 2 << ($this -> minCodeSize - 1);
         $this -> decodeDict = range(chr(0), chr($count - 1));
-        //$this -> encodeDict = array_flip($this -> decodeDict);
         $this -> clearCode = $count;
         $count++;
         $this -> eodCode = $count;
         $count++;
         $this -> size = $count;
-        
-        //print_r($this -> decodeDict);
-        //print_r($this -> encodeDict);
     }
     
     public function get(int $code)
@@ -39,9 +35,6 @@ class LzwDecodeDictionary extends AbstractLzwDictionary
         if ($this -> size == AbstractLzwDictionary::MAX_SIZE) {
             throw new \Exception("LZW code table overflow");
         }
-        //$hexVal = bin2hex($entry);
-        //$l = strlen($entry);
-        //echo "LzwDecodeDictionary ADDING 0x$hexVal (len=$l) to dict @ position " . $this -> size ."\n";
         $this -> decodeDict[$this -> size] = $entry;
         $this -> size++;
     }

@@ -28,7 +28,6 @@ class GifsuiteTest extends TestCase
     }
 
     function test_4095_codes() {
-        $this -> markTestSkipped("Known bug: LZW overflow");
         $img = $this -> loadImage("4095-codes.gif");
         $this -> assertEquals(100, $img -> getWidth());
         $this -> assertEquals(100, $img -> getHeight());

@@ -32,14 +32,13 @@ class LzwCompression
                 $outp -> add($dict -> get($word), $bits);
                 $dict -> add($ch);
                 if ($dict -> getSize() > (2 ** $bits)) {
+                    // expand bit size
                     $bits++;
-                    //echo "compress Expanded to $bits\n";
                 }
                 $word = $inp[$i];
             }
             // Separately to parsing the input stream, periodically reset to keep under 12 bits
             if ($dict -> getSize() >= AbstractLzwDictionary::MAX_SIZE) {
-                //echo "truncating dict\n";
                 if ($word !== "") {
                     $outp -> add($dict -> get($word), $bits);
                 }
@@ -75,20 +74,19 @@ class LzwCompression
         $prevcodeStr = $dict -> get($prevcode);
         $outp .= $prevcodeStr;
         while (($code = $buffer -> read($bits)) !== false) {
-            //echo "DECODING " . $code . "\n";
+            // Decode
             if ($code > $dict -> getSize()) {
                 throw new \Exception("Bad LZW, code too large");
             }
 
             if ($code === $dict -> getClearCode()) {
-                //echo "got RESET\n";
+                // got a clear code
                 $bits = $minCodeSize + 1;
                 $prevcodeStr = "";
                 $dict -> clear();
                 // Manually do an iteration with no dictionary modification.
                 // This involves reading ahead 1 character, same as what we do above the
                 // 'while' loop. There is probably some way to combine these
-                // way to combine them.
                 $prevcode = $buffer -> read($bits);
                 while ($prevcode == $dict -> getClearCode()) {
                     // In case of consecutive clear codes
@@ -105,7 +103,7 @@ class LzwCompression
                 $outp .= $prevcodeStr;
                 continue;
             } else if ($code === $dict -> getEodCode()) {
-                //$outp .= $prevcodeStr;
+                // End the stream
                 break;
             }
 
@@ -116,7 +114,9 @@ class LzwCompression
             }
             $outp .= $codeStr;
             $ch = $codeStr[0];
-            $dict -> add($prevcodeStr . $ch);
+            if ($dict -> getSize() < 4096) { // Don't modify dictionary after a certain point
+                $dict -> add($prevcodeStr . $ch);
+            }
             // assign current code to prev code
             $prevcode = $code;
             $prevcodeStr = $codeStr;
@@ -124,11 +124,10 @@ class LzwCompression
                 if (($bits + 1) > 12) {
                     // Don't exceed 12 bits. If table gets max'd out at
                     // 4096, the following RESET or END code remains 12-bit encoded.
-                    //echo "not expanding";
                     continue;
                 } else {
+                    // Expand
                     $bits++;
-                    //echo "decompress: expanded to $bits\n";
                 }
             }
         }
