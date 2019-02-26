@@ -27,11 +27,11 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
     {
         $data = DataBlobInputStream::fromBlob($blob);
         $header = $data -> read(2);
-        if($header != "\x00\x00") {
+        if ($header != "\x00\x00") {
             throw new Exception("Not a WBMP file");
         }
         $width = ord($data -> read(1));
-        if($width > 127) {
+        if ($width > 127) {
             throw new Exception("Maximum image width is 127");
         }
         $height = ord($data -> read(1));
@@ -44,7 +44,6 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         $image = BlackAndWhiteRasterImage::create($width, $height, $dataValues);
         $image -> invert();
         return $image;
-
     }
 
     public function getDecodeFormats(): array
@@ -55,7 +54,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
     public function encode(RasterImage $image, string $format): string
     {
         $image = $image = $image -> toBlackAndWhite();
-        if($image -> getWidth() > 127 || $image -> getHeight() > 127) {
+        if ($image -> getWidth() > 127 || $image -> getHeight() > 127) {
             throw new Exception("Maximum image width or height is 127");
         }
         $image -> invert();
