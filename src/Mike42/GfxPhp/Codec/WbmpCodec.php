@@ -30,11 +30,8 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         if ($header != "\x00\x00") {
             throw new Exception("Not a WBMP file");
         }
-        $width = ord($data -> read(1));
-        if ($width > 127) {
-            throw new Exception("Maximum image width is 127");
-        }
-        $height = ord($data -> read(1));
+        $width = $this -> readInt($data);
+        $height = $this -> readInt($data);
         $bytesPerRow = intdiv($width + 7, 8);
         $expectedBytes = $bytesPerRow * $height;
         $binaryData = $data -> read($expectedBytes);
@@ -46,6 +43,39 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return $image;
     }
 
+    public function readInt(DataBlobInputStream $data) : int
+    {
+        $i = 0;
+        $ret = 0;
+        do {
+            $byte = ord($data -> read(1));
+            $ret = ($ret << 7) | ($byte & 0x7F);
+            $continuation = $byte >> 7 == 1;
+            $i++;
+        } while ($continuation && $i < 4); // Limit to 4 bytes to avoid overflow.
+        if ($continuation) {
+            throw new Exception("WBMP image size too large, file may be corrupt");
+        }
+        return $ret;
+    }
+
+    public function writeInt(int $val) : string
+    {
+        $i = 0;
+        $ret = chr($val & 0x7F);
+        $val >>= 7;
+        while ($val > 0 && $i < 3) {
+            $byteVal = ($val & 0x7F) | 0x80;
+            $ret = chr($byteVal) . $ret;
+            $val >>= 7;
+            $i++;
+        }
+        if ($val > 0) {
+            throw new Exception("WBMP image size too large.");
+        }
+        return $ret;
+    }
+
     public function getDecodeFormats(): array
     {
         return ["wbmp"];
@@ -54,11 +84,8 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
     public function encode(RasterImage $image, string $format): string
     {
         $image = $image = $image -> toBlackAndWhite();
-        if ($image -> getWidth() > 127 || $image -> getHeight() > 127) {
-            throw new Exception("Maximum image width or height is 127");
-        }
         $image -> invert();
-        return "\x00\x00" . chr($image -> getWidth()) . chr($image -> getHeight()) . $image -> getRasterData();
+        return "\x00\x00" . $this -> writeInt($image -> getWidth()) . $this -> writeInt($image -> getHeight()) . $image -> getRasterData();
     }
 
     public function getEncodeFormats(): array
