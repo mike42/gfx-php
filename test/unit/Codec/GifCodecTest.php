@@ -61,5 +61,14 @@ class GifCodecTest extends TestCase
         $this -> assertEquals(self::GIF_IMAGE, $imageStr);
     }
 
+    public function testGifDecode() {
+        $decoder = new GifCodec();
+        $image = $decoder -> decode(self::GIF_IMAGE, 'gif') -> toIndexed();
+        $this -> assertEquals(1, $image -> getWidth());
+        $this -> assertEquals(1, $image -> getHeight());
+        $this -> assertEquals([255, 255, 255], $image -> indexToRgb($image -> getPixel(0, 0)));
+    }
+
+
 }
 
