@@ -48,7 +48,7 @@ The GIF codec is used where the input has the ``gif`` file extension. Any well-f
 - If a GIF file contains multiple images, then only the first one will be loaded
 - If a transparent color is present, then this will be mixed to white
 
-A GIF image will always be loaded into an omstamce of :class:`IndexedRasterImage`, which makes palette information available.
+A GIF image will always be loaded into an instance of :class:`IndexedRasterImage`, which makes palette information available.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^
@@ -61,6 +61,11 @@ The Netpbm formats are a series of uncompressed bitmap formats, which can repres
 :PBM: This is a 1-bit bitmap format. A PBM file is identified by the P4 header, and loaded into an instance of :class:`BlackAndWhiteRasterImage`.
 
 Each of these formats has both a binary and text encoding. ``gfx-php`` only supports the binary encodings at this stage.
+
+WBMP
+^^^
+
+The WBMP codec is used where the input has the ``wbmp`` file extension. A WBMP image will always be loaded into a :class:`BlackAndWhiteRasterImage` object.
 
 Output formats
 --------------
@@ -108,6 +113,17 @@ The BMP format is selected by using the ``bmp`` file extension.
   $tux -> write("tux.bmp");
 
 This library will currently output BMP files using an uncompressed 24-bit RGB representation of the image.
+
+WBMP
+^^^
+
+The WBMP format is selected by using the ``wbmp`` file extension.
+
+.. code-block:: php
+
+  $tux -> write("tux.wbmp");
+
+The image will be converted to a 1-bit monochrome representation, which is the only type of image supported by WBMP.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^
