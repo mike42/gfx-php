@@ -1,0 +1,21 @@
+{
+    "php_disable_ini": true,
+    "bootstrap": "vendor/autoload.php",
+    "path": "test/benchmark",
+    "php_config": {
+        "extension": [ "json.so" ]
+    },
+    "outputs": {
+         "my_output": {
+             "extends": "html",
+             "file": "my_report.html",
+             "title": "Hello World"
+         }
+    },
+    "reports": {
+        "my_report": {
+            "extends": "aggregate"
+        }
+    },
+    "time_unit": "microseconds"
+}
