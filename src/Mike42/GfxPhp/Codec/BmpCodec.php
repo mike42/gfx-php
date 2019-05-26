@@ -2,10 +2,13 @@
 
 namespace Mike42\GfxPhp\Codec;
 
+use Mike42\GfxPhp\Codec\Bmp\BmpFile;
+use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
+use Mike42\GfxPhp\Codec\Gif\GifDataStream;
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
 
-class BmpCodec implements ImageEncoder
+class BmpCodec implements ImageEncoder, ImageDecoder
 {
     protected static $instance = null;
     const INFO_HEADER_SIZE = 40;
@@ -67,6 +70,26 @@ class BmpCodec implements ImageEncoder
     }
     
     public function getEncodeFormats(): array
+    {
+        return ["bmp", "dib"];
+    }
+
+    public function decode(string $blob): RasterImage
+    {
+        $data = DataBlobInputStream::fromBlob($blob);
+        $bmp = BmpFile::fromBinary($data);
+        return $bmp -> toRasterImage();
+    }
+
+    public function identify(string $blob): string
+    {
+        if (substr($blob, 0, 2) == BmpFile::BMP_SIGNATURE) {
+            return "bmp";
+        }
+        return "";
+    }
+
+    public function getDecodeFormats(): array
     {
         return ["bmp", "dib"];
     }
