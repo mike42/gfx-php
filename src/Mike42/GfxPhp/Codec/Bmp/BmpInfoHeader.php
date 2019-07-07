@@ -73,16 +73,16 @@ class BmpInfoHeader
         }
     }
 
-    private static function readCoreFields(DataInputStream $data) : BmpInfoHeader
+    private static function readCoreHeader(DataInputStream $data) : BmpInfoHeader
     {
-        $infoData = $data -> read(self::BITMAPCOREHEADER_SIZE);
-        $fields = unpack("Vwidth/Vheight/vplanes/vbpp", $infoData);
+        $infoData = $data -> read(self::BITMAPCOREHEADER_SIZE - 4);
+        $fields = unpack("vwidth/vheight/vplanes/vbpp", $infoData);
         return new BmpInfoHeader(self::BITMAPCOREHEADER_SIZE, $fields['width'], $fields['height'], $fields['planes'], $fields['bpp']);
     }
 
     private static function readBitmapInfoHeader(DataInputStream $data) : BmpInfoHeader
     {
-        $infoData = $data -> read(self::BITMAPINFOHEADER_SIZE);
+        $infoData = $data -> read(self::BITMAPINFOHEADER_SIZE - 4);
         $fields = unpack("Vwidth/Vheight/vplanes/vbpp/Vcompression/VcompressedSize/VhorizontalRes/VverticalRes/Vcolors/VimportantColors", $infoData);
         return new BmpInfoHeader(self::BITMAPINFOHEADER_SIZE, $fields['width'], $fields['height'], $fields['planes'], $fields['bpp'], $fields['compression'], $fields['compressedSize'], $fields['horizontalRes'], $fields['verticalRes'], $fields['colors'], $fields['importantColors']);
     }
