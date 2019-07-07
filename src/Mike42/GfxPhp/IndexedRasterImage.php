@@ -232,6 +232,19 @@ class IndexedRasterImage extends AbstractRasterImage
         throw new \Exception("Not implemented");
     }
 
+    protected function createCanvas(int $width, int $height) : RasterImage
+    {
+        return IndexedRasterImage::create($width, $height, null, $this -> getPalette(), $this -> getMaxVal());
+    }
+
+    public function mapColor(int $srcColor, RasterImage $destImage)
+    {
+        if ($destImage instanceof IndexedRasterImage) {
+            return $srcColor;
+        }
+        throw new \Exception("Cannot map colors");
+    }
+
     public static function create(int $width, int $height, array $data = null, array $palette = [], int $maxVal = 255)
     {
         $expectedSize = $width * $height;

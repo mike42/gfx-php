@@ -52,10 +52,15 @@ abstract class AbstractRasterImage implements RasterImage
         $blob = $encoder -> encode($this, $ext);
         file_put_contents($filename, $blob);
     }
-    
+
+    protected function createCanvas(int $width, int $height) : RasterImage
+    {
+        return $this::create($width, $height);
+    }
+
     public function scale(int $width, int $height) : RasterImage
     {
-        $img = $this::create($width, $height);
+        $img = $this -> createCanvas($width, $height);
         $thisWidth = $this -> getWidth();
         $thisHeight = $this -> getHeight();
         for ($y = 0; $y < $height; $y++) {

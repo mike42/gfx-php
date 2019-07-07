@@ -9,15 +9,11 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - hhvm-3.21
-  - hhvm-3.27
   - nightly
-  - hhvm-nightly
 
 matrix:
   allow_failures:
     - php: nightly
-    - php: hhvm-nightly
 
 install:
   - composer install
