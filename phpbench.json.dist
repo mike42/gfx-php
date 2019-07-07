@@ -6,10 +6,10 @@
         "extension": [ "json.so" ]
     },
     "outputs": {
-         "my_output": {
+         "benchmarks_file": {
              "extends": "html",
-             "file": "my_report.html",
-             "title": "Hello World"
+             "file": "benchmarks.html",
+             "title": "gfx-php benchmarks"
          }
     },
     "reports": {
