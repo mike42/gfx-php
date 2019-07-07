@@ -53,7 +53,7 @@ class BmpInfoHeader
         $infoHeaderSizeData = $data -> read(4);
         $infoHeaderSize = unpack("V", $infoHeaderSizeData)[1];
         switch ($infoHeaderSize) {
-            case self::BITMAPCOREHEADER_SIZE;
+            case self::BITMAPCOREHEADER_SIZE:
                 return self::readCoreHeader($data);
             case 64:
                 throw new Exception("OS22XBITMAPHEADER not implemented");
