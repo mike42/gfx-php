@@ -33,7 +33,8 @@ class BmpInfoHeader
     public $verticalRes;
     public $width;
 
-    public function __construct(int $headerSize, int $width, int $height, int $planes, int $bpp, int $compression = 0, int $compressedSize = 0, int $horizontalRes = 0, int $verticalRes = 0, int $colors = 0, int $importantColors = 0) {
+    public function __construct(int $headerSize, int $width, int $height, int $planes, int $bpp, int $compression = 0, int $compressedSize = 0, int $horizontalRes = 0, int $verticalRes = 0, int $colors = 0, int $importantColors = 0)
+    {
         $this -> headerSize = $headerSize;
         $this -> width = $width;
         $this -> height = $height;
@@ -51,7 +52,7 @@ class BmpInfoHeader
     {
         $infoHeaderSizeData = $data -> read(4);
         $infoHeaderSize = unpack("V", $infoHeaderSizeData)[1];
-        switch($infoHeaderSize) {
+        switch ($infoHeaderSize) {
             case self::BITMAPCOREHEADER_SIZE;
                 return self::readCoreHeader($data);
             case 64:
