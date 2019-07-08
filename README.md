@@ -63,6 +63,7 @@ As a small project, we can't do everything. In particular, `gfx-php` is not like
 
 This repository uses test files from other projects:
 
+- [BMP Suite](http://entropymine.com/jason/bmpsuite/) by Jason Summers.
 - [PyGIF](https://github.com/robert-ancell/pygif) test suite by Robert Ancell.
 - [pngsuite](http://www.schaik.com/pngsuite/) by Willem van Schaik.
 

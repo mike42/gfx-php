@@ -18,5 +18,12 @@ class BmpCodecTest extends TestCase
         $imageStr = $encoder -> encode($image, 'bmp');
         $this -> assertEquals(self::BMP_IMAGE, $imageStr);
     }
+
+    public function testBmpDecode() {
+        $decoder = new BmpCodec();
+        $image = $decoder -> decode(self::BMP_IMAGE);
+        $this -> assertEquals(1, $image -> getWidth());
+        $this -> assertEquals(1, $image -> getHeight());
+    }
 }
 
