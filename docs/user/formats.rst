@@ -50,7 +50,7 @@ The GIF codec is used where the input has the ``gif`` file extension. Any well-f
 
 A GIF image will always be loaded into an instance of :class:`IndexedRasterImage`, which makes palette information available.
 
-PNG
+BMP
 ^^^
 
 The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions.

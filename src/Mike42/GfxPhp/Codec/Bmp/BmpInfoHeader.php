@@ -27,7 +27,7 @@ class BmpInfoHeader
     public $compression;
     public $headerSize;
     public $height;
-    public $hprizontalRes;
+    public $horizontalRes;
     public $importantColors;
     public $planes;
     public $verticalRes;
@@ -42,7 +42,7 @@ class BmpInfoHeader
         $this -> bpp = $bpp;
         $this -> compression = $compression;
         $this -> compressedSize = $compressedSize;
-        $this -> hprizontalRes = $horizontalRes;
+        $this -> horizontalRes = $horizontalRes;
         $this -> verticalRes = $verticalRes;
         $this -> colors = $colors;
         $this -> importantColors = $importantColors;
