@@ -32,6 +32,7 @@ class BmpFile
         $infoHeader = BmpInfoHeader::fromBinary($data);
         if ($infoHeader -> bpp != 0 &&
             $infoHeader -> bpp != 1 &&
+            $infoHeader -> bpp != 2 &&
             $infoHeader -> bpp != 4 &&
             $infoHeader -> bpp != 8 &&
             $infoHeader -> bpp != 16 &&
@@ -109,8 +110,11 @@ class BmpFile
     public function toRasterImage() : RasterImage
     {
         if ($this -> infoHeader -> bpp == 1) {
-            $expandedData = PngImage::expandBytes1Bpp($this->uncompressedData, $this->infoHeader->width);
-            return IndexedRasterImage::create($this->infoHeader->width, $this->infoHeader->height, $expandedData, $this->palette);
+            $expandedData = PngImage::expandBytes1Bpp($this -> uncompressedData, $this -> infoHeader -> width);
+            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 2) {
+            $expandedData = PngImage::expandBytes2Bpp($this -> uncompressedData, $this -> infoHeader -> width);
+            return IndexedRasterImage::create($this->infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 4) {
             $expandedData = PngImage::expandBytes4Bpp($this -> uncompressedData, $this -> infoHeader -> width);
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);

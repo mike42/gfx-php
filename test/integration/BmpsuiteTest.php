@@ -305,14 +305,12 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal2() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal2.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal2color() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal2color.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
