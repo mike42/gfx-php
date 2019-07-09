@@ -17,23 +17,27 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_badbitssize() {
-        $this -> expectException(Exception::class);
         $img = $this -> loadImage("b/badbitssize.bmp");
+        $this -> assertEquals(127, $img -> getWidth());
+        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_baddens1() {
-        $this -> expectException(Exception::class);
         $img = $this -> loadImage("b/baddens1.bmp");
+        $this -> assertEquals(127, $img -> getWidth());
+        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_baddens2() {
-        $this -> expectException(Exception::class);
         $img = $this -> loadImage("b/baddens2.bmp");
+        $this -> assertEquals(127, $img -> getWidth());
+        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_badfilesize() {
-        $this -> expectException(Exception::class);
         $img = $this -> loadImage("b/badfilesize.bmp");
+        $this -> assertEquals(127, $img -> getWidth());
+        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_badheadersize() {
@@ -47,8 +51,9 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_badplanes() {
-        $this -> expectException(Exception::class);
         $img = $this -> loadImage("b/badplanes.bmp");
+        $this -> assertEquals(127, $img -> getWidth());
+        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_badrle() {
@@ -112,35 +117,30 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal1() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal1.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal1bg() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal1bg.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal1wb() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal1wb.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal4() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal4.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal4gs() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal4gs.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -154,28 +154,24 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8_0() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8-0.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal8() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal8gs() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8gs.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal8nonsquare() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8nonsquare.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(32, $img -> getHeight());
@@ -217,21 +213,18 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8w124() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8w124.bmp");
         $this -> assertEquals(124, $img -> getWidth());
         $this -> assertEquals(61, $img -> getHeight());
     }
 
     function test_pal8w125() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8w125.bmp");
         $this -> assertEquals(125, $img -> getWidth());
         $this -> assertEquals(62, $img -> getHeight());
     }
 
     function test_pal8w126() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8w126.bmp");
         $this -> assertEquals(126, $img -> getWidth());
         $this -> assertEquals(63, $img -> getHeight());
@@ -306,21 +299,18 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal1p1() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal1p1.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal2() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal2.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal2color() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal2color.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -376,7 +366,6 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8os2v2_40sz() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2v2-40sz.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -397,7 +386,6 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8oversizepal() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8oversizepal.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());

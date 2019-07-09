@@ -3,6 +3,8 @@ namespace Mike42\GfxPhp\Codec\Bmp;
 
 use Exception;
 use Mike42\GfxPhp\Codec\Common\DataInputStream;
+use Mike42\GfxPhp\Codec\Png\PngImage;
+use Mike42\GfxPhp\IndexedRasterImage;
 use Mike42\GfxPhp\RasterImage;
 use Mike42\GfxPhp\RgbRasterImage;
 
@@ -12,13 +14,15 @@ class BmpFile
 
     private $fileHeader;
     private $infoHeader;
+    private $palette;
     private $uncompressedData;
 
-    public function __construct(BmpFileHeader $fileHeader, BmpInfoHeader $infoHeader, array $data)
+    public function __construct(BmpFileHeader $fileHeader, BmpInfoHeader $infoHeader, array $data, array $palette)
     {
         $this -> fileHeader = $fileHeader;
         $this -> infoHeader = $infoHeader;
         $this -> uncompressedData = $data;
+        $this -> palette = $palette;
     }
 
     public static function fromBinary(DataInputStream $data) : BmpFile
@@ -28,22 +32,32 @@ class BmpFile
         $infoHeader = BmpInfoHeader::fromBinary($data);
         if ($infoHeader -> bpp != 0 &&
             $infoHeader -> bpp != 1 &&
+            $infoHeader -> bpp != 2 &&
             $infoHeader -> bpp != 4 &&
             $infoHeader -> bpp != 8 &&
             $infoHeader -> bpp != 16 &&
             $infoHeader -> bpp != 24 &&
             $infoHeader -> bpp != 32) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
-        } else if ($infoHeader -> bpp != 24) {
+        } else if ($infoHeader -> bpp === 0 ||
+            $infoHeader -> bpp === 16 ||
+            $infoHeader -> bpp === 32) {
             // Fail early to give a clearer error for the things which aren't tested yet
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not implemented.");
         }
-        // Skip color table (allowed in a true color image, but not useful)
+        // See how many colors we expect. 2^n colors in table for bpp <= 8, 0 for higher color depths
+        $colorCount = $infoHeader -> bpp <= 8 ? 2 **  $infoHeader -> bpp : 0;
         if ($infoHeader -> colors > 0) {
-            // for non-truecolor images, 0 will mean 2^bpp.
-            // Size of each entry may also be variable
-            $data -> read($infoHeader -> colors * 4);
+            // .. unless otherwise specified
+            $colorCount = $infoHeader -> colors;
         }
+        $colorTable = [];
+        for ($i = 0; $i < $colorCount; $i++) {
+            $entryData = $data -> read(4);
+            $color = unpack("C*", $entryData);
+            $colorTable[] = [$color[3], $color[2], $color[1]];
+        }
+        // May need to skip here if header shows pixel data later than we expect
         // Determine compressed & uncompressed size
         $rowSizeBytes = intdiv(($infoHeader -> bpp * $infoHeader -> width + 31), 32) * 4;
         $uncompressedImgSizeBytes = $rowSizeBytes * $infoHeader -> height;
@@ -86,13 +100,27 @@ class BmpFile
             $uncompressedImgData = implode("", $pixels);
         }
         // Convert to array of numbers 0-255.
-        $dataArray = array_values(unpack("c*", $uncompressedImgData));
-        return new BmpFile($fileHeader, $infoHeader, $dataArray);
+        $dataArray = array_values(unpack("C*", $uncompressedImgData));
+        if (!$data -> isEof()) {
+            throw new Exception("BMP image has unexpected trailing data");
+        }
+        return new BmpFile($fileHeader, $infoHeader, $dataArray, $colorTable);
     }
 
     public function toRasterImage() : RasterImage
     {
-        if ($this -> infoHeader -> bpp == 24) {
+        if ($this -> infoHeader -> bpp == 1) {
+            $expandedData = PngImage::expandBytes1Bpp($this -> uncompressedData, $this -> infoHeader -> width);
+            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 2) {
+            $expandedData = PngImage::expandBytes2Bpp($this -> uncompressedData, $this -> infoHeader -> width);
+            return IndexedRasterImage::create($this->infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 4) {
+            $expandedData = PngImage::expandBytes4Bpp($this -> uncompressedData, $this -> infoHeader -> width);
+            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 8) {
+            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 24) {
             return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData);
         }
         throw new Exception("Unknown bit depth " . $this -> infoHeader -> bpp);

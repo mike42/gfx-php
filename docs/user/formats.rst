@@ -50,13 +50,14 @@ The GIF codec is used where the input has the ``gif`` file extension. Any well-f
 
 A GIF image will always be loaded into an instance of :class:`IndexedRasterImage`, which makes palette information available.
 
-PNG
+BMP
 ^^^
 
-The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions.
+The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions. Most uncompressed bitmap files cn be read.
 
-Only uncompressed 24-bit color bitmap images may currently be read. The returned object will be an
-instance of instance of :class:`RgbRasterImage`.
+The returned object will be an instance of instance of :class:`IndexedRasterImage` if the color depth is 8 or lower.
+
+24-bit bitmap images are loaded into an instance of :class:`RgbRasterImage`. 16-bit and 32-bit bitmaps are not supported.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^
