@@ -185,7 +185,6 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8rle() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8rle.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -392,14 +391,12 @@ class BmpsuiteTest extends TestCase {
     }
 
     function test_pal8rlecut() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8rlecut.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal8rletrns() {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8rletrns.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
