@@ -2,6 +2,8 @@
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
+use Exception;
+
 /**
  * 2D canvas for writing RLE-encoded BMP data into. A cursor is moved based on the commands issued, and an Exception
  * is thrown if the data goes outside the canvas boundary, or if the data continues after endOfBitmap is called.
