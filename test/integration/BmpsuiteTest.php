@@ -211,7 +211,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8os2.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -392,7 +391,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2_hs()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2-hs.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -400,7 +398,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2_sz()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2-sz.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -408,7 +405,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2sp()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2sp.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());

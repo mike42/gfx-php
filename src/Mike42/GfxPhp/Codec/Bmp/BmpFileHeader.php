@@ -8,6 +8,8 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class BmpFileHeader
 {
+    const FILE_HEADER_SIZE = 14;
+
     public $offset;
     public $size;
 

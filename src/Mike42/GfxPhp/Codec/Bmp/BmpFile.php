@@ -47,15 +47,37 @@ class BmpFile
         }
         // See how many colors we expect. 2^n colors in table for bpp <= 8, 0 for higher color depths
         $colorCount = $infoHeader -> bpp <= 8 ? 2 **  $infoHeader -> bpp : 0;
-        if ($infoHeader -> colors > 0) {
-            // .. unless otherwise specified
-            $colorCount = $infoHeader -> colors;
-        }
         $colorTable = [];
-        for ($i = 0; $i < $colorCount; $i++) {
-            $entryData = $data -> read(4);
-            $color = unpack("C*", $entryData);
-            $colorTable[] = [$color[3], $color[2], $color[1]];
+        if (self::isOs21XBitmap($fileHeader, $infoHeader, $colorCount)) {
+            // This type of image may only be 1, 4, 8 or 24 bit
+            if ($infoHeader -> bpp != 1 &&
+                $infoHeader -> bpp != 4 &&
+                $infoHeader -> bpp != 8 &&
+                $infoHeader -> bpp != 24) {
+                throw new Exception("Bit depth " . $infoHeader->bpp . " not valid for OS/2 1.x bitmap.");
+            }
+            $calculatedTableSize = intdiv($fileHeader -> offset - (BmpInfoHeader::OS21XBITMAPHEADER_SIZE + BmpFileHeader::FILE_HEADER_SIZE), 3);
+            if ($calculatedTableSize < $colorCount) {
+                // Downsize the palette based on observed offset: only non-standard files do this.
+                $colorCount = $calculatedTableSize;
+            }
+            // OS/2 1.x bitmaps use 3-bytes per color
+            for ($i = 0; $i < $colorCount; $i++) {
+                $entryData = $data->read(3);
+                $color = unpack("C*", $entryData);
+                $colorTable[] = [$color[3], $color[2], $color[1]];
+            }
+            // In the case of 1bpp or small palettes, it is possible that we are not aligned to a multiple of 4 bytes now.
+        } else {
+            if ($infoHeader -> colors > 0) {
+                // .. unless otherwise specified
+                $colorCount = $infoHeader -> colors;
+            }
+            for ($i = 0; $i < $colorCount; $i++) {
+                $entryData = $data->read(4);
+                $color = unpack("C*", $entryData);
+                $colorTable[] = [$color[3], $color[2], $color[1]];
+            }
         }
         // May need to skip here if header shows pixel data later than we expect
         // Determine compressed & uncompressed size
@@ -119,6 +141,22 @@ class BmpFile
             throw new Exception("BMP image has unexpected trailing data");
         }
         return new BmpFile($fileHeader, $infoHeader, $dataArray, $colorTable);
+    }
+
+    private static function isOs21XBitmap(BmpFileHeader $fileHeader, BmpInfoHeader $infoHeader, int $colorCount)
+    {
+        // OS/2 1.x bitmaps use 24 bits per entry in the color palette, rather than 32, but share the same 12-byte
+        // header as original Windows bitmaps. If the header size, color count and offset to the bitmap data are
+        // consistent with 24-bit color table, then this function returns true.
+        if ($infoHeader -> headerSize !== BmpInfoHeader::OS21XBITMAPHEADER_SIZE) {
+            // Wrong header size
+            return false;
+        }
+        if ($fileHeader -> offset > $colorCount * 3 + BmpInfoHeader::OS21XBITMAPHEADER_SIZE + BmpFileHeader::FILE_HEADER_SIZE) {
+            // Data starts later than we expect
+            return false;
+        }
+        return true;
     }
 
     public function toRasterImage() : RasterImage
