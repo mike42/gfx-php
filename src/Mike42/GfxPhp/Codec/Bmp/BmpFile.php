@@ -110,6 +110,16 @@ class BmpFile
                 }
                 break;
             case BmpInfoHeader::B1_RLE4:
+                if ($infoHeader -> bpp !== 4) {
+                    throw new Exception("RLE4 compression only valid for 4-bit images");
+                }
+                $decoder = new Rle4Decoder();
+                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
+                $actualSize = strlen($uncompressedImgData);
+                if ($uncompressedImgSizeBytes !== $actualSize) {
+                    throw new Exception("RLE4 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
+                }
+                break;
             case BmpInfoHeader::B1_BITFILEDS:
             case BmpInfoHeader::B1_JPEG:
             case BmpInfoHeader::B1_PNG:

@@ -175,7 +175,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal4rle()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal4rle.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
