@@ -80,7 +80,8 @@ class BmpFile
                 if ($infoHeader -> bpp !== 8) {
                     throw new Exception("RLE8 compression only valid for 8-bit images");
                 }
-                $uncompressedImgData = self::rle8decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
+                $decoder = new Rle8Decoder();
+                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
                 $actualSize = strlen($uncompressedImgData);
                 if ($uncompressedImgSizeBytes !== $actualSize) {
                     throw new Exception("RLE8 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
@@ -118,115 +119,6 @@ class BmpFile
             throw new Exception("BMP image has unexpected trailing data");
         }
         return new BmpFile($fileHeader, $infoHeader, $dataArray, $colorTable);
-    }
-
-    private static function rle8decode(string $compressedImgData, int $width, int $height)
-    {
-        // Padding to 4-byte boundary: Can this be simplified?
-        $rowWidth = intdiv((8 * $width + 31), 32) * 4;
-        // Initialize buffer to 0's
-        $outpNum = [];
-        for ($y = 0; $y < $height; $y++) {
-            $outpNum[] = array_fill(0, $rowWidth, 0);
-        }
-        // read input data into 2d buffer
-        $inpNum = array_values(unpack("C*", $compressedImgData));
-        $x = 0;
-        $y = 0;
-        $i = 0;
-        $len = intdiv(count($inpNum), 2) * 2;
-        while ($i < $len) {
-            $firstByte = $inpNum[$i];
-            $secondByte = $inpNum[$i + 1];
-            $i += 2;
-            //echo "Pair $firstByte $secondByte\n";
-            if ($firstByte === 0) {
-                if ($secondByte == 0) {
-                    //echo "End of line\n";
-                    // EOL
-                    $x = 0;
-                    $y++;
-                    if ($y >= $height) {
-                        //echo "ERROR Y overflow on EOL, breaking.";
-                        break;
-                    }
-                } else if ($secondByte == 1) {
-                    //echo "End of bitmap\n";
-                    // End of bitmap
-                    break;
-                } else if ($secondByte == 2) {
-                    if ($i >= $len) {
-                        throw new Exception("Unexpected EOF");
-                    }
-                    $firstDeltaByte = $inpNum[$i];
-                    $secondDeltaByte = $inpNum[$i + 1];
-                    //echo "Delta $firstDeltaByte, $secondDeltaByte\n";
-                    $i += 2;
-                    $x += $firstDeltaByte;
-                    $y += $secondDeltaByte;
-                    if ($x == $width) {
-                        $x = 0;
-                        //$y++;
-                        // echo "Wrapping line x=$x, y=$y\n";
-                    } else if ($x > $width) {
-                        throw new Exception("Overflow.");
-                    }
-                    if ($y >= $height) {
-                        // Overflow
-                        //echo "ERROR Y overflow on jump, breaking.";
-                        throw new Exception("Bitmap compressed data exceeds image boundary; file is not valid.");
-                    }
-                } else {
-                    //echo "Absolute run of $secondByte bytes\n";
-                    $absoluteLen = $secondByte;
-                    for ($j = 0; $j < $absoluteLen; $j++) {
-                        //echo "Setting byte " . $inpNum[$i + $j] . " x=$x, y=$y (j=$j)\n";
-                        $outpNum[$y][$x] = $inpNum[$i + $j];
-                        $x++;
-                        if ($x == $width) {
-                            $x = 0;
-                            //$y++;
-                            // echo "Wrapping line x=$x, y=$y\n";
-                        } else if ($x > $width) {
-                            throw new Exception("Overflow..");
-                        }
-                        if ($y >= $height) {
-                            // Overflow
-                            //echo "ERROR Y overflow on line-wrap, breaking.";
-                            break 2;
-                        }
-                    }
-                    $i += $absoluteLen;
-                    if ($absoluteLen % 2 != 0) {
-                        //echo "Skipped padding byte\n";
-                        $i++; // skip a padding byte too
-                    }
-                }
-            } else {
-                //echo "Repeat $firstByte instances of $secondByte\n";
-                for ($j = 0; $j < $firstByte; $j++) {
-                    //echo "Setting byte " . $secondByte . " x=$x, y=$y (j=$j)\n";
-                    $outpNum[$y][$x] = $secondByte;
-                    $x++;
-                    if ($x >= $width) {
-                        $x = 0;
-                        //$y++;
-                        //echo "Wrapping line x=$x, y=$y\n";
-                    }
-                    if ($y >= $height) {
-                        // Overflow
-                        //echo "ERROR Y overflow on line-wrap, breaking.";
-                        break 2;
-                    }
-                }
-            }
-        }
-        // Back to string
-        $outStringArr = [];
-        foreach ($outpNum as $row) {
-            $outStringArr[] = pack("C*", ...$row);
-        }
-        return implode("", $outStringArr); //str_repeat("\0", $rowWidth * $height);
     }
 
     public function toRasterImage() : RasterImage
