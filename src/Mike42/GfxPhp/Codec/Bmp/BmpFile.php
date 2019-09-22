@@ -65,6 +65,10 @@ class BmpFile
             $compressedImgSizeBytes = $uncompressedImgSizeBytes;
         } else {
             $compressedImgSizeBytes = $infoHeader -> compressedSize;
+            // Limit height to prevent insane allocations during decompression if file is corrupt
+            if ($infoHeader -> width > 65535 || $infoHeader -> height > 65535 || $infoHeader -> width < 0 || $infoHeader -> height < 0) {
+                throw new Exception("Image size " . $infoHeader -> width . "x" . $infoHeader -> height . " is outside the supported range.");
+            }
         }
         $compressedImgData = $data -> read($compressedImgSizeBytes);
         // De-compress if necessary
@@ -73,6 +77,16 @@ class BmpFile
                 $uncompressedImgData = $compressedImgData;
                 break;
             case BmpInfoHeader::B1_RLE8:
+                if ($infoHeader -> bpp !== 8) {
+                    throw new Exception("RLE8 compression only valid for 8-bit images");
+                }
+                $decoder = new Rle8Decoder();
+                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
+                $actualSize = strlen($uncompressedImgData);
+                if ($uncompressedImgSizeBytes !== $actualSize) {
+                    throw new Exception("RLE8 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
+                }
+                break;
             case BmpInfoHeader::B1_RLE4:
             case BmpInfoHeader::B1_BITFILEDS:
             case BmpInfoHeader::B1_JPEG:

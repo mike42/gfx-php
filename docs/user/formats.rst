@@ -53,7 +53,7 @@ A GIF image will always be loaded into an instance of :class:`IndexedRasterImage
 BMP
 ^^^
 
-The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions. Most uncompressed bitmap files cn be read.
+The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions. Most uncompressed or run-length encoded bitmap files can be read by this library.
 
 The returned object will be an instance of instance of :class:`IndexedRasterImage` if the color depth is 8 or lower.
 
