@@ -234,7 +234,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8v4()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8v4.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -242,7 +241,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8v5()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8v5.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
