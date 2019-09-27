@@ -40,7 +40,6 @@ class BmpFile
             $infoHeader -> bpp != 32) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
         } else if ($infoHeader -> bpp === 0 ||
-            $infoHeader -> bpp === 16 ||
             $infoHeader -> bpp === 32) {
             // Fail early to give a clearer error for the things which aren't tested yet
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not implemented.");
@@ -182,10 +181,55 @@ class BmpFile
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 8) {
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 16) {
+            // Default bit counts only.
+            // TODO check for different numbers of bits in info header and/or BITFIELDS
+            $redBits = 5;
+            $blueBits = 5;
+            $greenBits = 5;
+            $expandedData = $this -> read16Bit($this -> uncompressedData, $redBits, $blueBits, $greenBits);
+            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
         } else if ($this -> infoHeader -> bpp == 24) {
             return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData);
         }
         throw new Exception("Unknown bit depth " . $this -> infoHeader -> bpp);
+    }
+
+    public static function read16bit(array $inpBytes, int $redBits = 5, int $blueBits = 5, int $greenBits = 5) : array
+    {
+        // Fill output array to 1.5 times the size of the input array
+        $pixelCount = intdiv(count($inpBytes), 2);
+        $outpBytes = array_fill(0, $pixelCount * 3, 0);
+        // Determine how many bits right to shift to get requested B, G, R values from the 16-bit input to the RHS.
+        $blueReadShift = 0;
+        $greenReadShift = $blueBits + $blueReadShift;
+        $redReadShift = $greenBits + $greenReadShift;
+        // Set up B, G, R masks to extract the requested number of bits
+        $blueReadMask =  (0xff >> (8 - $blueBits));
+        $greenReadMask = (0xff >> (8 - $greenBits));
+        $redReadMask = (0xff >> (8 - $redBits));
+        // How many bits left to shift to get the extracted value to take up 8 bits
+        $blueWriteShift = 8 - $blueBits;
+        $greenWriteShift = 8 - $greenBits;
+        $redWriteShift = 8 - $redBits;
+        // Number of bits right to shift to get the extracted value to top up otherwise unset least-significant bits.
+        // This allows us to map values to the full 0-255 range, as long as at least 4 bits are used.
+        $blueWriteLsbShift = $blueBits - $blueWriteShift;
+        $greenWriteLsbShift = $greenBits - $greenWriteShift;
+        $redWriteLsbShift = $redBits - $redWriteShift;
+        for ($i = 0; $i < $pixelCount; $i++) {
+            // Extract little-endian color code in 16 bit space
+            $inpColor = ($inpBytes[$i * 2 + 1] << 8) + ($inpBytes[$i * 2]);
+            // Get 5-bit red, blue and green components
+            $blueLevel = ($inpColor >> $blueReadShift) & $blueReadMask;
+            $greenLevel = ($inpColor >> $greenReadShift) & $greenReadMask;
+            $redLevel = ($inpColor >> $redReadShift) & $redReadMask;
+            // Store as 8-bit components
+            $outpBytes[$i * 3] = ($redLevel << $redWriteShift) + ($redLevel >> $redWriteLsbShift);
+            $outpBytes[$i * 3 + 1] = ($greenLevel << $greenWriteShift) + ($greenLevel >> $greenWriteLsbShift);
+            $outpBytes[$i * 3 + 2] = ($blueLevel << $blueWriteShift) + ($blueLevel >> $blueWriteLsbShift);
+        }
+        return $outpBytes;
     }
 
     public static function transformRevString(&$item, $key)
