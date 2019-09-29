@@ -38,14 +38,20 @@ class BmpBitfieldDecoder
         for ($i = 0; $i < $pixelCount; $i++) {
             // Extract little-endian color code in 16 bit space
             $inpColor = ($inpBytes[$i * 2 + 1] << 8) + ($inpBytes[$i * 2]);
-            // Get 5-bit red, blue and green components
-            $blueLevel = ($inpColor & $blue -> getMask()) >> $blue -> getOffset();
-            $greenLevel = ($inpColor & $green -> getMask()) >> $green -> getOffset();
-            $redLevel = ($inpColor & $red -> getMask()) >> $red -> getOffset();
-            // Store as 8-bit components
-            $outpBytes[$i * 3] = ($redLevel << $redWriteShift) + ($redLevel >> $redWriteLsbShift);
-            $outpBytes[$i * 3 + 1] = ($greenLevel << $greenWriteShift) + ($greenLevel >> $greenWriteLsbShift);
-            $outpBytes[$i * 3 + 2] = ($blueLevel << $blueWriteShift) + ($blueLevel >> $blueWriteLsbShift);
+            if (false) {
+                // Get 5-bit red, blue and green components
+                $blueLevel = ($inpColor & $blue->getMask()) >> $blue->getOffset();
+                $greenLevel = ($inpColor & $green->getMask()) >> $green->getOffset();
+                $redLevel = ($inpColor & $red->getMask()) >> $red->getOffset();
+                // Store as 8-bit components
+                $outpBytes[$i * 3] = ($redLevel << $redWriteShift) + ($redLevel >> $redWriteLsbShift);
+                $outpBytes[$i * 3 + 1] = ($greenLevel << $greenWriteShift) + ($greenLevel >> $greenWriteLsbShift);
+                $outpBytes[$i * 3 + 2] = ($blueLevel << $blueWriteShift) + ($blueLevel >> $blueWriteLsbShift);
+            } else {
+                $outpBytes[$i * 3] = $red -> getNormalisedValue($inpColor);
+                $outpBytes[$i * 3 + 1] = $green -> getNormalisedValue($inpColor);
+                $outpBytes[$i * 3 + 2] = $blue -> getNormalisedValue($inpColor);
+            }
         }
         return $outpBytes;
     }

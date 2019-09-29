@@ -55,7 +55,7 @@ class BmpColorMask
     public function getMaxValue()
     {
         // Max value for size of this channel
-        return 2 ** $this->max;
+        return (2 ** $this->len)- 1;
     }
 
     /**
@@ -69,14 +69,15 @@ class BmpColorMask
         $normalisedValue = $rawValue;
         if ($this -> len < 8) {
             $normalisedValue = $rawValue << (8 - ($this->len));
-        } else {
+        } else if ($this -> len > 8) {
             $normalisedValue = $rawValue >> (($this->len) - 8);
         }
+        // Correct scaling up
         $repeat = ($normalisedValue >> ($this -> len));
         while ($repeat > 0) {
-            $rawValue |= $repeat;
+            $normalisedValue |= $repeat;
             $repeat >>= ($this -> len);
         }
-        return $rawValue;
+        return $normalisedValue;
     }
 }

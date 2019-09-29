@@ -182,8 +182,13 @@ class BmpFile
         } else if ($this -> infoHeader -> bpp == 8) {
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 16) {
+            $masks = BmpColorBitfield::from16bitDefaults();
+            if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
+                // Any non-default values?
+                $masks = BmpColorBitfield::fromRgba($this -> infoHeader -> redMask, $this -> infoHeader -> greenMask, $this -> infoHeader -> blueMask, $this -> infoHeader -> alphaMask);
+            }
             // Map 16-bit raster data to 24-bit
-            $decoder = new BmpBitfieldDecoder(BmpColorBitfield::from16bitDefaults());
+            $decoder = new BmpBitfieldDecoder($masks);
             $expandedData = $decoder -> read16bit($this -> uncompressedData);
             return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
         } else if ($this -> infoHeader -> bpp == 24) {
