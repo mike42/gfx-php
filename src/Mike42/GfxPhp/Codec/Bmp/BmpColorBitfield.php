@@ -59,4 +59,10 @@ class BmpColorBitfield
         // If not specified, we use XRRRRRGG GGGBBBBB
         return self::fromRgba(0x7c00, 0x03e0, 0x001f, 0x0000);
     }
+
+    public static function from32bitDefaults()
+    {
+        // If not specified, we use XXXXXXXX RRRRRRRR GGGGGGGG BBBBBBBB
+        return self::fromRgba(0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+    }
 }

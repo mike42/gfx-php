@@ -310,7 +310,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/rgb32.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -318,7 +317,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32bf()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/rgb32bf.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -326,7 +324,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32bfdef()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/rgb32bfdef.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -528,7 +525,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32_111110()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb32-111110.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -536,7 +532,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32_7187()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb32-7187.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -544,7 +539,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32_xbgr()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb32-xbgr.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -552,7 +546,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32fakealpha()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb32fakealpha.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -560,7 +553,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb32h52()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb32h52.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -589,7 +581,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32_1010102()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32-1010102.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -597,7 +588,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32_61754()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32-61754.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -613,7 +603,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -629,7 +618,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32h56()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32h56.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
