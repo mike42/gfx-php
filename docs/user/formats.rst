@@ -57,7 +57,7 @@ The BMP codec is used where the input has the ``bmp`` or ``dib`` file extensions
 
 The returned object will be an instance of instance of :class:`IndexedRasterImage` if the color depth is 8 or lower.
 
-24-bit bitmap images are loaded into an instance of :class:`RgbRasterImage`. 16-bit and 32-bit bitmaps are not supported.
+24-bit, 16-bit and 32-bit bitmap images are also supported, and will be loaded into an instance of :class:`RgbRasterImage`. If an alpha channel is used, then it will be mixed to white.
 
 Netpbm Formats
 ^^^^^^^^^^^^^^
