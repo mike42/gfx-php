@@ -225,7 +225,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8topdown()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("g/pal8topdown.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
