@@ -36,6 +36,10 @@ class BmpInfoHeader
     public $planes;
     public $verticalRes;
     public $width;
+    public $redMask;
+    public $greenMask;
+    public $blueMask;
+    public $alphaMask;
 
     public function __construct(
         int $headerSize,
@@ -68,6 +72,10 @@ class BmpInfoHeader
         $this -> verticalRes = $verticalRes;
         $this -> colors = $colors;
         $this -> importantColors = $importantColors;
+        $this -> redMask = $redMask;
+        $this -> greenMask = $greenMask;
+        $this -> blueMask = $blueMask;
+        $this -> alphaMask = $alphaMask;
     }
 
     public static function fromBinary(DataInputStream $data) : BmpInfoHeader
@@ -157,6 +165,24 @@ class BmpInfoHeader
     private static function readBitmapInfoHeader(DataInputStream $data) : BmpInfoHeader
     {
         $infoFields = self::getInfoFields($data);
+        // Quirk- A BITMAPINFOHEADER specifying B1_BITFIELDS has 12 bytes of masks after it.
+        // In later versions, this information is part of the header itself, and is read unconditionally.
+        $redMask = 0;
+        $greenMask = 0;
+        $blueMask = 0;
+        $alphaMask = 0;
+        if ($infoFields['compression'] === self::B1_BITFILEDS || $infoFields['compression'] === self::B1_ALPHABITFIELDS) {
+            // Quirk!
+            $rgbMaskFields = self::getV2fields($data);
+            $redMask = $rgbMaskFields['redMask'];
+            $greenMask = $rgbMaskFields['greenMask'];
+            $blueMask = $rgbMaskFields['blueMask'];
+        }
+        if ($infoFields['compression'] === self::B1_ALPHABITFIELDS) {
+            // we might or might not need to read a 4-byte alpha mask too, depending on the compression type.
+            $alphaMaskFields = self::getV3fields($data);
+            $alphaMask = $alphaMaskFields['alphaMask'];
+        }
         return new BmpInfoHeader(
             self::BITMAPINFOHEADER_SIZE,
             $infoFields['width'],
@@ -168,7 +194,11 @@ class BmpInfoHeader
             $infoFields['horizontalRes'],
             $infoFields['verticalRes'],
             $infoFields['colors'],
-            $infoFields['importantColors']
+            $infoFields['importantColors'],
+            $redMask,
+            $greenMask,
+            $blueMask,
+            $alphaMask
         );
     }
 

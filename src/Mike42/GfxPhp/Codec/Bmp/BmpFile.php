@@ -39,9 +39,7 @@ class BmpFile
             $infoHeader -> bpp != 24 &&
             $infoHeader -> bpp != 32) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
-        } else if ($infoHeader -> bpp === 0 ||
-            $infoHeader -> bpp === 16 ||
-            $infoHeader -> bpp === 32) {
+        } else if ($infoHeader -> bpp === 0) {
             // Fail early to give a clearer error for the things which aren't tested yet
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not implemented.");
         }
@@ -96,6 +94,7 @@ class BmpFile
         // De-compress if necessary
         switch ($infoHeader -> compression) {
             case BmpInfoHeader::B1_RGB:
+            case BmpInfoHeader::B1_BITFILEDS:
                 $uncompressedImgData = $compressedImgData;
                 break;
             case BmpInfoHeader::B1_RLE8:
@@ -120,7 +119,6 @@ class BmpFile
                     throw new Exception("RLE4 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
                 }
                 break;
-            case BmpInfoHeader::B1_BITFILEDS:
             case BmpInfoHeader::B1_JPEG:
             case BmpInfoHeader::B1_PNG:
             case BmpInfoHeader::B1_ALPHABITFIELDS:
@@ -182,8 +180,28 @@ class BmpFile
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 8) {
             return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData, $this -> palette);
+        } else if ($this -> infoHeader -> bpp == 16) {
+            $masks = BmpColorBitfield::from16bitDefaults();
+            if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
+                // Any non-default values?
+                $masks = BmpColorBitfield::fromRgba($this -> infoHeader -> redMask, $this -> infoHeader -> greenMask, $this -> infoHeader -> blueMask, $this -> infoHeader -> alphaMask);
+            }
+            // Map 16-bit raster data to 24-bit
+            $decoder = new BmpBitfieldDecoder($masks);
+            $expandedData = $decoder -> read16bit($this -> uncompressedData);
+            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
         } else if ($this -> infoHeader -> bpp == 24) {
-            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData);
+            return RgbRasterImage::create($this->infoHeader->width, $this->infoHeader->height, $this->uncompressedData);
+        } else if ($this -> infoHeader -> bpp == 32) {
+            $masks = BmpColorBitfield::from32bitDefaults();
+            if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
+                // Any non-default values?
+                $masks = BmpColorBitfield::fromRgba($this -> infoHeader -> redMask, $this -> infoHeader -> greenMask, $this -> infoHeader -> blueMask, $this -> infoHeader -> alphaMask);
+            }
+            // Map 32-bit raster data to 24-bit
+            $decoder = new BmpBitfieldDecoder($masks);
+            $expandedData = $decoder -> read32bit($this -> uncompressedData);
+            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
         }
         throw new Exception("Unknown bit depth " . $this -> infoHeader -> bpp);
     }
