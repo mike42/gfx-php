@@ -40,8 +40,8 @@ class BmpFile
             $infoHeader -> bpp != 32) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
         } else if ($infoHeader -> bpp === 0) {
-            // Fail early to give a clearer error for the things which aren't tested yet
-            throw new Exception("Bit depth " . $infoHeader -> bpp . " not implemented.");
+            // Fail early to give a clearer error: bit depth 0 is used for embedding PNG/JPEG in a bitmap
+            throw new Exception("Bit depth " . $infoHeader -> bpp . " not supported.");
         }
         // See how many colors we expect. 2^n colors in table for bpp <= 8, 0 for higher color depths
         $colorCount = $infoHeader -> bpp <= 8 ? 2 **  $infoHeader -> bpp : 0;
@@ -164,6 +164,15 @@ class BmpFile
         }
         // Convert to array of numbers 0-255.
         $dataArray = array_values(unpack("C*", $uncompressedImgData));
+        if ($infoHeader -> profileSize > 0) {
+            // Skip color profile if present after the image
+            $imgEnd = $compressedImgSizeBytes + $fileHeader -> offset - BmpFileHeader::FILE_HEADER_SIZE;
+            $profileStart = $infoHeader -> profileData;
+            if ($profileStart >= $imgEnd) { // Profile may be before image data, in which case it's already been skipped
+                $padding = $profileStart - $imgEnd;
+                $data -> read($infoHeader -> profileSize + $padding);
+            }
+        }
         if (!$data -> isEof()) {
             throw new Exception("BMP image has unexpected trailing data");
         }
