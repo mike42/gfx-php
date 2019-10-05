@@ -165,6 +165,7 @@ class BmpInfoHeader
 
     private static function readBitmapInfoHeader(DataInputStream $data) : BmpInfoHeader
     {
+        $headerSize = self::BITMAPINFOHEADER_SIZE;
         $infoFields = self::getInfoFields($data);
         // Quirk- A BITMAPINFOHEADER specifying B1_BITFIELDS has 12 bytes of masks after it.
         // In later versions, this information is part of the header itself, and is read unconditionally.
@@ -178,14 +179,16 @@ class BmpInfoHeader
             $redMask = $rgbMaskFields['redMask'];
             $greenMask = $rgbMaskFields['greenMask'];
             $blueMask = $rgbMaskFields['blueMask'];
+            $headerSize += 12;
         }
         if ($infoFields['compression'] === self::B1_ALPHABITFIELDS) {
             // we might or might not need to read a 4-byte alpha mask too, depending on the compression type.
             $alphaMaskFields = self::getV3fields($data);
             $alphaMask = $alphaMaskFields['alphaMask'];
+            $headerSize += 4;
         }
         return new BmpInfoHeader(
-            self::BITMAPINFOHEADER_SIZE,
+            $headerSize,
             $infoFields['width'],
             $infoFields['height'],
             $infoFields['planes'],

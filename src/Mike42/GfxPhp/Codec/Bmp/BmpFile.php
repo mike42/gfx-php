@@ -68,7 +68,7 @@ class BmpFile
             // In the case of 1bpp or small palettes, it is possible that we are not aligned to a multiple of 4 bytes now.
         } else {
             if ($infoHeader -> colors > 0) {
-                // .. unless otherwise specified
+                // .. override color count when specified
                 $colorCount = $infoHeader -> colors;
             }
             for ($i = 0; $i < $colorCount; $i++) {
@@ -76,8 +76,16 @@ class BmpFile
                 $color = unpack("C*", $entryData);
                 $colorTable[] = [$color[3], $color[2], $color[1]];
             }
+            // May need to skip here if header shows pixel data later than we expect
+            $calculatedOffset = $colorCount * 4 + $infoHeader -> headerSize + BmpFileHeader::FILE_HEADER_SIZE;
+            if ($calculatedOffset > $fileHeader -> offset) {
+                // Apparently we have read into the image data already, better to fail now before we run out of data later in the file
+                throw new Exception("Header extends into image data. File is likely to be corrupt.");
+            } else if ($calculatedOffset < $fileHeader -> offset) {
+                // Skip up to the data.
+                $data -> advance($fileHeader -> offset - $calculatedOffset);
+            }
         }
-        // TODO May need to skip here if header shows pixel data later than we expect
         // Determine compressed & uncompressed size
         $topDown = false;
         $height = $infoHeader -> height;
