@@ -77,18 +77,25 @@ class BmpFile
                 $colorTable[] = [$color[3], $color[2], $color[1]];
             }
         }
-        // May need to skip here if header shows pixel data later than we expect
+        // TODO May need to skip here if header shows pixel data later than we expect
         // Determine compressed & uncompressed size
+        $topDown = false;
+        $height = $infoHeader -> height;
+        if ($infoHeader -> height < 0 && $infoHeader -> compression == BmpInfoHeader::B1_RGB) {
+            // negative heights are valid for uncompressed images, and indicate reversed row order
+            $height = -$infoHeader -> height;
+            $topDown = true;
+        }
+        if ($infoHeader -> width > 65535 || $height > 65535 || $infoHeader -> width < 0 || $height < 0) {
+            // Limit height to prevent insane allocations during decompression if file is corrupt
+            throw new Exception("Image size " . $infoHeader -> width . "x" . $height . " is outside the supported range.");
+        }
         $rowSizeBytes = intdiv(($infoHeader -> bpp * $infoHeader -> width + 31), 32) * 4;
-        $uncompressedImgSizeBytes = $rowSizeBytes * $infoHeader -> height;
+        $uncompressedImgSizeBytes = $rowSizeBytes * $height;
         if ($infoHeader -> compression == BmpInfoHeader::B1_RGB) {
             $compressedImgSizeBytes = $uncompressedImgSizeBytes;
         } else {
             $compressedImgSizeBytes = $infoHeader -> compressedSize;
-            // Limit height to prevent insane allocations during decompression if file is corrupt
-            if ($infoHeader -> width > 65535 || $infoHeader -> height > 65535 || $infoHeader -> width < 0 || $infoHeader -> height < 0) {
-                throw new Exception("Image size " . $infoHeader -> width . "x" . $infoHeader -> height . " is outside the supported range.");
-            }
         }
         $compressedImgData = $data -> read($compressedImgSizeBytes);
         // De-compress if necessary
@@ -102,7 +109,7 @@ class BmpFile
                     throw new Exception("RLE8 compression only valid for 8-bit images");
                 }
                 $decoder = new Rle8Decoder();
-                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
+                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $height);
                 $actualSize = strlen($uncompressedImgData);
                 if ($uncompressedImgSizeBytes !== $actualSize) {
                     throw new Exception("RLE8 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
@@ -113,7 +120,7 @@ class BmpFile
                     throw new Exception("RLE4 compression only valid for 4-bit images");
                 }
                 $decoder = new Rle4Decoder();
-                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $infoHeader -> height);
+                $uncompressedImgData = $decoder -> decode($compressedImgData, $infoHeader -> width, $height);
                 $actualSize = strlen($uncompressedImgData);
                 if ($uncompressedImgSizeBytes !== $actualSize) {
                     throw new Exception("RLE4 decode failed. Expected $uncompressedImgSizeBytes bytes uncompressed, got $actualSize");
@@ -135,6 +142,10 @@ class BmpFile
         $rowDataBytes = intdiv($infoHeader -> bpp * $infoHeader -> width + 7, 8); // Excludes padding bytes
         for ($i = count($paddedLines) - 1; $i >= 0; $i--) { // Iterate lines backwards
             $dataLines[] = substr($paddedLines[$i], 0, $rowDataBytes);
+        }
+        if ($topDown) {
+            // Top-down storage (not as common), reverse them again.
+            $dataLines = array_reverse($dataLines);
         }
         $uncompressedImgData = implode("", $dataLines);
         // Account for RGB vs BGR in file format
@@ -169,17 +180,19 @@ class BmpFile
 
     public function toRasterImage() : RasterImage
     {
+        $height = abs($this -> infoHeader -> height);
+        $width = $this -> infoHeader -> width;
         if ($this -> infoHeader -> bpp == 1) {
-            $expandedData = PngImage::expandBytes1Bpp($this -> uncompressedData, $this -> infoHeader -> width);
-            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+            $expandedData = PngImage::expandBytes1Bpp($this -> uncompressedData, $width);
+            return IndexedRasterImage::create($width, $height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 2) {
-            $expandedData = PngImage::expandBytes2Bpp($this -> uncompressedData, $this -> infoHeader -> width);
-            return IndexedRasterImage::create($this->infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+            $expandedData = PngImage::expandBytes2Bpp($this -> uncompressedData, $width);
+            return IndexedRasterImage::create($this->infoHeader -> width, $height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 4) {
-            $expandedData = PngImage::expandBytes4Bpp($this -> uncompressedData, $this -> infoHeader -> width);
-            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData, $this -> palette);
+            $expandedData = PngImage::expandBytes4Bpp($this -> uncompressedData, $width);
+            return IndexedRasterImage::create($width, $height, $expandedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 8) {
-            return IndexedRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $this -> uncompressedData, $this -> palette);
+            return IndexedRasterImage::create($width, $height, $this -> uncompressedData, $this -> palette);
         } else if ($this -> infoHeader -> bpp == 16) {
             $masks = BmpColorBitfield::from16bitDefaults();
             if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
@@ -189,7 +202,7 @@ class BmpFile
             // Map 16-bit raster data to 24-bit
             $decoder = new BmpBitfieldDecoder($masks);
             $expandedData = $decoder -> read16bit($this -> uncompressedData);
-            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
+            return RgbRasterImage::create($width, $height, $expandedData);
         } else if ($this -> infoHeader -> bpp == 24) {
             return RgbRasterImage::create($this->infoHeader->width, $this->infoHeader->height, $this->uncompressedData);
         } else if ($this -> infoHeader -> bpp == 32) {
@@ -201,7 +214,7 @@ class BmpFile
             // Map 32-bit raster data to 24-bit
             $decoder = new BmpBitfieldDecoder($masks);
             $expandedData = $decoder -> read32bit($this -> uncompressedData);
-            return RgbRasterImage::create($this -> infoHeader -> width, $this -> infoHeader -> height, $expandedData);
+            return RgbRasterImage::create($width, $height, $expandedData);
         }
         throw new Exception("Unknown bit depth " . $this -> infoHeader -> bpp);
     }

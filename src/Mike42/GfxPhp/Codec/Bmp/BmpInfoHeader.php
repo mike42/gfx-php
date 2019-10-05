@@ -63,7 +63,8 @@ class BmpInfoHeader
     ) {
         $this -> headerSize = $headerSize;
         $this -> width = $width;
-        $this -> height = $height;
+        // Not possible to read signed little-endian 32-bit long with unpack(), but height may be negative.
+        $this -> height = ($height >= (2**31)) ? ($height - (2**32)) : $height;
         $this -> planes = $planes;
         $this -> bpp = $bpp;
         $this -> compression = $compression;
