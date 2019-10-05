@@ -8,6 +8,8 @@ class BmpInfoHeader
 {
     const BITMAPCOREHEADER_SIZE = 12;
     const OS21XBITMAPHEADER_SIZE = 12;
+    const OS22XBITMAPHEADER_MIN_SIZE = 16;
+    const OS22XBITMAPHEADER_FULL_SIZE = 64;
     const BITMAPINFOHEADER_SIZE = 40;
     const BITMAPV2INFOHEADER_SIZE = 52;
     const BITMAPV3INFOHEADER_SIZE = 56;
@@ -40,6 +42,12 @@ class BmpInfoHeader
     public $greenMask;
     public $blueMask;
     public $alphaMask;
+    public $csType;
+    public $endpoint;
+    public $gamma;
+    public $intent;
+    public $profileData;
+    public $profileSize;
 
     public function __construct(
         int $headerSize,
@@ -59,7 +67,10 @@ class BmpInfoHeader
         int $alphaMask = 0,
         int $csType = 0,
         array $endpoint = [],
-        array $gamma = []
+        array $gamma = [],
+        int $intent = 0,
+        int $profileData = 0,
+        int $profileSize = 0
     ) {
         $this -> headerSize = $headerSize;
         $this -> width = $width;
@@ -77,6 +88,12 @@ class BmpInfoHeader
         $this -> greenMask = $greenMask;
         $this -> blueMask = $blueMask;
         $this -> alphaMask = $alphaMask;
+        $this -> csType = $csType;
+        $this -> endpoint = $endpoint;
+        $this -> gamma = $gamma;
+        $this -> intent = $intent;
+        $this -> profileData = $profileData;
+        $this -> profileSize = $profileSize;
     }
 
     public static function fromBinary(DataInputStream $data) : BmpInfoHeader
@@ -86,10 +103,10 @@ class BmpInfoHeader
         switch ($infoHeaderSize) {
             case self::BITMAPCOREHEADER_SIZE:
                 return self::readCoreHeader($data);
-            case 64:
-                return self::readOs22xBitmapHeader($data);
-            case 16:
-                throw new Exception("OS22XBITMAPHEADER not implemented");
+            case self::OS22XBITMAPHEADER_MIN_SIZE:
+            case self::OS22XBITMAPHEADER_FULL_SIZE:
+                // OS/2 v2 bitmap header is technically variable-length, only 16 and 64 are used in practice.
+                return self::readOs22xBitmapHeader($infoHeaderSize, $data);
             case self::BITMAPINFOHEADER_SIZE:
                 return self::readBitmapInfoHeader($data);
             case self::BITMAPV2INFOHEADER_SIZE:
@@ -165,7 +182,7 @@ class BmpInfoHeader
 
     private static function readBitmapInfoHeader(DataInputStream $data) : BmpInfoHeader
     {
-        $headerSize = self::BITMAPINFOHEADER_SIZE;
+        $extraBytes = 0;
         $infoFields = self::getInfoFields($data);
         // Quirk- A BITMAPINFOHEADER specifying B1_BITFIELDS has 12 bytes of masks after it.
         // In later versions, this information is part of the header itself, and is read unconditionally.
@@ -179,16 +196,16 @@ class BmpInfoHeader
             $redMask = $rgbMaskFields['redMask'];
             $greenMask = $rgbMaskFields['greenMask'];
             $blueMask = $rgbMaskFields['blueMask'];
-            $headerSize += 12;
+            $extraBytes += 12;
         }
         if ($infoFields['compression'] === self::B1_ALPHABITFIELDS) {
             // we might or might not need to read a 4-byte alpha mask too, depending on the compression type.
             $alphaMaskFields = self::getV3fields($data);
             $alphaMask = $alphaMaskFields['alphaMask'];
-            $headerSize += 4;
+            $extraBytes += 4;
         }
         return new BmpInfoHeader(
-            $headerSize,
+            self::BITMAPINFOHEADER_SIZE + $extraBytes, // Count any extra bytes as part of the header
             $infoFields['width'],
             $infoFields['height'],
             $infoFields['planes'],
@@ -289,9 +306,6 @@ class BmpInfoHeader
         $v3fields = self::getV3fields($data);
         $v4fields = self::getV4fields($data);
         $v5fields = self::getV5fields($data);
-        if ($v5fields['profileSize'] > 0) {  // TODO include these fields
-            throw new Exception("Bitmaps with embedded ICC profile data are not supported.");
-        }
         return new BmpInfoHeader(
             self::BITMAPV5HEADER_SIZE,
             $infoFields['width'],
@@ -310,12 +324,41 @@ class BmpInfoHeader
             $v3fields['alphaMask'],
             $v4fields['csType'],
             $v4fields['endpoint'],
-            $v4fields['gamma']
+            $v4fields['gamma'],
+            $v5fields['intent'],
+            $v5fields['profileData'],
+            $v5fields['profileSize']
         );
     }
 
-    private static function readOs22xBitmapHeader(DataInputStream $data)
+    private static function readOs22xBitmapHeader(int $size, DataInputStream $data)
     {
-        throw new Exception("OS22XBITMAPHEADER not implemented");
+        $coreData = $data -> read(self::OS22XBITMAPHEADER_MIN_SIZE - 4);
+        $coreFields = unpack("Vwidth/Vheight/vplanes/vbpp", $coreData);
+        if ($size == self::OS22XBITMAPHEADER_MIN_SIZE) {
+            return new BmpInfoHeader(
+                self::OS22XBITMAPHEADER_MIN_SIZE,
+                $coreFields['width'],
+                $coreFields['height'],
+                $coreFields['planes'],
+                $coreFields['bpp']
+            );
+        }
+        // Read up to the full header size
+        $extraData = $data -> read(self::OS22XBITMAPHEADER_FULL_SIZE - self::OS22XBITMAPHEADER_MIN_SIZE);
+        $extraFields =  unpack("Vcompression/VcompressedSize/VhorizontalRes/VverticalRes/Vcolors/VimportantColors/vunits/vreserved/vrecording/vrendering/Vsize1/Vsize2/VcolorEncoding/Videntifier", $extraData);
+        return new BmpInfoHeader(
+            self::OS22XBITMAPHEADER_FULL_SIZE,
+            $coreFields['width'],
+            $coreFields['height'],
+            $coreFields['planes'],
+            $coreFields['bpp'],
+            $extraFields['compression'],
+            $extraFields['compressedSize'],
+            $extraFields['horizontalRes'],
+            $extraFields['verticalRes'],
+            $extraFields['colors'],
+            $extraFields['importantColors']
+        ); // Other fields are ignored.
     }
 }

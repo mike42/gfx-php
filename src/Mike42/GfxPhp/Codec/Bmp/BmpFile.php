@@ -40,8 +40,8 @@ class BmpFile
             $infoHeader -> bpp != 32) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
         } else if ($infoHeader -> bpp === 0) {
-            // Fail early to give a clearer error for the things which aren't tested yet
-            throw new Exception("Bit depth " . $infoHeader -> bpp . " not implemented.");
+            // Fail early to give a clearer error: bit depth 0 is used for embedding PNG/JPEG in a bitmap
+            throw new Exception("Bit depth " . $infoHeader -> bpp . " not supported.");
         }
         // See how many colors we expect. 2^n colors in table for bpp <= 8, 0 for higher color depths
         $colorCount = $infoHeader -> bpp <= 8 ? 2 **  $infoHeader -> bpp : 0;
@@ -86,6 +86,14 @@ class BmpFile
                 $data -> advance($fileHeader -> offset - $calculatedOffset);
             }
         }
+        if ($infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_FULL_SIZE || $infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_MIN_SIZE) {
+            // Some compression modes in OS/2 V2 bitmaps use the same numeric ID' as unrelated Windows BMP compression modes, but are not supported.
+            if ($infoHeader -> compression != BmpInfoHeader::B1_RGB &&
+                $infoHeader -> compression != BmpInfoHeader::B1_RLE4 &&
+                $infoHeader -> compression != BmpInfoHeader::B1_RLE8) {
+                throw new Exception("Compression method not implemented for OS/2 V2 bitmaps");
+            }
+        }
         // Determine compressed & uncompressed size
         $topDown = false;
         $height = $infoHeader -> height;
@@ -110,6 +118,7 @@ class BmpFile
         switch ($infoHeader -> compression) {
             case BmpInfoHeader::B1_RGB:
             case BmpInfoHeader::B1_BITFILEDS:
+            case BmpInfoHeader::B1_ALPHABITFIELDS:
                 $uncompressedImgData = $compressedImgData;
                 break;
             case BmpInfoHeader::B1_RLE8:
@@ -136,7 +145,6 @@ class BmpFile
                 break;
             case BmpInfoHeader::B1_JPEG:
             case BmpInfoHeader::B1_PNG:
-            case BmpInfoHeader::B1_ALPHABITFIELDS:
             case BmpInfoHeader::B1_CMYK:
             case BmpInfoHeader::B1_CMYKRLE8:
             case BmpInfoHeader::B1_CMYKRLE4:
@@ -164,6 +172,15 @@ class BmpFile
         }
         // Convert to array of numbers 0-255.
         $dataArray = array_values(unpack("C*", $uncompressedImgData));
+        if ($infoHeader -> profileSize > 0) {
+            // Skip color profile if present after the image
+            $imgEnd = $compressedImgSizeBytes + $fileHeader -> offset - BmpFileHeader::FILE_HEADER_SIZE;
+            $profileStart = $infoHeader -> profileData;
+            if ($profileStart >= $imgEnd) { // Profile may be before image data, in which case it's already been skipped
+                $padding = $profileStart - $imgEnd;
+                $data -> read($infoHeader -> profileSize + $padding);
+            }
+        }
         if (!$data -> isEof()) {
             throw new Exception("BMP image has unexpected trailing data");
         }

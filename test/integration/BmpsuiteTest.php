@@ -330,7 +330,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal1huff()
     {
-        // Fails here because of unsupported header type, but compression format is not widely implemented either.
         $this -> expectException(Exception::class);
         $img = $this -> loadImage("q/pal1huff.bmp");
     }
@@ -400,7 +399,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2v2_16()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2v2-16.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -415,7 +413,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2v2_sz()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2v2-sz.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -423,7 +420,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2v2()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2v2.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -473,7 +469,7 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb24jpeg()
     {
-        $this -> markTestSkipped("Not implemented");
+        $this -> expectException(Exception::class);
         $img = $this -> loadImage("q/rgb24jpeg.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -488,7 +484,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb24lprof()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb24lprof.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -496,7 +491,7 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb24png()
     {
-        $this -> markTestSkipped("Not implemented");
+        $this -> expectException(Exception::class);
         $img = $this -> loadImage("q/rgb24png.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -504,7 +499,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb24prof()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb24prof.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -512,7 +506,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgb24prof2()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgb24prof2.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -590,7 +583,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32_81284()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32-81284.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -605,7 +597,6 @@ class BmpsuiteTest extends TestCase
 
     function test_rgba32abf()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/rgba32abf.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -620,9 +611,8 @@ class BmpsuiteTest extends TestCase
 
     function test_ba_bm()
     {
-        $this -> markTestSkipped("Not implemented");
+        // Different container format, not recognised as bitmap at all
+        $this -> expectException(Exception::class);
         $img = $this -> loadImage("x/ba-bm.bmp");
-        $this -> assertEquals(1, $img -> getWidth());
-        $this -> assertEquals(1, $img -> getHeight());
     }
 }
