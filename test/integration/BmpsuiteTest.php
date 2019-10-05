@@ -330,7 +330,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal1huff()
     {
-        // Fails here because of unsupported header type, but compression format is not widely implemented either.
         $this -> expectException(Exception::class);
         $img = $this -> loadImage("q/pal1huff.bmp");
     }
@@ -400,7 +399,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8os2v2_16()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8os2v2-16.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());

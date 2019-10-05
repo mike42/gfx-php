@@ -8,6 +8,8 @@ class BmpInfoHeader
 {
     const BITMAPCOREHEADER_SIZE = 12;
     const OS21XBITMAPHEADER_SIZE = 12;
+    const OS22XBITMAPHEADER_MIN_SIZE = 16;
+    const OS22XBITMAPHEADER_FULL_SIZE = 64;
     const BITMAPINFOHEADER_SIZE = 40;
     const BITMAPV2INFOHEADER_SIZE = 52;
     const BITMAPV3INFOHEADER_SIZE = 56;
@@ -101,10 +103,10 @@ class BmpInfoHeader
         switch ($infoHeaderSize) {
             case self::BITMAPCOREHEADER_SIZE:
                 return self::readCoreHeader($data);
-            case 64:
-                return self::readOs22xBitmapHeader($data);
-            case 16:
-                throw new Exception("OS22XBITMAPHEADER not implemented");
+            case self::OS22XBITMAPHEADER_MIN_SIZE:
+            case self::OS22XBITMAPHEADER_FULL_SIZE:
+                // OS/2 v2 bitmap header is technically variable-length, only 16 and 64 are used in practice.
+                return self::readOs22xBitmapHeader($infoHeaderSize, $data);
             case self::BITMAPINFOHEADER_SIZE:
                 return self::readBitmapInfoHeader($data);
             case self::BITMAPV2INFOHEADER_SIZE:
@@ -329,8 +331,22 @@ class BmpInfoHeader
         );
     }
 
-    private static function readOs22xBitmapHeader(DataInputStream $data)
+    private static function readOs22xBitmapHeader(int $size, DataInputStream $data)
     {
-        throw new Exception("OS22XBITMAPHEADER not implemented");
+        $coreData = $data -> read(self::OS22XBITMAPHEADER_MIN_SIZE - 4);
+        $coreFields = unpack("Vwidth/Vheight/vplanes/vbpp", $coreData);
+        if ($size > self::OS22XBITMAPHEADER_MIN_SIZE) {
+            // Skip more bytes
+            $extraData = $data -> read(self::OS22XBITMAPHEADER_FULL_SIZE - self::OS22XBITMAPHEADER_MIN_SIZE);
+        } else {
+            return new BmpInfoHeader(
+                self::OS22XBITMAPHEADER_MIN_SIZE,
+                $coreFields['width'],
+                $coreFields['height'],
+                $coreFields['planes'],
+                $coreFields['bpp']
+            );
+        }
+        throw new Exception("OS22XBITMAPHEADER at full size not supported");
     }
 }
