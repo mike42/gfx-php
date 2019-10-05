@@ -110,6 +110,7 @@ class BmpFile
         switch ($infoHeader -> compression) {
             case BmpInfoHeader::B1_RGB:
             case BmpInfoHeader::B1_BITFILEDS:
+            case BmpInfoHeader::B1_ALPHABITFIELDS:
                 $uncompressedImgData = $compressedImgData;
                 break;
             case BmpInfoHeader::B1_RLE8:
@@ -136,7 +137,6 @@ class BmpFile
                 break;
             case BmpInfoHeader::B1_JPEG:
             case BmpInfoHeader::B1_PNG:
-            case BmpInfoHeader::B1_ALPHABITFIELDS:
             case BmpInfoHeader::B1_CMYK:
             case BmpInfoHeader::B1_CMYKRLE8:
             case BmpInfoHeader::B1_CMYKRLE4:
