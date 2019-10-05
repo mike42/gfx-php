@@ -86,6 +86,14 @@ class BmpFile
                 $data -> advance($fileHeader -> offset - $calculatedOffset);
             }
         }
+        if ($infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_FULL_SIZE || $infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_MIN_SIZE) {
+            // Some compression modes in OS/2 V2 bitmaps use the same numeric ID' as unrelated Windows BMP compression modes, but are not supported.
+            if ($infoHeader -> compression != BmpInfoHeader::B1_RGB &&
+                $infoHeader -> compression != BmpInfoHeader::B1_RLE4 &&
+                $infoHeader -> compression != BmpInfoHeader::B1_RLE8) {
+                throw new Exception("Compression method not implemented for OS/2 V2 bitmaps");
+            }
+        }
         // Determine compressed & uncompressed size
         $topDown = false;
         $height = $infoHeader -> height;

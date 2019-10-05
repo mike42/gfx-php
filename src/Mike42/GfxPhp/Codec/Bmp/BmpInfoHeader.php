@@ -335,10 +335,7 @@ class BmpInfoHeader
     {
         $coreData = $data -> read(self::OS22XBITMAPHEADER_MIN_SIZE - 4);
         $coreFields = unpack("Vwidth/Vheight/vplanes/vbpp", $coreData);
-        if ($size > self::OS22XBITMAPHEADER_MIN_SIZE) {
-            // Skip more bytes
-            $extraData = $data -> read(self::OS22XBITMAPHEADER_FULL_SIZE - self::OS22XBITMAPHEADER_MIN_SIZE);
-        } else {
+        if ($size == self::OS22XBITMAPHEADER_MIN_SIZE) {
             return new BmpInfoHeader(
                 self::OS22XBITMAPHEADER_MIN_SIZE,
                 $coreFields['width'],
@@ -347,6 +344,21 @@ class BmpInfoHeader
                 $coreFields['bpp']
             );
         }
-        throw new Exception("OS22XBITMAPHEADER at full size not supported");
+        // Read up to the full header size
+        $extraData = $data -> read(self::OS22XBITMAPHEADER_FULL_SIZE - self::OS22XBITMAPHEADER_MIN_SIZE);
+        $extraFields =  unpack("Vcompression/VcompressedSize/VhorizontalRes/VverticalRes/Vcolors/VimportantColors/vunits/vreserved/vrecording/vrendering/Vsize1/Vsize2/VcolorEncoding/Videntifier", $extraData);
+        return new BmpInfoHeader(
+            self::OS22XBITMAPHEADER_FULL_SIZE,
+            $coreFields['width'],
+            $coreFields['height'],
+            $coreFields['planes'],
+            $coreFields['bpp'],
+            $extraFields['compression'],
+            $extraFields['compressedSize'],
+            $extraFields['horizontalRes'],
+            $extraFields['verticalRes'],
+            $extraFields['colors'],
+            $extraFields['importantColors']
+        ); // Other fields are ignored.
     }
 }
