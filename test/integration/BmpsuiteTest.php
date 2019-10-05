@@ -330,10 +330,9 @@ class BmpsuiteTest extends TestCase
 
     function test_pal1huff()
     {
-        $this -> markTestSkipped("Not implemented");
+        // Fails here because of unsupported header type, but compression format is not widely implemented either.
+        $this -> expectException(Exception::class);
         $img = $this -> loadImage("q/pal1huff.bmp");
-        $this -> assertEquals(127, $img -> getWidth());
-        $this -> assertEquals(64, $img -> getHeight());
     }
 
     function test_pal1p1()
@@ -359,7 +358,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal4rlecut()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal4rlecut.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -367,7 +365,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal4rletrns()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal4rletrns.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
@@ -375,7 +372,6 @@ class BmpsuiteTest extends TestCase
 
     function test_pal8offs()
     {
-        $this -> markTestSkipped("Not implemented");
         $img = $this -> loadImage("q/pal8offs.bmp");
         $this -> assertEquals(127, $img -> getWidth());
         $this -> assertEquals(64, $img -> getHeight());
