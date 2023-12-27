@@ -10,7 +10,7 @@ use Mike42\GfxPhp\Codec\Png\PngImage;
 
 class PngCodec implements ImageEncoder, ImageDecoder
 {
-    protected static $instance = null;
+    protected static ?PngCodec $instance = null;
 
     public function encode(RasterImage $image, string $format): string
     {
@@ -36,7 +36,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
         return $png -> toRasterImage();
     }
     
-    public function encodeRgb(RgbRasterImage $image)
+    public function encodeRgb(RgbRasterImage $image): string
     {
         // PNG signature
         $signature = PngImage::PNG_SIGNATURE;
@@ -53,7 +53,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
         return $signature . $ihdr . $idat . $iend;
     }
 
-    protected function chunk(string $type, string $data = '')
+    protected function chunk(string $type, string $data = ''): string
     {
         $len = strlen($data);
         $lenData = pack("N", $len);
@@ -72,7 +72,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
         return ["png"];
     }
     
-    public static function getInstance()
+    public static function getInstance(): PngCodec
     {
         if (self::$instance === null) {
             self::$instance = new PngCodec();

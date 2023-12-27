@@ -11,7 +11,7 @@ use Mike42\GfxPhp\RgbRasterImage;
 
 class BmpCodec implements ImageEncoder, ImageDecoder
 {
-    protected static $instance = null;
+    protected static ?BmpCodec $instance = null;
     const INFO_HEADER_SIZE = 40;
     const FILE_HEADER_SIZE = 14;
 
@@ -64,7 +64,7 @@ class BmpCodec implements ImageEncoder, ImageDecoder
         return $header . $infoHeader . $colorTable . $pixelData;
     }
 
-    protected function transformRevString(&$item, $key)
+    protected function transformRevString(&$item, $key): void
     {
         // Convert RGB to BGR
         $item = strrev($item);
@@ -95,7 +95,7 @@ class BmpCodec implements ImageEncoder, ImageDecoder
         return ["bmp", "dib"];
     }
 
-    public static function getInstance()
+    public static function getInstance(): BmpCodec
     {
         if (self::$instance === null) {
             self::$instance = new BmpCodec();

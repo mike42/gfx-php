@@ -5,11 +5,11 @@ namespace Mike42\GfxPhp\Codec;
 
 class ImageCodec
 {
-    protected static $instance = null;
+    protected static ?ImageCodec $instance = null;
 
-    protected $encoders;
+    protected array $encoders;
 
-    protected $decoders;
+    protected array $decoders;
 
     public function __construct(array $encoders, array $decoders)
     {

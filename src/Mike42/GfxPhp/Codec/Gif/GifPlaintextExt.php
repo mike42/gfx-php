@@ -8,7 +8,7 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 class GifPlaintextExt
 {
 
-    private $header;
+    private string $header;
 
     public function getHeader(): string
     {
@@ -19,7 +19,7 @@ class GifPlaintextExt
     {
         return $this->data;
     }
-    private $data;
+    private array $data;
 
     public function __construct(string $header, array $data)
     {

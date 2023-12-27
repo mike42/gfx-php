@@ -7,14 +7,14 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifLogicalScreenDescriptor
 {
-    private $width;
-    private $height;
-    private $hasGlobalColorTable;
-    private $colorResolution;
-    private $hasSortedGlobalColorTable;
-    private $globalColorTableSize;
-    private $backgroundColorIndex;
-    private $pixelAspectRatio;
+    private int $width;
+    private int $height;
+    private bool $hasGlobalColorTable;
+    private int $colorResolution;
+    private bool $hasSortedGlobalColorTable;
+    private int $globalColorTableSize;
+    private int $backgroundColorIndex;
+    private int $pixelAspectRatio;
 
     public function __construct(int $width, int $height, bool $hasGlobalColorTable, int $colorResolution, bool $hasSortedGlobalColorTable, int $globalColorTableSize, int $backgroundColorIndex, int $pixelAspectRatio)
     {

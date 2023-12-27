@@ -30,38 +30,38 @@ class BmpColorBitfield
         $this->alpha = $alpha;
     }
 
-    public function getRed()
+    public function getRed(): BmpColorMask
     {
         return $this->red;
     }
 
-    public function getGreen()
+    public function getGreen(): BmpColorMask
     {
         return $this->green;
     }
 
-    public function getBlue()
+    public function getBlue(): BmpColorMask
     {
         return $this->blue;
     }
 
-    public function getAlpha()
+    public function getAlpha(): BmpColorMask
     {
         return $this->alpha;
     }
 
-    public static function fromRgba(int $r, int $g, int $b, int $a)
+    public static function fromRgba(int $r, int $g, int $b, int $a): BmpColorBitfield
     {
         return new BmpColorBitfield(new BmpColorMask($r), new BmpColorMask($g), new BmpColorMask($b), new BmpColorMask($a));
     }
 
-    public static function from16bitDefaults()
+    public static function from16bitDefaults(): BmpColorBitfield
     {
         // If not specified, we use XRRRRRGG GGGBBBBB
         return self::fromRgba(0x7c00, 0x03e0, 0x001f, 0x0000);
     }
 
-    public static function from32bitDefaults()
+    public static function from32bitDefaults(): BmpColorBitfield
     {
         // If not specified, we use XXXXXXXX RRRRRRRR GGGGGGGG BBBBBBBB
         return self::fromRgba(0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);

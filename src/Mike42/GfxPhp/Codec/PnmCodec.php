@@ -11,7 +11,7 @@ use Exception;
 
 class PnmCodec implements ImageDecoder, ImageEncoder
 {
-    protected static $instance = null;
+    protected static ?PnmCodec $instance = null;
 
     public function identify(string $blob): string
     {
@@ -183,7 +183,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         return ["ppm", "pgm", "pbm"];
     }
 
-    public static function getInstance()
+    public static function getInstance(): PnmCodec
     {
         if (self::$instance === null) {
             self::$instance = new PnmCodec();

@@ -7,9 +7,9 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifUnknownExt
 {
-    private $label;
-    private $header;
-    private $data;
+    private string $label;
+    private string $header;
+    private array $data;
 
     public function __construct(string $label, string $header, array $data)
     {
@@ -34,7 +34,7 @@ class GifUnknownExt
         return $this->data;
     }
 
-    public static function fromBin(DataInputStream $in)
+    public static function fromBin(DataInputStream $in): GifUnknownExt
     {
         $introducer = $in->read(1);
         if ($introducer != GifData::GIF_EXTENSION) {

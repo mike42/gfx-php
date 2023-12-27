@@ -7,15 +7,15 @@ abstract class AbstractLzwDictionary
 {
     const MAX_SIZE = 4096;
     
-    protected $minCodeSize;
-    protected $clearCode;
-    protected $eodCode;
-    protected $size;
+    protected int $minCodeSize;
+    protected int $clearCode;
+    protected int $eodCode;
+    protected int $size;
     
     /**
      * @return number
      */
-    public function getClearCode()
+    public function getClearCode(): int
     {
         return $this->clearCode;
     }
@@ -23,7 +23,7 @@ abstract class AbstractLzwDictionary
     /**
      * @return number
      */
-    public function getEodCode()
+    public function getEodCode(): int
     {
         return $this->eodCode;
     }
@@ -34,7 +34,7 @@ abstract class AbstractLzwDictionary
         $this -> clear();
     }
     
-    public function getSize()
+    public function getSize(): int
     {
         return $this -> size;
     }

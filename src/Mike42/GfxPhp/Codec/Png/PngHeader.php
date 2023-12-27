@@ -85,7 +85,7 @@ class PngHeader
         return new PngHeader($dataItems['width'], $dataItems['height'], $dataItems['bitDepth'], $dataItems['colorType'], $dataItems['compression'], $dataItems['filter'], $dataItems['interlace']);
     }
     
-    public function toString()
+    public function toString(): string
     {
         return "Image dimensions " . $this -> width . " x " . $this -> height .
         ", bitDepth " . $this -> bitDepth .
@@ -95,7 +95,7 @@ class PngHeader
         ", interlace " . $this -> interlace;
     }
     
-    public function allowsPalette()
+    public function allowsPalette(): bool
     {
         return $this -> requiresPalette() ||
         $this -> colorType === PngHeader::COLOR_TYPE_RGB ||

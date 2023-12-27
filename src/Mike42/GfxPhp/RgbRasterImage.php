@@ -5,13 +5,13 @@ namespace Mike42\GfxPhp;
 
 class RgbRasterImage extends AbstractRasterImage
 {
-    protected $width;
+    protected int $width;
 
-    protected $height;
+    protected int $height;
 
-    protected $data;
+    protected array $data;
 
-    protected $maxVal;
+    protected int $maxVal;
 
     public function getWidth() : int
     {
@@ -31,7 +31,7 @@ class RgbRasterImage extends AbstractRasterImage
         return pack("C*", ... $this -> data);
     }
 
-    public function getMaxVal()
+    public function getMaxVal(): int
     {
         return $this -> maxVal;
     }
@@ -88,7 +88,7 @@ class RgbRasterImage extends AbstractRasterImage
         }
     }
 
-    public function mapColor(int $srcColor, RasterImage $destImage)
+    public function mapColor(int $srcColor, RasterImage $destImage): int
     {
         if ($destImage instanceof RgbRasterImage) {
             return $srcColor;

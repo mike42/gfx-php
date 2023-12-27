@@ -8,9 +8,9 @@ namespace Mike42\GfxPhp\Util;
  */
 class LzwDecodeBuffer
 {
-    protected $contents;
-    protected $ptr;
-    protected $len;
+    protected array $contents;
+    protected int $ptr;
+    protected int $len;
     const MASK = [0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF];
 
     public function __construct(string $contents)
@@ -23,7 +23,7 @@ class LzwDecodeBuffer
     /**
      * @param int $readBits Number of bits to read
      */
-    public function read(int $readBits)
+    public function read(int $readBits): bool|int
     {
         $num = 0;
         $firstBit = $this -> ptr - $readBits + 1;
@@ -40,7 +40,7 @@ class LzwDecodeBuffer
         return $val;
     }
 
-    public function readBit(int $i)
+    public function readBit(int $i): int
     {
         $byte = intdiv($i, 8);
         $bit = $i % 8;

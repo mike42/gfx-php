@@ -6,8 +6,8 @@ namespace Mike42\GfxPhp\Codec\Gif;
 class GifSpecialPurposeBlock
 {
 
-    private $applicationExt;
-    private $commentExt;
+    private ?GifApplicationExt $applicationExt;
+    private ?GifCommentExt $commentExt;
 
     public function __construct(GifApplicationExt $applicationExt = null, GifCommentExt $commentExt = null)
     {
@@ -15,12 +15,12 @@ class GifSpecialPurposeBlock
         $this->commentExt = $commentExt;
     }
 
-    public function getApplicationExt()
+    public function getApplicationExt(): ?GifApplicationExt
     {
         return $this->applicationExt;
     }
 
-    public function getCommentExt()
+    public function getCommentExt(): ?GifCommentExt
     {
         return $this->commentExt;
     }

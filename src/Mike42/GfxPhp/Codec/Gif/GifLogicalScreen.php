@@ -8,8 +8,8 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 class GifLogicalScreen
 {
 
-    private $logicalScreenDescriptor;
-    private $globalColorTable;
+    private GifLogicalScreenDescriptor $logicalScreenDescriptor;
+    private ?GifColorTable $globalColorTable;
 
     public function __construct(GifLogicalScreenDescriptor $logicalScreenDescriptor, GifColorTable $globalColorTable = null)
     {

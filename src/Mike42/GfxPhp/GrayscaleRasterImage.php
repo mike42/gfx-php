@@ -5,13 +5,13 @@ namespace Mike42\GfxPhp;
 
 class GrayscaleRasterImage extends AbstractRasterImage
 {
-    protected $width;
+    protected int $width;
 
-    protected $height;
+    protected int $height;
 
-    protected $data;
+    protected array $data;
     
-    protected $maxVal;
+    protected int $maxVal;
 
     public function getWidth() : int
     {
@@ -23,7 +23,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         return $this -> height;
     }
     
-    public function setPixel(int $x, int $y, int $value)
+    public function setPixel(int $x, int $y, int $value): void
     {
         if ($x < 0 || $x >= $this -> width) {
             return;
@@ -61,7 +61,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         $this -> maxVal = $maxVal;
     }
     
-    public function getMaxVal()
+    public function getMaxVal(): int
     {
         return $this -> maxVal;
     }
@@ -83,7 +83,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         return pack("C*", ... $this -> data);
     }
     
-    public function mapColor(int $srcColor, RasterImage $destImage)
+    public function mapColor(int $srcColor, RasterImage $destImage): int
     {
         if ($destImage instanceof GrayscaleRasterImage) {
             if ($destImage -> maxVal == $this -> maxVal) {
@@ -130,7 +130,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
     {
         if ($this -> maxVal > 255) {
             // Making use of how scale() uses default values to make a new canvas, which has the
-            // side-effect of creating an 8-bit image.
+            // side effect of creating an 8-bit image.
             return $this -> scale($this -> width, $this -> height) -> toIndexed();
         }
         $data = $this -> data;

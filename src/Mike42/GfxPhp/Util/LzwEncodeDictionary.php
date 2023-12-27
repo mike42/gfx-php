@@ -5,9 +5,9 @@ namespace Mike42\GfxPhp\Util;
 
 class LzwEncodeDictionary extends AbstractLzwDictionary
 {
-    protected $encodeDict;
+    protected array $encodeDict;
     
-    public function clear()
+    public function clear(): void
     {
         $count = 2 << ($this -> minCodeSize - 1);
         $this -> encodeDict = array_flip(range(chr(0), chr($count - 1)));
@@ -18,7 +18,7 @@ class LzwEncodeDictionary extends AbstractLzwDictionary
         $this -> size = $count;
     }
     
-    public function get(string $code)
+    public function get(string $code): int
     {
         if (!$this -> contains($code)) {
             throw new \Exception("LZW encode error; code sequence not in dictionary.");
@@ -26,12 +26,12 @@ class LzwEncodeDictionary extends AbstractLzwDictionary
         return $this -> encodeDict[$code];
     }
     
-    public function contains(string $code)
+    public function contains(string $code): bool
     {
         return isset($this -> encodeDict[$code]);
     }
     
-    public function add(string $entry)
+    public function add(string $entry): void
     {
         if ($this -> size == self::MAX_SIZE) {
             throw new \Exception("LZW code table overflow");

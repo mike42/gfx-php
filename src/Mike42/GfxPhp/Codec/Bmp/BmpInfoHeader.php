@@ -29,27 +29,27 @@ class BmpInfoHeader
     const B1_CMYKRLE8 = 12;
     const B1_CMYKRLE4 = 13;
 
-    public $bpp;
-    public $colors;
-    public $compressedSize;
-    public $compression;
-    public $headerSize;
-    public $height;
-    public $horizontalRes;
-    public $importantColors;
-    public $planes;
-    public $verticalRes;
-    public $width;
-    public $redMask;
-    public $greenMask;
-    public $blueMask;
-    public $alphaMask;
-    public $csType;
-    public $endpoint;
-    public $gamma;
-    public $intent;
-    public $profileData;
-    public $profileSize;
+    public int $bpp;
+    public int $colors;
+    public int $compressedSize;
+    public int $compression;
+    public int $headerSize;
+    public int $height;
+    public int $horizontalRes;
+    public int $importantColors;
+    public int $planes;
+    public int $verticalRes;
+    public int $width;
+    public int $redMask;
+    public int $greenMask;
+    public int $blueMask;
+    public int $alphaMask;
+    public int $csType;
+    public array $endpoint;
+    public array $gamma;
+    public int $intent;
+    public int $profileData;
+    public int $profileSize;
 
     public function __construct(
         int $headerSize,
@@ -333,7 +333,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readOs22xBitmapHeader(int $size, DataInputStream $data)
+    private static function readOs22xBitmapHeader(int $size, DataInputStream $data): BmpInfoHeader
     {
         $coreData = $data -> read(self::OS22XBITMAPHEADER_MIN_SIZE - 4);
         $coreFields = unpack("Vwidth/Vheight/vplanes/vbpp", $coreData);
