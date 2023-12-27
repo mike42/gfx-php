@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp;
 
 class RgbRasterImage extends AbstractRasterImage
@@ -46,22 +48,22 @@ class RgbRasterImage extends AbstractRasterImage
         return self::rgbToInt($this -> data[$byte], $this -> data[$byte + 1], $this -> data[$byte + 2], $this -> maxVal);
     }
 
-    public function indexToRgb(int $val)
+    public function indexToRgb(int $val): array
     {
         return self::intToRgb($val);
     }
     
-    public function rgbToIndex(array $val)
+    public function rgbToIndex(array $val): int
     {
         return self::rgbToInt($val[0], $val[1], $val[2]);
     }
     
-    public static function rgbToInt(int $r, int $g, int $b)
+    public static function rgbToInt(int $r, int $g, int $b): int
     {
         return ($r << 16) | ($g << 8) | $b;
     }
 
-    public static function intToRgb($in)
+    public static function intToRgb($in): array
     {
         return [
             ($in >> 16) & 0xFF,
@@ -70,7 +72,7 @@ class RgbRasterImage extends AbstractRasterImage
         ];
     }
 
-    public function setPixel(int $x, int $y, int $value)
+    public function setPixel(int $x, int $y, int $value): void
     {
         if ($x < 0 || $x >= $this -> width) {
             return;
@@ -109,17 +111,18 @@ class RgbRasterImage extends AbstractRasterImage
             $data = array_values(array_fill(0, $expectedBytes, $maxVal));
         }
         if ($maxVal > 255) {
-            array_walk($data, array('self', 'convertDepth'), [$maxVal, 255]);
+            array_walk($data, [RgbRasterImage::class, 'convertDepth'], [$maxVal, 255]);
             $maxVal = 255;
         }
         return new RgbRasterImage($width, $height, $data, $maxVal);
     }
 
-    public static function convertDepth(&$item, $key, array $data)
+    public static function convertDepth(&$item, $key, array $data): void
     {
         $maxVal = $data[0];
         $newMaxVal = $data[1];
-        $item = intdiv($item * $newMaxVal, $maxVal);
+        $bigvalue = $item * $newMaxVal;
+        $item = intdiv($bigvalue, $maxVal);
     }
 
     public function toRgb() : RgbRasterImage

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Compression and decompression of binary data in the LZW format, as
  * used in GIF.

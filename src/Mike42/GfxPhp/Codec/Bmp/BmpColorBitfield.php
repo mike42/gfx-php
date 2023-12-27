@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
@@ -7,10 +8,10 @@ namespace Mike42\GfxPhp\Codec\Bmp;
  */
 class BmpColorBitfield
 {
-    private $red;
-    private $green;
-    private $blue;
-    private $alpha;
+    private BmpColorMask $red;
+    private BmpColorMask $green;
+    private BmpColorMask $blue;
+    private BmpColorMask $alpha;
 
     public function __construct(BmpColorMask $red, BmpColorMask $green, BmpColorMask $blue, BmpColorMask $alpha)
     {

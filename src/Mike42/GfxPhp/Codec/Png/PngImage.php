@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 use Mike42\GfxPhp\BlackAndWhiteRasterImage;
@@ -279,21 +281,21 @@ class PngImage
     /**
      * We'll use this to mix with a background color.
      */
-    private function alphaMix(array $data, $chunkSize)
+    private function alphaMix(array $data, $chunkSize): array
     {
         // Will need to change to "alphaMixPixel" to [$this, "alphaMixPixel"] once we are in a class.
         $noAlphaPixels = array_map([$this, "alphaMixPixel"], array_chunk($data, $chunkSize, false));
         return array_merge(...$noAlphaPixels);
     }
     
-    private function alphaMixPixel(array $channels)
+    private function alphaMixPixel(array $channels): array
     {
         // Mix alpha to white
         $maxLevel = 2 ** $this -> header -> getBitDepth() - 1;
         $backGround = $maxLevel;
         $alpha = array_pop($channels) / $maxLevel;
         foreach ($channels as $id => $channel) {
-            $pixels[$id] = ($maxLevel - ($maxLevel - $channel) * $alpha);
+            $pixels[$id] = (int)($maxLevel - ($maxLevel - $channel) * $alpha);
         }
         return $pixels;
     }

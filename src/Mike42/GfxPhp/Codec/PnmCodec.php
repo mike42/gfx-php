@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
 
@@ -50,8 +51,8 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         if (count($sizes) != 2 || !is_numeric($sizes[0]) || !is_numeric($sizes[1])) {
             throw new Exception("Image size is bogus, file probably corrupt.");
         }
-        $width = $sizes[0];
-        $height = $sizes[1];
+        $width = intval($sizes[0]);
+        $height = intval($sizes[1]);
         $line_end = $next_line_end;
         // Extract data and return differently based on each magic number.
         switch ($pnmMagicNumber) {

@@ -1,9 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Common;
 
 class DataBlobInputStream implements DataInputStream
 {
+    private string $data;
+    private int $offset;
+
     public function __construct(string $data)
     {
         $this -> data = $data;

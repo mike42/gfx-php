@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
@@ -41,7 +42,7 @@ class BmpColorMask
         return $this->offset;
     }
 
-    public function getMask()
+    public function getMask(): int
     {
         return $this->mask;
     }

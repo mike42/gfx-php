@@ -1,7 +1,7 @@
 <?php
-namespace Mike42\GfxPhp\Codec\Png;
+declare(strict_types=1);
 
-use Mike42\GfxPhp\Codec\Png\PngHeader;
+namespace Mike42\GfxPhp\Codec\Png;
 
 class PngHeader
 {
@@ -17,14 +17,14 @@ class PngHeader
     const INTERLACE_NONE = 0;
     const INTERLACE_ADAM7 = 1;
 
-    private $width;
-    private $height;
-    private $bitDepth;
-    private $colorType;
-    private $compression;
-    private $filter;
-    private $interlace;
-    
+    private int $width;
+    private int $height;
+    private int $bitDepth;
+    private int $colorType;
+    private int $compression;
+    private int $filter;
+    private int $interlace;
+
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
         // Image dimensions
@@ -72,7 +72,7 @@ class PngHeader
                 $this -> interlace = $interlace;
     }
     
-    public static function fromChunk(PngChunk $chunk)
+    public static function fromChunk(PngChunk $chunk): PngHeader
     {
         $chunkData = $chunk -> getData();
         $chunkLen = strlen($chunkData);
@@ -102,37 +102,37 @@ class PngHeader
         $this -> colorType === PngHeader::COLOR_TYPE_RGBA;
     }
     
-    public function requiresPalette()
+    public function requiresPalette(): bool
     {
         return $this -> colorType === PngHeader::COLOR_TYPE_INDEXED;
     }
     
-    public function getWidth()
+    public function getWidth(): int
     {
         return $this -> width;
     }
     
-    public function getHeight()
+    public function getHeight(): int
     {
         return $this -> height;
     }
     
-    public function getBitDepth()
+    public function getBitDepth(): int
     {
         return $this -> bitDepth;
     }
     
-    public function getColorType()
+    public function getColorType(): int
     {
         return $this -> colorType;
     }
-    
-    public function getCompresssion()
+
+    public function getCompression(): int
     {
-        return $this -> compresssion;
+        return $this -> compression;
     }
-    
-    public function getChannels()
+
+    public function getChannels(): int
     {
         // Return number of channels
         $channelLookup = [
@@ -145,12 +145,12 @@ class PngHeader
         return $channelLookup[$this -> getColorType()];
     }
     
-    public function getFilter()
+    public function getFilter(): int
     {
         return $this -> filter;
     }
     
-    public function getInterlace()
+    public function getInterlace(): int
     {
         return $this -> interlace;
     }

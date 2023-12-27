@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
@@ -10,8 +10,9 @@ class BmpFileHeader
 {
     const FILE_HEADER_SIZE = 14;
 
-    public $offset;
-    public $size;
+    public int $offset;
+    public int $size;
+    private string $fileType;
 
     public function __construct(string $fileType, int $size, int $offset)
     {
