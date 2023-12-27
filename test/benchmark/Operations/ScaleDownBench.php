@@ -9,7 +9,7 @@ use Mike42\GfxPhp\RgbRasterImage;
  * @BeforeMethods({"init"})
  * @Revs(10000)
  */
-class ScaleDownBenchmark
+class ScaleDownBench
 {
     private static $bw100;
     private static $rgb100;

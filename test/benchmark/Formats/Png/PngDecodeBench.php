@@ -6,7 +6,7 @@ use Mike42\GfxPhp\Image;
  * @BeforeMethods({"init"})
  * @Revs(1000)
 */
-class PngDecodeBenchmark {
+class PngDecodeBench {
 
     private static $blob;
 

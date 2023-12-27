@@ -6,7 +6,7 @@ use Mike42\GfxPhp\Util\LzwCompression;
  * @BeforeMethods({"init"})
  * @Revs(10)
  */
-class LzwEncodeBenchmark
+class LzwEncodeBench
 {
     private $blank;
     private $random;

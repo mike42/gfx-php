@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "005cfd749b2994390534201dd16a746b",
+    "content-hash": "6b705f8acd3882349f6a5911a0978ad7",
     "packages": [],
     "packages-dev": [
         {
@@ -490,16 +490,16 @@
         },
         {
             "name": "phpbench/phpbench",
-            "version": "dev-master",
+            "version": "1.2.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpbench/phpbench.git",
-                "reference": "6998f01ee068e30009328768aef1d8ce48f339f1"
+                "reference": "f7000319695cfad04a57fc64bf7ef7abdf4c437c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpbench/phpbench/zipball/6998f01ee068e30009328768aef1d8ce48f339f1",
-                "reference": "6998f01ee068e30009328768aef1d8ce48f339f1",
+                "url": "https://api.github.com/repos/phpbench/phpbench/zipball/f7000319695cfad04a57fc64bf7ef7abdf4c437c",
+                "reference": "f7000319695cfad04a57fc64bf7ef7abdf4c437c",
                 "shasum": ""
             },
             "require": {
@@ -515,35 +515,29 @@
                 "phpbench/dom": "~0.3.3",
                 "psr/log": "^1.1 || ^2.0 || ^3.0",
                 "seld/jsonlint": "^1.1",
-                "symfony/console": "^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/console": "^4.2 || ^5.0  || ^6.0 || ^7.0",
                 "symfony/filesystem": "^4.2 || ^5.0 || ^6.0 || ^7.0",
                 "symfony/finder": "^4.2 || ^5.0 || ^6.0 || ^7.0",
                 "symfony/options-resolver": "^4.2 || ^5.0 || ^6.0 || ^7.0",
                 "symfony/process": "^4.2 || ^5.0 || ^6.0 || ^7.0",
                 "webmozart/glob": "^4.6"
             },
-            "replace": {
-                "symfony/polyfill-php80": "*",
-                "symfony/polyfill-php81": "*"
-            },
             "require-dev": {
                 "dantleech/invoke": "^2.0",
-                "ergebnis/composer-normalize": "^2.39",
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "jangregor/phpstan-prophecy": "^1.0",
                 "phpspec/prophecy": "dev-master",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^1.0",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^10.4",
-                "rector/rector": "^0.18.11",
+                "phpunit/phpunit": "^10.0",
+                "rector/rector": "^0.18.10",
                 "symfony/error-handler": "^5.2 || ^6.0 || ^7.0",
                 "symfony/var-dumper": "^4.0 || ^5.0 || ^6.0 || ^7.0"
             },
             "suggest": {
                 "ext-xdebug": "For Xdebug profiling extension."
             },
-            "default-branch": true,
             "bin": [
                 "bin/phpbench"
             ],
@@ -582,7 +576,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpbench/phpbench/issues",
-                "source": "https://github.com/phpbench/phpbench/tree/master"
+                "source": "https://github.com/phpbench/phpbench/tree/1.2.15"
             },
             "funding": [
                 {
@@ -590,7 +584,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-24T09:38:48+00:00"
+            "time": "2023-11-29T12:21:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3240,9 +3234,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpbench/phpbench": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
