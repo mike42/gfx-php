@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp;
 
 /**
@@ -7,30 +9,30 @@ namespace Mike42\GfxPhp;
  */
 class BlackAndWhiteRasterImage extends AbstractRasterImage
 {
-    protected $width;
+    protected int $width;
 
-    protected $bytesPerRow;
+    protected int $bytesPerRow;
 
-    protected $height;
+    protected int $height;
 
-    protected $data;
+    protected array $data;
 
-    public function invert()
+    public function invert(): void
     {
-        array_walk($this -> data, 'self::invertByte');
+        array_walk($this -> data, [$this, 'invertByte']);
     }
 
-    public function clear()
+    public function clear(): void
     {
-        array_walk($this -> data, 'self::clearByte');
+        array_walk($this -> data, [$this, 'clearByte']);
     }
 
-    protected static function invertByte(int &$item, $key)
+    protected static function invertByte(int &$item, $key): void
     {
-        $item = ~ $item;
+        $item = ~$item;
     }
 
-    protected static function clearByte(int &$item, $key)
+    protected static function clearByte(int &$item, $key): void
     {
         $item = 0;
     }
@@ -46,7 +48,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
     }
 
 
-    public function setPixel(int $x, int $y, int $value)
+    public function setPixel(int $x, int $y, int $value): void
     {
         if ($x < 0 || $x >= $this -> width) {
             return;
@@ -78,7 +80,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return ($this -> data[$byte] >> (7 - $bit)) & 0x01;
     }
 
-    protected function __construct($width, $height, array $data)
+    protected function __construct(int $width, int $height, array $data)
     {
         $this -> width = $width;
         $this -> height = $height;
@@ -86,7 +88,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         $this -> bytesPerRow = intdiv($width + 7, 8);
     }
 
-    public static function create($width, $height, array $data = null) : BlackAndWhiteRasterImage
+    public static function create(int $width, int $height, array $data = null) : BlackAndWhiteRasterImage
     {
         $bytesPerRow = intdiv($width + 7, 8);
         $expectedBytes = $bytesPerRow * $height;
@@ -96,7 +98,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return new BlackAndWhiteRasterImage($width, $height, $data);
     }
 
-    public function toString()
+    public function toString(): string
     {
         $out = "";
         for ($y = 0; $y < $this -> getHeight(); $y += 2) {
@@ -124,7 +126,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return pack("C*", ... $this -> data);
     }
     
-    public function mapColor(int $srcColor, RasterImage $destImage)
+    public function mapColor(int $srcColor, RasterImage $destImage): int
     {
         if ($destImage instanceof BlackAndWhiteRasterImage) {
             return $srcColor;

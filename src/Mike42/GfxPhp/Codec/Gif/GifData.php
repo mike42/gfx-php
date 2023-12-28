@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -14,9 +14,9 @@ class GifData
     const GIF_EXTENSION_APPLICATION="\xFF";
     const GIF_EXTENSION_COMMENT="\xFE";
 
-    private $graphicsBlock;
-    private $specialPurposeBlock;
-    private $unrecognisedBlock;
+    private ?GifGraphicsBlock $graphicsBlock;
+    private ?GifSpecialPurposeBlock $specialPurposeBlock;
+    private ?GifUnknownExt $unrecognisedBlock;
 
     public function __construct(GifGraphicsBlock $graphicsBlock = null, GifSpecialPurposeBlock $specialPurposeBlock = null, GifUnknownExt $unrecognisedBlock = null)
     {
@@ -25,17 +25,17 @@ class GifData
         $this->unrecognisedBlock = $unrecognisedBlock;
     }
 
-    public function getUnrecognisedBlock()
+    public function getUnrecognisedBlock(): ?GifUnknownExt
     {
         return $this->unrecognisedBlock;
     }
 
-    public function getSpecialPurposeBlock()
+    public function getSpecialPurposeBlock(): ?GifSpecialPurposeBlock
     {
         return $this->specialPurposeBlock;
     }
 
-    public function getGraphicsBlock()
+    public function getGraphicsBlock(): ?GifGraphicsBlock
     {
         return $this->graphicsBlock;
     }

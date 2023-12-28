@@ -2,9 +2,11 @@
 // This file is part of mike42/gfx-php, which is released under LGPL-2.1-or-later.
 // See file LICENSE or go to https://github.com/mike42/gfx-php for full license details
 
+declare(strict_types=1);
+
 /**
  * Top-level namespace for Mike42\GfxPhp, containing the classes and
- * interfaces that a provide an entry-point into the library.
+ * interfaces that provide an entry-point into the library.
  */
 namespace Mike42\GfxPhp;
 

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 class FilterDecoder
@@ -6,7 +8,7 @@ class FilterDecoder
     /*
      * Unfilter entire image, or a pass of an interlaced image.
      */
-    public function unfilterImage(string $binData, int $scanlineBytes, int $channels, int $bitDepth)
+    public function unfilterImage(string $binData, int $scanlineBytes, int $channels, int $bitDepth): array
     {
         // Extract filtered data
         $scanlinesWithFiltering = str_split($binData, $scanlineBytes + 1);
@@ -32,7 +34,7 @@ class FilterDecoder
     /**
      * Unfilter an individual scanline
      */
-    public function unfilterScanline(array $currentFiltered, array $prior, int $filterType, int $bpp)
+    public function unfilterScanline(array $currentFiltered, array $prior, int $filterType, int $bpp): array
     {
         $lw = count($currentFiltered);
         if ($filterType === 0) {
@@ -75,7 +77,7 @@ class FilterDecoder
         throw new \Exception("Filter type $filterType not valid");
     }
 
-    private function paethPredictor(int $a, int $b, int $c)
+    private function paethPredictor(int $a, int $b, int $c): int
     {
         // Nearest-neighbor, based on pseudocode from the PNG spec.
         $p = $a + $b - $c;

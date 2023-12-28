@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class PngChunk
 {
-    private $type;
-    private $data;
-    private $crc;
+    private string $type;
+    private string $data;
+    private int $crc;
     
     public function __construct(string $type, string $data)
     {
@@ -19,7 +21,7 @@ class PngChunk
         $this -> crc = crc32($type . $data);
     }
     
-    public function toBin()
+    public function toBin(): string
     {
         $len = strlen($this -> data);
         $lenData = pack("N", $len);
@@ -28,22 +30,22 @@ class PngChunk
         return $lenData . $bodyData . $crcData;
     }
     
-    public function getCrc()
+    public function getCrc(): int
     {
         return $this -> crc;
     }
     
-    public function getType()
+    public function getType(): string
     {
         return $this -> type;
     }
     
-    public function getData()
+    public function getData(): string
     {
         return $this -> data;
     }
     
-    public static function isValidChunkName(string $name)
+    public static function isValidChunkName(string $name): bool
     {
         if (array_search($name, ["IHDR", "IDAT", "PLTE", "IEND"], true) !== false) {
             // Critical chunks defined as of PNG 1.2
@@ -55,7 +57,7 @@ class PngChunk
         return false;
     }
     
-    public static function fromBin(DataInputStream $in)
+    public static function fromBin(DataInputStream $in): ?PngChunk
     {
         if ($in -> isEof()) {
             return null;
@@ -79,7 +81,7 @@ class PngChunk
         return $chunk;
     }
     
-    public function toString()
+    public function toString(): string
     {
         return $this -> type . " chunk";
     }

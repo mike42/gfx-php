@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec;
 
 use Mike42\GfxPhp\Codec\Common\DataBlobInputStream;
@@ -9,7 +11,7 @@ use Mike42\GfxPhp\IndexedRasterImage;
 
 class GifCodec implements ImageEncoder, ImageDecoder
 {
-    protected static $instance = null;
+    protected static ?GifCodec $instance = null;
 
     public function encode(RasterImage $image, string $format): string
     {
@@ -105,7 +107,7 @@ class GifCodec implements ImageEncoder, ImageDecoder
         return ["gif"];
     }
 
-    public static function getInstance()
+    public static function getInstance(): GifCodec
     {
         if (self::$instance === null) {
             self::$instance = new GifCodec();

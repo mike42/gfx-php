@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,11 +7,11 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifGraphicControlExt
 {
-    private $disposalMethod;
-    private $hasUserInputFlag;
-    private $hasTransparentColor;
-    private $delayTime;
-    private $transparentColorIndex;
+    private int $disposalMethod;
+    private bool $hasUserInputFlag;
+    private bool $hasTransparentColor;
+    private int $delayTime;
+    private int $transparentColorIndex;
 
     public function __construct(int $disposalMethod, bool $hasUserInputFlag, bool $hasTransparentColor, int $delayTime, int $transparentColorIndex)
     {

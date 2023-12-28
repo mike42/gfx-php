@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Compression and decompression of binary data in the LZW format, as
  * used in GIF.
@@ -17,7 +19,7 @@ namespace Mike42\GfxPhp\Util;
  */
 class LzwCompression
 {
-    public static function compress(string $inp, int $minCodeSize)
+    public static function compress(string $inp, int $minCodeSize): string
     {
         $bits = $minCodeSize + 1;
         $dict = new LzwEncodeDictionary($minCodeSize);
@@ -56,7 +58,7 @@ class LzwCompression
         return $outp -> asString();
     }
 
-    public static function decompress(string $inp, int $minCodeSize)
+    public static function decompress(string $inp, int $minCodeSize): string
     {
         $bits = $minCodeSize + 1;
         $dict = new LzwDecodeDictionary($minCodeSize);

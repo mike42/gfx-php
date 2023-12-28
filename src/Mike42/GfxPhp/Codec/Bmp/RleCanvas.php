@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
@@ -10,12 +11,12 @@ use Exception;
  */
 class RleCanvas
 {
-    private $buffer;
-    private $cursorX;
-    private $cursorY;
-    private $width;
-    private $height;
-    private $complete;
+    private array $buffer;
+    private int $cursorX;
+    private int $cursorY;
+    private int $width;
+    private int $height;
+    private bool $complete;
 
     public function __construct(int $width, int $height)
     {
@@ -32,24 +33,24 @@ class RleCanvas
         $this->buffer = $tmp;
     }
 
-    public function delta(int $deltaX, int $deltaY)
+    public function delta(int $deltaX, int $deltaY): void
     {
         $this -> cursorX += $deltaX;
         $this -> cursorY += $deltaY;
     }
 
-    public function endOfLine()
+    public function endOfLine(): void
     {
         $this -> cursorY++;
         $this -> cursorX = 0;
     }
 
-    public function endOfBitmap()
+    public function endOfBitmap(): void
     {
         $this -> complete = true;
     }
 
-    public function set(int $val)
+    public function set(int $val): void
     {
         // Range check when we attempt to write the pixel.
         if ($this -> cursorY < 0 || $this -> cursorY >= $this -> height) {
@@ -66,21 +67,21 @@ class RleCanvas
         $this -> cursorX++;
     }
 
-    public function absolute(array $values)
+    public function absolute(array $values): void
     {
         for ($i = 0; $i < count($values); $i++) {
             $this -> set($values[$i]);
         }
     }
 
-    public function repeat(int $val, int $times)
+    public function repeat(int $val, int $times): void
     {
         for ($j = 0; $j < $times; $j++) {
             $this -> set($val);
         }
     }
 
-    public function getContents()
+    public function getContents(): array
     {
         return $this -> buffer;
     }

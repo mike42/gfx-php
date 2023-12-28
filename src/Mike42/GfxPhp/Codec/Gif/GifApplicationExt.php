@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,9 +7,9 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifApplicationExt
 {
-    private $appIdentifer;
-    private $appAuthCode;
-    private $data;
+    private string $appIdentifer;
+    private string $appAuthCode;
+    private array $data;
 
     public function __construct(string $appIdentifer, string $appAuthCode, array $data)
     {

@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
 class BmpBitfieldDecoder
 {
-    private $bitfields;
+    private BmpColorBitfield $bitfields;
 
     public function __construct(BmpColorBitfield $bitfields)
     {
@@ -65,7 +66,7 @@ class BmpBitfieldDecoder
         return $outpBytes;
     }
 
-    public function mixChannel(int $value1, int $value2, int $amount)
+    public function mixChannel(int $value1, int $value2, int $amount): int
     {
         $amountMultiplier = $amount / 255.0;
         $result = (($value1 / 255.0) * $amountMultiplier) + (($value2 / 255.0) * (1.0 - $amountMultiplier));

@@ -6,7 +6,7 @@ use Mike42\GfxPhp\Image;
  * @BeforeMethods({"init"})
  * @Revs(1000)
  */
-class ConvertRasterImageBenchmark
+class ConvertRasterImageBench
 {
     private static $bw100;
     private static $gray100;

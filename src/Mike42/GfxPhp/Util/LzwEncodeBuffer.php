@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Util;
 
 /*
@@ -6,6 +8,10 @@ namespace Mike42\GfxPhp\Util;
  */
 class LzwEncodeBuffer
 {
+    protected int $bitPos;
+    private int $bitBuffer;
+    private string $textBuffer;
+
     public function __construct()
     {
         $this -> textBuffer = "";
@@ -13,7 +19,7 @@ class LzwEncodeBuffer
         $this -> bitPos = 0;
     }
     
-    public function add(int $code, int $bits)
+    public function add(int $code, int $bits): void
     {
         $mask = [];
         $byte = 0;
@@ -42,7 +48,7 @@ class LzwEncodeBuffer
         }
     }
 
-    public function asString()
+    public function asString(): string
     {
         if ($this -> bitPos !== 0) {
             // Flush

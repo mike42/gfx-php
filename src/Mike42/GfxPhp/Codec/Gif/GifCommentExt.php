@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,7 +7,7 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifCommentExt
 {
-    private $data;
+    private array $data;
 
     public function getData(): array
     {
@@ -19,7 +19,7 @@ class GifCommentExt
         $this -> data = $data;
     }
 
-    public static function fromBin(DataInputStream $in)
+    public static function fromBin(DataInputStream $in): GifCommentExt
     {
         $extIntroducer = $in->read(1);
         $extLabel = $in->read(1);

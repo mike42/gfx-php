@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
 
@@ -10,7 +11,7 @@ use Exception;
 
 class PnmCodec implements ImageDecoder, ImageEncoder
 {
-    protected static $instance = null;
+    protected static ?PnmCodec $instance = null;
 
     public function identify(string $blob): string
     {
@@ -50,8 +51,8 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         if (count($sizes) != 2 || !is_numeric($sizes[0]) || !is_numeric($sizes[1])) {
             throw new Exception("Image size is bogus, file probably corrupt.");
         }
-        $width = $sizes[0];
-        $height = $sizes[1];
+        $width = intval($sizes[0]);
+        $height = intval($sizes[1]);
         $line_end = $next_line_end;
         // Extract data and return differently based on each magic number.
         switch ($pnmMagicNumber) {
@@ -182,7 +183,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         return ["ppm", "pgm", "pbm"];
     }
 
-    public static function getInstance()
+    public static function getInstance(): PnmCodec
     {
         if (self::$instance === null) {
             self::$instance = new PnmCodec();
