@@ -33,8 +33,7 @@ class BmpFile
         // Read two different headers
         $fileHeader = BmpFileHeader::fromBinary($data);
         $infoHeader = BmpInfoHeader::fromBinary($data);
-        if (
-            $infoHeader -> bpp != 0 &&
+        if ($infoHeader -> bpp != 0 &&
             $infoHeader -> bpp != 1 &&
             $infoHeader -> bpp != 2 &&
             $infoHeader -> bpp != 4 &&
@@ -53,8 +52,7 @@ class BmpFile
         $colorTable = [];
         if (self::isOs21XBitmap($fileHeader, $infoHeader, $colorCount)) {
             // This type of image may only be 1, 4, 8 or 24 bit
-            if (
-                $infoHeader -> bpp != 1 &&
+            if ($infoHeader -> bpp != 1 &&
                 $infoHeader -> bpp != 4 &&
                 $infoHeader -> bpp != 8 &&
                 $infoHeader -> bpp != 24
@@ -95,8 +93,7 @@ class BmpFile
         }
         if ($infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_FULL_SIZE || $infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_MIN_SIZE) {
             // Some compression modes in OS/2 V2 bitmaps use the same numeric ID' as unrelated Windows BMP compression modes, but are not supported.
-            if (
-                $infoHeader -> compression != BmpInfoHeader::B1_RGB &&
+            if ($infoHeader -> compression != BmpInfoHeader::B1_RGB &&
                 $infoHeader -> compression != BmpInfoHeader::B1_RLE4 &&
                 $infoHeader -> compression != BmpInfoHeader::B1_RLE8
             ) {

@@ -29,8 +29,7 @@ class PngHeader
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
         // Image dimensions
-        if (
-            $width < 1 || $width > 2147483647 ||
+        if ($width < 1 || $width > 2147483647 ||
             $height < 1 || $height > 2147483647
         ) {
                 throw new \Exception("Invalid image dimensions");
@@ -68,8 +67,7 @@ class PngHeader
         }
             $this -> filter = $filter;
             // Interlace method
-        if (
-            $interlace != PngHeader::INTERLACE_NONE &&
+        if ($interlace != PngHeader::INTERLACE_NONE &&
                 $interlace != PngHeader::INTERLACE_ADAM7
         ) {
                 throw new \Exception("Interlace method not supported");

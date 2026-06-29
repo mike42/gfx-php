@@ -34,8 +34,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
     {
         // Read header line
         $im_hdr_line = substr($blob, 0, 3);
-        if (
-            $im_hdr_line !== "P4\n" &&
+        if ($im_hdr_line !== "P4\n" &&
             $im_hdr_line !== "P5\n" &&
             $im_hdr_line !== "P6\n"
         ) {
