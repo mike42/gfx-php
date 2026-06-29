@@ -11,7 +11,8 @@ class LzwDecodeDictionary extends AbstractLzwDictionary
     public function clear(): void
     {
         $count = 2 << ($this -> minCodeSize - 1);
-        $this -> decodeDict = range(chr(0), chr($count - 1));
+        // Max 256 entries pre-loaded into table (one per possible byte value)
+        $this -> decodeDict = range(chr(0), chr(min($count - 1, 255)));
         $this -> clearCode = $count;
         $count++;
         $this -> eodCode = $count;

@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Compression and decompression of binary data in the LZW format, as
  * used in GIF.
  *
- * This is implemented based on these decriptions:
+ * This is implemented based on these descriptions:
  *
  * - http://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp
  * - https://www2.cs.duke.edu/csed/curious/compression/lzw.html
