@@ -29,3 +29,6 @@ jobs:
 
       - name: Run tests
         run: php vendor/bin/phpunit
+
+      - name: Run benchmarks
+        run: php vendor/bin/phpbench run --report=aggregate --progress=none
