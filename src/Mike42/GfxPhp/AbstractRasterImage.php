@@ -57,7 +57,7 @@ abstract class AbstractRasterImage implements RasterImage
 
     public function getBlob(string $extension): string
     {
-        // Use extension to decide output codec 
+        // Use extension to decide output codec
         if ($extension === null || empty($extension)) {
             throw new \Exception("Cannot generate: No extension.");
         }
