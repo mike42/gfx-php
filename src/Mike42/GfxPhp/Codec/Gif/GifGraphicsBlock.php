@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,33 +8,33 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifGraphicsBlock
 {
-    private $graphicControlExt;
-    private $tableBasedImage;
-    private $plaintextExt;
+    private ?GifGraphicControlExt $graphicControlExt;
+    private ?GifTableBasedImage $tableBasedImage;
+    private ?GifPlaintextExt $plaintextExt;
 
-    public function __construct(GifGraphicControlExt $graphicControlExt = null, GifTableBasedImage $tableBasedImage = null, GifPlaintextExt $plaintextExt = null)
+    public function __construct(?GifGraphicControlExt $graphicControlExt = null, ?GifTableBasedImage $tableBasedImage = null, ?GifPlaintextExt $plaintextExt = null)
     {
         $this->graphicControlExt = $graphicControlExt;
         $this->tableBasedImage = $tableBasedImage;
         $this->plaintextExt = $plaintextExt;
     }
 
-    public function getGraphicControlExt()
+    public function getGraphicControlExt(): ?GifGraphicControlExt
     {
         return $this->graphicControlExt;
     }
 
-    public function getTableBasedImage()
+    public function getTableBasedImage(): ?GifTableBasedImage
     {
         return $this->tableBasedImage;
     }
 
-    public function getPlaintextExt()
+    public function getPlaintextExt(): ?GifPlaintextExt
     {
         return $this->plaintextExt;
     }
 
-    public static function fromBin(DataInputStream $in) : GifGraphicsBlock
+    public static function fromBin(DataInputStream $in): GifGraphicsBlock
     {
         $peek = $in -> peek(2);
         $blockId = $peek[0];
@@ -53,7 +54,7 @@ class GifGraphicsBlock
             if ($extensionId == GifData::GIF_EXTENSION_APPLICATION) {
                 // ImageMagick drops an 'application' block here, which we can discard (gfx-php does not use it at this stage)
                 GifApplicationExt::fromBin($in);
-            } else if ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
+            } elseif ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
                 // Also GIMP places a 'comment' block here.
                 GifCommentExt::fromBin($in);
             } else {
@@ -68,7 +69,7 @@ class GifGraphicsBlock
             // Plain text
             $plaintextExtension = GifPlaintextExt::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, null, $plaintextExtension);
-        } else if ($blockId == GifData::GIF_IMAGE_SEPARATOR) {
+        } elseif ($blockId == GifData::GIF_IMAGE_SEPARATOR) {
             // Table-based image
             $tableBasedImage = GifTableBasedImage::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, $tableBasedImage, null);

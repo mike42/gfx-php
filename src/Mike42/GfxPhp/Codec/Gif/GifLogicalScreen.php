@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,11 +8,10 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifLogicalScreen
 {
+    private GifLogicalScreenDescriptor $logicalScreenDescriptor;
+    private ?GifColorTable $globalColorTable;
 
-    private $logicalScreenDescriptor;
-    private $globalColorTable;
-
-    public function __construct(GifLogicalScreenDescriptor $logicalScreenDescriptor, GifColorTable $globalColorTable = null)
+    public function __construct(GifLogicalScreenDescriptor $logicalScreenDescriptor, ?GifColorTable $globalColorTable = null)
     {
         $this->logicalScreenDescriptor = $logicalScreenDescriptor;
         $this->globalColorTable = $globalColorTable;

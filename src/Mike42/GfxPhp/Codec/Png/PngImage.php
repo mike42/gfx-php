@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 use Mike42\GfxPhp\BlackAndWhiteRasterImage;
@@ -10,27 +13,27 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class PngImage
 {
-    const PNG_SIGNATURE="\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
+    const PNG_SIGNATURE = "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
 
-    private $header;
-    private $imageData;
-    private $chunkPalette;
-    
-    private function __construct(PngHeader $header, array $imageData, PngChunk $chunkPalette = null)
+    private PngHeader $header;
+    private array $imageData;
+    private ?PngChunk $chunkPalette;
+
+    private function __construct(PngHeader $header, array $imageData, ?PngChunk $chunkPalette = null)
     {
         $this -> header = $header;
         $this -> imageData = $imageData;
         $this -> chunkPalette = $chunkPalette;
     }
 
-    public static function fromBinary(DataInputStream $data) : PngImage
+    public static function fromBinary(DataInputStream $data): PngImage
     {
         // Check signature
         $signature = $data -> read(8);
         if ($signature != PngImage::PNG_SIGNATURE) {
             throw new \Exception("Bad PNG signature");
         }
-        
+
         // Iterate chunks
         $chunk_header = PngChunk::fromBin($data);
         $header = PngHeader::fromChunk($chunk_header);
@@ -40,7 +43,7 @@ class PngImage
         $chunk_palette = null;
         $chunk_data = [];
         $chunk_end = null;
-        
+
         while (( $chunk = PngChunk::fromBin($data) ) !== null) {
             if ($chunk -> getType() === "IEND") {
                 $chunk_end = $chunk;
@@ -49,9 +52,9 @@ class PngImage
             if ($chunk -> getType() === "PLTE") {
                 if (!$header -> allowsPalette()) {
                     throw new \Exception("Palette not allowed for this image type");
-                } else if ($chunk_palette !== null) {
+                } elseif ($chunk_palette !== null) {
                     throw new \Exception("Multiple palette entries");
-                } else if (count($chunk_data) > 0) {
+                } elseif (count($chunk_data) > 0) {
                     throw new \Exception("Palette must be issued before first data chunk");
                 }
                 $paletteLen = strlen($chunk -> getData());
@@ -64,23 +67,23 @@ class PngImage
                 $chunk_data[] = $chunk;
             }
         }
-        
+
         if ($header -> requiresPalette() && $chunk_palette === null) {
             throw new \Exception("Missing palette, required for this image type");
         }
-        
+
         if (count($chunk_data) === 0) {
             throw new \Exception("No data received");
         }
-        
+
         if ($chunk_end === null) {
             throw new \Exception("File does not end with IEND chunk");
         }
-        
+
         if (!$data -> isEof()) {
             throw new \Exception("Data extends past end of file");
         }
-        
+
         // Extract, join and decompress chunks
         $imageDataCompressed = '';
         foreach ($chunk_data as $chunk) {
@@ -91,15 +94,15 @@ class PngImage
         if ($binData === false) {
             throw new \Exception("DEFLATE decompression failed");
         }
-        
+
         // Turn into array of scan-lines based on filtering
         $filterDecoder = new FilterDecoder();
         $interlaceDecoder = new InterlaceDecoder($filterDecoder);
         $imageData = $interlaceDecoder -> decode($header, $binData);
         return new PngImage($header, $imageData, $chunk_palette);
     }
-    
-    public function toRasterImage() : RasterImage
+
+    public function toRasterImage(): RasterImage
     {
         // Further processing depends on image type
         $bitDepth = $this -> header -> getBitDepth();
@@ -206,12 +209,12 @@ class PngImage
         }
         return $im;
     }
-    
+
     /**
      * Takes 8-bit samples, and produces eight times as many 1-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes1Bpp(array $in, int $width)
+    public static function expandBytes1Bpp(array $in, int $width): array
     {
         $res =  [];
         $scanlineBytes = intdiv($width + 7, 8);
@@ -226,12 +229,12 @@ class PngImage
         }
         return $res;
     }
-    
+
     /**
      * Takes 8-bit samples, and produces four times as many 2-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes2Bpp(array $in, int $width)
+    public static function expandBytes2Bpp(array $in, int $width): array
     {
         $res =  [];
         $scanlineBytes = intdiv($width + 3, 4);
@@ -246,12 +249,12 @@ class PngImage
         }
         return $res;
     }
-    
+
     /**
      * Takes 8-bit samples, and produces twice as many 4-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes4Bpp(array $in, int $width)
+    public static function expandBytes4Bpp(array $in, int $width): array
     {
         $scanlineBytes = intdiv($width + 1, 2);
         $scanlines = array_chunk($in, $scanlineBytes);
@@ -266,34 +269,34 @@ class PngImage
         }
         return $res;
     }
-    
+
     /**
      * Takes 8-bit samples, and produces half as many 16-bit samples.
      */
-    public static function combineBytes16Bpp(array $in)
+    public static function combineBytes16Bpp(array $in): array
     {
         $data = array_values(unpack("n*", pack("C*", ...$in)));
         return $data;
     }
-    
+
     /**
      * We'll use this to mix with a background color.
      */
-    private function alphaMix(array $data, $chunkSize)
+    private function alphaMix(array $data, $chunkSize): array
     {
         // Will need to change to "alphaMixPixel" to [$this, "alphaMixPixel"] once we are in a class.
         $noAlphaPixels = array_map([$this, "alphaMixPixel"], array_chunk($data, $chunkSize, false));
         return array_merge(...$noAlphaPixels);
     }
-    
-    private function alphaMixPixel(array $channels)
+
+    private function alphaMixPixel(array $channels): array
     {
         // Mix alpha to white
         $maxLevel = 2 ** $this -> header -> getBitDepth() - 1;
         $backGround = $maxLevel;
         $alpha = array_pop($channels) / $maxLevel;
         foreach ($channels as $id => $channel) {
-            $pixels[$id] = ($maxLevel - ($maxLevel - $channel) * $alpha);
+            $pixels[$id] = (int)($maxLevel - ($maxLevel - $channel) * $alpha);
         }
         return $pixels;
     }

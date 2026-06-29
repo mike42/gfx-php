@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp;
 
 use Mike42\GfxPhp\Codec\ImageCodec;
@@ -12,9 +14,9 @@ class Image
     const IMAGE_RGB = 3;
     const IMAGE_RGBA = 4;
 
-    protected static $codecs = null;
-    
-    public static function fromFile(string $filename) : RasterImage
+    protected static ?ImageCodec $codecs = null;
+
+    public static function fromFile(string $filename): RasterImage
     {
         // Attempt to catch the cause of any errors
         self::clearLastError();
@@ -26,7 +28,7 @@ class Image
         return self::fromBlob($blob, $filename);
     }
 
-    public static function fromBlob(string $blob, string $filename = null) : RasterImage
+    public static function fromBlob(string $blob, ?string $filename = null): RasterImage
     {
         if (self::$codecs === null) {
             self::$codecs = ImageCodec::getInstance();
@@ -41,8 +43,8 @@ class Image
         }
         return $decoder -> decode($blob);
     }
-    
-    public static function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE)
+
+    public static function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE): BlackAndWhiteRasterImage
     {
         return BlackAndWhiteRasterImage::create($width, $height);
     }
@@ -50,7 +52,7 @@ class Image
     /**
      * Call error_clear_last() if it exists. This is dependent on which PHP runtime is used.
      */
-    private static function clearLastError()
+    private static function clearLastError(): void
     {
         if (function_exists('error_clear_last')) {
             error_clear_last();
@@ -61,7 +63,7 @@ class Image
      * Retrieve the message from error_get_last() if possible. This is very useful for debugging, but it will not
      * always exist or return anything useful.
      */
-    private static function getLastErrorOrDefault(string $default)
+    private static function getLastErrorOrDefault(string $default): string
     {
         if (function_exists('error_clear_last')) {
             $e = error_get_last();

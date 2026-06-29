@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,40 +8,40 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifData
 {
-    const GIF_IMAGE_SEPARATOR="\x2C";
-    const GIF_EXTENSION="\x21";
-    const GIF_EXTENSION_GRAPHIC_CONTROL="\xF9";
-    const GIF_EXTENSION_PLAINTEXT="\x01";
-    const GIF_EXTENSION_APPLICATION="\xFF";
-    const GIF_EXTENSION_COMMENT="\xFE";
+    const GIF_IMAGE_SEPARATOR = "\x2C";
+    const GIF_EXTENSION = "\x21";
+    const GIF_EXTENSION_GRAPHIC_CONTROL = "\xF9";
+    const GIF_EXTENSION_PLAINTEXT = "\x01";
+    const GIF_EXTENSION_APPLICATION = "\xFF";
+    const GIF_EXTENSION_COMMENT = "\xFE";
 
-    private $graphicsBlock;
-    private $specialPurposeBlock;
-    private $unrecognisedBlock;
+    private ?GifGraphicsBlock $graphicsBlock;
+    private ?GifSpecialPurposeBlock $specialPurposeBlock;
+    private ?GifUnknownExt $unrecognisedBlock;
 
-    public function __construct(GifGraphicsBlock $graphicsBlock = null, GifSpecialPurposeBlock $specialPurposeBlock = null, GifUnknownExt $unrecognisedBlock = null)
+    public function __construct(?GifGraphicsBlock $graphicsBlock = null, ?GifSpecialPurposeBlock $specialPurposeBlock = null, ?GifUnknownExt $unrecognisedBlock = null)
     {
         $this->graphicsBlock = $graphicsBlock;
         $this->specialPurposeBlock = $specialPurposeBlock;
         $this->unrecognisedBlock = $unrecognisedBlock;
     }
 
-    public function getUnrecognisedBlock()
+    public function getUnrecognisedBlock(): ?GifUnknownExt
     {
         return $this->unrecognisedBlock;
     }
 
-    public function getSpecialPurposeBlock()
+    public function getSpecialPurposeBlock(): ?GifSpecialPurposeBlock
     {
         return $this->specialPurposeBlock;
     }
 
-    public function getGraphicsBlock()
+    public function getGraphicsBlock(): ?GifGraphicsBlock
     {
         return $this->graphicsBlock;
     }
 
-    public static function fromBin(DataInputStream $in) : GifData
+    public static function fromBin(DataInputStream $in): GifData
     {
         $peek = $in -> peek(2);
         $blockId = $peek[0];
@@ -51,7 +52,7 @@ class GifData
                 $applicationExt = GifApplicationExt::fromBin($in);
                 $specialPurposeBlock = new GifSpecialPurposeBlock($applicationExt, null);
                 return new GifData(null, $specialPurposeBlock, null);
-            } else if ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
+            } elseif ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
                 $commentExt = GifCommentExt::fromBin($in);
                 $specialPurposeBlock = new GifSpecialPurposeBlock(null, $commentExt);
                 return new GifData(null, $specialPurposeBlock, null);
@@ -66,7 +67,7 @@ class GifData
         return new GifData($graphicsBlock, null, null);
     }
 
-    public static function readDataSubBlocks(DataInputStream $in) : array
+    public static function readDataSubBlocks(DataInputStream $in): array
     {
         $blocks = [];
         while ($in -> peek(1) != "\x00") {

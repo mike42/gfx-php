@@ -1,15 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Compression and decompression of binary data in the LZW format, as
  * used in GIF.
  *
- * This is implemented based on these decriptions:
+ * This is implemented based on these descriptions:
  *
  * - http://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp
  * - https://www2.cs.duke.edu/csed/curious/compression/lzw.html
  * - https://www.cs.cmu.edu/~cil/lzw.and.gif.txt
  * - https://rosettacode.org/wiki/LZW_compression
  */
+
 namespace Mike42\GfxPhp\Util;
 
 /**
@@ -17,7 +21,7 @@ namespace Mike42\GfxPhp\Util;
  */
 class LzwCompression
 {
-    public static function compress(string $inp, int $minCodeSize)
+    public static function compress(string $inp, int $minCodeSize): string
     {
         $bits = $minCodeSize + 1;
         $dict = new LzwEncodeDictionary($minCodeSize);
@@ -56,7 +60,7 @@ class LzwCompression
         return $outp -> asString();
     }
 
-    public static function decompress(string $inp, int $minCodeSize)
+    public static function decompress(string $inp, int $minCodeSize): string
     {
         $bits = $minCodeSize + 1;
         $dict = new LzwDecodeDictionary($minCodeSize);
@@ -102,7 +106,7 @@ class LzwCompression
                 $prevcodeStr = $dict -> get($prevcode);
                 $outp .= $prevcodeStr;
                 continue;
-            } else if ($code === $dict -> getEodCode()) {
+            } elseif ($code === $dict -> getEodCode()) {
                 // End the stream
                 break;
             }

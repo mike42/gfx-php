@@ -374,6 +374,8 @@ class GifsuiteTest extends TestCase
         $img = $this -> loadImage("max-codes.gif");
         $this -> assertEquals(100, $img -> getWidth());
         $this -> assertEquals(100, $img -> getHeight());
+        // Verify decoded pixels (minCodeSize 11 / 12-bit codes), matches ImageMagick
+        $this -> assertEquals("bb0cedd8778988cd199f768507b71468", md5($img -> getRasterData()));
     }
 
     function test_max_height() {

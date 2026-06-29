@@ -1,13 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec;
 
 class ImageCodec
 {
-    protected static $instance = null;
+    protected static ?ImageCodec $instance = null;
 
-    protected $encoders;
+    protected array $encoders;
 
-    protected $decoders;
+    protected array $decoders;
 
     public function __construct(array $encoders, array $decoders)
     {
@@ -15,7 +18,7 @@ class ImageCodec
         $this -> decoders = $decoders;
     }
 
-    public function identify(string $blob) : string
+    public function identify(string $blob): string
     {
         foreach ($this -> decoders as $decoder) {
             $identity = $decoder -> identify($blob);
@@ -26,7 +29,7 @@ class ImageCodec
         return '';
     }
 
-    public function getDecoderForFormat(string $format) : ImageDecoder
+    public function getDecoderForFormat(string $format): ImageDecoder
     {
         $format = strtolower($format);
         foreach ($this -> decoders as $decoder) {
@@ -37,7 +40,7 @@ class ImageCodec
         throw new \Exception("No decoder for format $format");
     }
 
-    public function getEncoderForFormat(string $format) : ImageEncoder
+    public function getEncoderForFormat(string $format): ImageEncoder
     {
         $format = strtolower($format);
         foreach ($this -> encoders as $encoder) {
@@ -47,8 +50,8 @@ class ImageCodec
         }
         throw new \Exception("No encoder for format '$format'");
     }
-    
-    public static function getInstance() : ImageCodec
+
+    public static function getInstance(): ImageCodec
     {
         if (self::$instance  === null) {
             $encoders = [

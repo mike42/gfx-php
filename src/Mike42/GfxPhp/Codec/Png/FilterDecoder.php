@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 class FilterDecoder
@@ -6,7 +9,7 @@ class FilterDecoder
     /*
      * Unfilter entire image, or a pass of an interlaced image.
      */
-    public function unfilterImage(string $binData, int $scanlineBytes, int $channels, int $bitDepth)
+    public function unfilterImage(string $binData, int $scanlineBytes, int $channels, int $bitDepth): array
     {
         // Extract filtered data
         $scanlinesWithFiltering = str_split($binData, $scanlineBytes + 1);
@@ -16,7 +19,7 @@ class FilterDecoder
             $filterType[] = ord($scanline[0]);
             $filteredData[] = array_values(unpack("C*", substr($scanline, 1)));
         }
-        
+
         // Transform back to raw data
         $rawData = [];
         $bytesPerPixel = intdiv($bitDepth + 7, 8) * $channels;
@@ -32,7 +35,7 @@ class FilterDecoder
     /**
      * Unfilter an individual scanline
      */
-    public function unfilterScanline(array $currentFiltered, array $prior, int $filterType, int $bpp)
+    public function unfilterScanline(array $currentFiltered, array $prior, int $filterType, int $bpp): array
     {
         $lw = count($currentFiltered);
         if ($filterType === 0) {
@@ -41,7 +44,7 @@ class FilterDecoder
         } elseif ($filterType === 1) {
             $ret = array_fill(0, $lw, 128);
             for ($i = 0; $i < $lw; $i++) {
-                $rawLeft = ($i < $bpp ? 0 : $ret[$i-$bpp]);
+                $rawLeft = ($i < $bpp ? 0 : $ret[$i - $bpp]);
                 $subX = $currentFiltered[$i];
                 $ret[$i] = ($subX + $rawLeft) % 256;
             }
@@ -55,7 +58,7 @@ class FilterDecoder
         } elseif ($filterType === 3) {
             $ret = array_fill(0, $lw, 0);
             for ($i = 0; $i < $lw; $i++) {
-                $prevX = $i < $bpp ? 0 : $ret[$i-$bpp];
+                $prevX = $i < $bpp ? 0 : $ret[$i - $bpp];
                 $priorX = $prior[$i];
                 $avgX = intdiv($prevX + $priorX, 2);
                 $prediction = $currentFiltered[$i] - $avgX;
@@ -65,8 +68,8 @@ class FilterDecoder
         } elseif ($filterType === 4) {
             $ret = array_fill(0, $lw, 0);
             for ($i = 0; $i < $lw; $i++) {
-                $upperLeft = $i < $bpp ? 0 : $prior[$i-$bpp];
-                $left = $i < $bpp ? 0 : $ret[$i-$bpp];
+                $upperLeft = $i < $bpp ? 0 : $prior[$i - $bpp];
+                $left = $i < $bpp ? 0 : $ret[$i - $bpp];
                 $upper = $prior[$i];
                 $ret[$i] = ($this -> paethPredictor($left, $upper, $upperLeft) + $currentFiltered[$i]) % 256;
             }
@@ -75,7 +78,7 @@ class FilterDecoder
         throw new \Exception("Filter type $filterType not valid");
     }
 
-    private function paethPredictor(int $a, int $b, int $c)
+    private function paethPredictor(int $a, int $b, int $c): int
     {
         // Nearest-neighbor, based on pseudocode from the PNG spec.
         $p = $a + $b - $c;
@@ -84,7 +87,7 @@ class FilterDecoder
         $pc = abs($p - $c);
         if ($pa <= $pb && $pa <= $pc) {
             return $a;
-        } else if ($pb <= $pc) {
+        } elseif ($pb <= $pc) {
             return $b;
         }
         return $c;

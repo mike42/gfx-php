@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,9 +8,9 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifApplicationExt
 {
-    private $appIdentifer;
-    private $appAuthCode;
-    private $data;
+    private string $appIdentifer;
+    private string $appAuthCode;
+    private array $data;
 
     public function __construct(string $appIdentifer, string $appAuthCode, array $data)
     {
@@ -33,7 +34,7 @@ class GifApplicationExt
         return $this->data;
     }
 
-    public static function fromBin(DataInputStream $in) : GifApplicationExt
+    public static function fromBin(DataInputStream $in): GifApplicationExt
     {
         $extIntroducer = $in->read(1);
         $extLabel = $in->read(1);

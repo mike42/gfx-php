@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec;
 
 use Exception;
@@ -11,7 +13,7 @@ use Mike42\GfxPhp\RasterImage;
 
 class WbmpCodec implements ImageDecoder, ImageEncoder
 {
-    protected static $instance = null;
+    protected static ?WbmpCodec $instance = null;
 
     public function identify(string $blob): string
     {
@@ -43,7 +45,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return $image;
     }
 
-    public function readInt(DataBlobInputStream $data) : int
+    public function readInt(DataBlobInputStream $data): int
     {
         $i = 0;
         $ret = 0;
@@ -59,7 +61,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return $ret;
     }
 
-    public function writeInt(int $val) : string
+    public function writeInt(int $val): string
     {
         $i = 0;
         $ret = chr($val & 0x7F);
@@ -93,7 +95,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return ["wbmp"];
     }
 
-    public static function getInstance()
+    public static function getInstance(): WbmpCodec
     {
         if (self::$instance === null) {
             self::$instance = new WbmpCodec();

@@ -1,11 +1,15 @@
 <?php
+
 // This file is part of mike42/gfx-php, which is released under LGPL-2.1-or-later.
 // See file LICENSE or go to https://github.com/mike42/gfx-php for full license details
 
+declare(strict_types=1);
+
 /**
  * Top-level namespace for Mike42\GfxPhp, containing the classes and
- * interfaces that a provide an entry-point into the library.
+ * interfaces that provide an entry-point into the library.
  */
+
 namespace Mike42\GfxPhp;
 
 /**
@@ -41,7 +45,7 @@ interface RasterImage
      * @return RasterImage A scaled version of the image.
      */
     public function scale(int $width, int $height): RasterImage;
-    
+
     /**
      * Write the image to a file. The output format is determined by the file extension.
      *
@@ -54,7 +58,7 @@ interface RasterImage
      *
      * @return RgbRasterImage An RGB version of the image.
      */
-    public function toRgb() : RgbRasterImage;
+    public function toRgb(): RgbRasterImage;
 
     /**
      * Get the value of a given pixel. The meaning of the integer value of this pixel is implementation-dependent.
@@ -63,7 +67,7 @@ interface RasterImage
      * @param int $y Y co-ordinate
      * @return int The value of the pixel at ($x, $y).
      */
-    public function getPixel(int $x, int $y) : int;
+    public function getPixel(int $x, int $y): int;
 
     /**
      * Set the value of a given pixel.
@@ -78,18 +82,18 @@ interface RasterImage
      *
      * @return GrayscaleRasterImage A monochrome version of the image.
      */
-    public function toGrayscale() : GrayscaleRasterImage;
+    public function toGrayscale(): GrayscaleRasterImage;
 
     /**
      * Produce a copy of this RasterImage in a pure black-and-white colorspace.
      * @return BlackAndWhiteRasterImage a black and white version of the image.
      */
-    public function toBlackAndWhite() : BlackAndWhiteRasterImage;
+    public function toBlackAndWhite(): BlackAndWhiteRasterImage;
 
     /**
      * Produce a copy of this RasterImage as an indexed image with an associated palette of unique colors.
      *
      * @return IndexedRasterImage An paletted version of the image.
      */
-    public function toIndexed() : IndexedRasterImage;
+    public function toIndexed(): IndexedRasterImage;
 }

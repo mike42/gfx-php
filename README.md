@@ -1,8 +1,9 @@
 # gfx-php - The pure PHP graphics library
 
-[![Build Status](https://travis-ci.org/mike42/gfx-php.svg?branch=master)](https://travis-ci.org/mike42/gfx-php) [![Latest Stable Version](https://poser.pugx.org/mike42/gfx-php/v/stable)](https://packagist.org/packages/mike42/gfx-php)
-[![Total Downloads](https://poser.pugx.org/mike42/gfx-php/downloads)](https://packagist.org/packages/mike42/gfx-php)
-[![License](https://poser.pugx.org/mike42/gfx-php/license)](https://packagist.org/packages/mike42/gfx-php) [![Coverage Status](https://coveralls.io/repos/github/mike42/gfx-php/badge.svg?branch=master)](https://coveralls.io/github/mike42/gfx-php?branch=master)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mike42/gfx-php/ci.yml?branch=main&style=flat-square)](https://github.com/mike42/gfx-php/actions/workflows/ci.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/mike42/gfx-php?style=flat-square&color=007ec6)](https://packagist.org/packages/mike42/gfx-php)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/mike42/gfx-php?style=flat-square)](https://packagist.org/packages/mike42/gfx-php)
+[![Packagist License](https://img.shields.io/packagist/l/mike42/gfx-php?style=flat-square&color=007ec6)](https://packagist.org/packages/mike42/gfx-php)
 
 This library implements input, output and processing of raster images in pure PHP, so that image
 processing extensions (Gd, Imagick) are not required.

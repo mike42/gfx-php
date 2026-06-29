@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Bmp;
 
 use Exception;
@@ -27,27 +30,27 @@ class BmpInfoHeader
     const B1_CMYKRLE8 = 12;
     const B1_CMYKRLE4 = 13;
 
-    public $bpp;
-    public $colors;
-    public $compressedSize;
-    public $compression;
-    public $headerSize;
-    public $height;
-    public $horizontalRes;
-    public $importantColors;
-    public $planes;
-    public $verticalRes;
-    public $width;
-    public $redMask;
-    public $greenMask;
-    public $blueMask;
-    public $alphaMask;
-    public $csType;
-    public $endpoint;
-    public $gamma;
-    public $intent;
-    public $profileData;
-    public $profileSize;
+    public int $bpp;
+    public int $colors;
+    public int $compressedSize;
+    public int $compression;
+    public int $headerSize;
+    public int $height;
+    public int $horizontalRes;
+    public int $importantColors;
+    public int $planes;
+    public int $verticalRes;
+    public int $width;
+    public int $redMask;
+    public int $greenMask;
+    public int $blueMask;
+    public int $alphaMask;
+    public int $csType;
+    public array $endpoint;
+    public array $gamma;
+    public int $intent;
+    public int $profileData;
+    public int $profileSize;
 
     public function __construct(
         int $headerSize,
@@ -75,7 +78,7 @@ class BmpInfoHeader
         $this -> headerSize = $headerSize;
         $this -> width = $width;
         // Not possible to read signed little-endian 32-bit long with unpack(), but height may be negative.
-        $this -> height = ($height >= (2**31)) ? ($height - (2**32)) : $height;
+        $this -> height = ($height >= (2 ** 31)) ? ($height - (2 ** 32)) : $height;
         $this -> planes = $planes;
         $this -> bpp = $bpp;
         $this -> compression = $compression;
@@ -96,7 +99,7 @@ class BmpInfoHeader
         $this -> profileSize = $profileSize;
     }
 
-    public static function fromBinary(DataInputStream $data) : BmpInfoHeader
+    public static function fromBinary(DataInputStream $data): BmpInfoHeader
     {
         $infoHeaderSizeData = $data -> read(4);
         $infoHeaderSize = unpack("V", $infoHeaderSizeData)[1];
@@ -122,7 +125,7 @@ class BmpInfoHeader
         }
     }
 
-    private static function readCoreHeader(DataInputStream $data) : BmpInfoHeader
+    private static function readCoreHeader(DataInputStream $data): BmpInfoHeader
     {
         $infoData = $data -> read(self::BITMAPCOREHEADER_SIZE - 4);
         $fields = unpack("vwidth/vheight/vplanes/vbpp", $infoData);
@@ -135,25 +138,25 @@ class BmpInfoHeader
         );
     }
 
-    private static function getInfoFields(DataInputStream $data) : array
+    private static function getInfoFields(DataInputStream $data): array
     {
         $infoData = $data -> read(self::BITMAPINFOHEADER_SIZE - 4);
         return unpack("Vwidth/Vheight/vplanes/vbpp/Vcompression/VcompressedSize/VhorizontalRes/VverticalRes/Vcolors/VimportantColors", $infoData);
     }
 
-    private static function getV2fields(DataInputStream $data) : array
+    private static function getV2fields(DataInputStream $data): array
     {
         $infoData = $data -> read(self::BITMAPV2INFOHEADER_SIZE - self::BITMAPINFOHEADER_SIZE);
         return unpack("VredMask/VgreenMask/VblueMask", $infoData);
     }
 
-    private static function getV3fields(DataInputStream $data) : array
+    private static function getV3fields(DataInputStream $data): array
     {
         $infoData = $data -> read(self::BITMAPV3INFOHEADER_SIZE - self::BITMAPV2INFOHEADER_SIZE);
         return unpack("ValphaMask", $infoData);
     }
 
-    private static function getV4fields(DataInputStream $data) : array
+    private static function getV4fields(DataInputStream $data): array
     {
         // color space
         $csTypeData = $data -> read(4);
@@ -174,13 +177,13 @@ class BmpInfoHeader
         ];
     }
 
-    private static function getV5fields(DataInputStream $data) : array
+    private static function getV5fields(DataInputStream $data): array
     {
         $infoData = $data -> read(self::BITMAPV5HEADER_SIZE - self::BITMAPV4HEADER_SIZE);
         return unpack("Vintent/VprofileData/VprofileSize/Vreserved", $infoData);
     }
 
-    private static function readBitmapInfoHeader(DataInputStream $data) : BmpInfoHeader
+    private static function readBitmapInfoHeader(DataInputStream $data): BmpInfoHeader
     {
         $extraBytes = 0;
         $infoFields = self::getInfoFields($data);
@@ -223,7 +226,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readBitmapV2InfoHeader(DataInputStream $data) : BmpInfoHeader
+    private static function readBitmapV2InfoHeader(DataInputStream $data): BmpInfoHeader
     {
         $infoFields = self::getInfoFields($data);
         $v2fields = self::getV2fields($data);
@@ -245,7 +248,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readBitmapV3InfoHeader(DataInputStream $data) : BmpInfoHeader
+    private static function readBitmapV3InfoHeader(DataInputStream $data): BmpInfoHeader
     {
         $infoFields = self::getInfoFields($data);
         $v2fields = self::getV2fields($data);
@@ -269,7 +272,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readBitmapV4Header(DataInputStream $data) : BmpInfoHeader
+    private static function readBitmapV4Header(DataInputStream $data): BmpInfoHeader
     {
         // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header
         $infoFields = self::getInfoFields($data);
@@ -298,7 +301,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readBitmapV5Header(DataInputStream $data) : BmpInfoHeader
+    private static function readBitmapV5Header(DataInputStream $data): BmpInfoHeader
     {
         // Structure documented @ https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv5header
         $infoFields = self::getInfoFields($data);
@@ -331,7 +334,7 @@ class BmpInfoHeader
         );
     }
 
-    private static function readOs22xBitmapHeader(int $size, DataInputStream $data)
+    private static function readOs22xBitmapHeader(int $size, DataInputStream $data): BmpInfoHeader
     {
         $coreData = $data -> read(self::OS22XBITMAPHEADER_MIN_SIZE - 4);
         $coreFields = unpack("Vwidth/Vheight/vplanes/vbpp", $coreData);

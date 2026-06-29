@@ -1,0 +1,9 @@
+* text=auto
+
+.gitattributes export-ignore
+.github/ export-ignore
+docs/ export-ignore
+example/ export-ignore
+phpbench.json.dist export-ignore
+phpunit.xml export-ignore
+test/ export-ignore
