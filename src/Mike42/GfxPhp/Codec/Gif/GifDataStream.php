@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Gif;
 
 use Mike42\GfxPhp\Codec\Common\DataInputStream;
@@ -11,10 +13,10 @@ class GifDataStream
     const GIF89_SIGNATURE="GIF89a";
     const GIF_TRAILER="\x3B";
 
-    private $header;
-    private $logicalScreen;
-    private $data;
-    private $trailer;
+    private string $header;
+    private GifLogicalScreen $logicalScreen;
+    private array $data;
+    private string $trailer;
 
     private function __construct(string $header, GifLogicalScreen $logicalScreen, array $data, string $trailer)
     {

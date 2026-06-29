@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 use Mike42\GfxPhp\BlackAndWhiteRasterImage;
@@ -12,9 +14,9 @@ class PngImage
 {
     const PNG_SIGNATURE="\x89\x50\x4E\x47\x0D\x0A\x1A\x0A";
 
-    private $header;
-    private $imageData;
-    private $chunkPalette;
+    private PngHeader $header;
+    private array $imageData;
+    private ?PngChunk $chunkPalette;
     
     private function __construct(PngHeader $header, array $imageData, PngChunk $chunkPalette = null)
     {
@@ -211,7 +213,7 @@ class PngImage
      * Takes 8-bit samples, and produces eight times as many 1-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes1Bpp(array $in, int $width)
+    public static function expandBytes1Bpp(array $in, int $width): array
     {
         $res =  [];
         $scanlineBytes = intdiv($width + 7, 8);
@@ -231,7 +233,7 @@ class PngImage
      * Takes 8-bit samples, and produces four times as many 2-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes2Bpp(array $in, int $width)
+    public static function expandBytes2Bpp(array $in, int $width): array
     {
         $res =  [];
         $scanlineBytes = intdiv($width + 3, 4);
@@ -251,7 +253,7 @@ class PngImage
      * Takes 8-bit samples, and produces twice as many 4-bit samples,
      * dropping padding bits along the way.
      */
-    public static function expandBytes4Bpp(array $in, int $width)
+    public static function expandBytes4Bpp(array $in, int $width): array
     {
         $scanlineBytes = intdiv($width + 1, 2);
         $scanlines = array_chunk($in, $scanlineBytes);
@@ -270,7 +272,7 @@ class PngImage
     /**
      * Takes 8-bit samples, and produces half as many 16-bit samples.
      */
-    public static function combineBytes16Bpp(array $in)
+    public static function combineBytes16Bpp(array $in): array
     {
         $data = array_values(unpack("n*", pack("C*", ...$in)));
         return $data;
@@ -279,21 +281,21 @@ class PngImage
     /**
      * We'll use this to mix with a background color.
      */
-    private function alphaMix(array $data, $chunkSize)
+    private function alphaMix(array $data, $chunkSize): array
     {
         // Will need to change to "alphaMixPixel" to [$this, "alphaMixPixel"] once we are in a class.
         $noAlphaPixels = array_map([$this, "alphaMixPixel"], array_chunk($data, $chunkSize, false));
         return array_merge(...$noAlphaPixels);
     }
     
-    private function alphaMixPixel(array $channels)
+    private function alphaMixPixel(array $channels): array
     {
         // Mix alpha to white
         $maxLevel = 2 ** $this -> header -> getBitDepth() - 1;
         $backGround = $maxLevel;
         $alpha = array_pop($channels) / $maxLevel;
         foreach ($channels as $id => $channel) {
-            $pixels[$id] = ($maxLevel - ($maxLevel - $channel) * $alpha);
+            $pixels[$id] = (int)($maxLevel - ($maxLevel - $channel) * $alpha);
         }
         return $pixels;
     }

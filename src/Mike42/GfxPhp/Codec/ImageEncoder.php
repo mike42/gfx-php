@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec;
 
 use Mike42\GfxPhp\RasterImage;

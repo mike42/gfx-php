@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -8,14 +8,14 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 class GifImageDescriptor
 {
 
-    private $left;
-    private $top;
-    private $width;
-    private $height;
-    private $hasLocalColorTable;
-    private $isInterlaced;
-    private $hasSortedLocalColorTable;
-    private $localColorTableSize;
+    private int $left;
+    private int $top;
+    private int $width;
+    private int $height;
+    private bool $hasLocalColorTable;
+    private bool $isInterlaced;
+    private bool $hasSortedLocalColorTable;
+    private int $localColorTableSize;
 
     public function __construct(int $left, int $top, int $width, int $height, bool $hasLocalColorTable, bool $isInterlaced, bool $hasSortedLocalColorTable, int $localColorTableSize)
     {

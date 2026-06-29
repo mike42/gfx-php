@@ -1,16 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Png;
 
 class InterlaceDecoder
 {
-    private $filterDecoder;
+    private FilterDecoder $filterDecoder;
     
     public function __construct(FilterDecoder $filterDecoder)
     {
         $this -> filterDecoder = $filterDecoder;
     }
     
-    public function decode(PngHeader $header, string $binData)
+    public function decode(PngHeader $header, string $binData): array
     {
         if ($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
             // No interlacing!
@@ -23,7 +25,7 @@ class InterlaceDecoder
         return $imageData;
     }
     
-    private function decodeAdam7Interlace(PngHeader $header, string $binData)
+    private function decodeAdam7Interlace(PngHeader $header, string $binData): array
     {
         $bitDepth = $header -> getBitDepth();
         $width = $header -> getWidth();
@@ -138,7 +140,7 @@ class InterlaceDecoder
         return $imageData;
     }
     
-    private function decodeNoInterlace(PngHeader $header, string $binData)
+    private function decodeNoInterlace(PngHeader $header, string $binData): array
     {
         $bitDepth = $header -> getBitDepth();
         $width = $header -> getWidth();

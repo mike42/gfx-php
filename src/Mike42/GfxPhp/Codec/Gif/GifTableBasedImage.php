@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,10 +7,10 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifTableBasedImage
 {
-    private $imageDescriptor;
-    private $lzqMinSize;
-    private $dataSubBlocks;
-    private $localColorTable;
+    private GifImageDescriptor $imageDescriptor;
+    private int $lzqMinSize;
+    private array $dataSubBlocks;
+    private ?GifColorTable $localColorTable;
 
     public function getImageDescriptor(): GifImageDescriptor
     {
@@ -27,14 +27,13 @@ class GifTableBasedImage
         return $this->dataSubBlocks;
     }
 
-    public function getLocalColorTable()
+    public function getLocalColorTable(): ?GifColorTable
     {
         return $this->localColorTable;
     }
 
     public function __construct(GifImageDescriptor $imageDescriptor, int $lzqMinSize, array $dataSubBlocks, GifColorTable $localColorTable = null)
     {
-
         $this->imageDescriptor = $imageDescriptor;
         $this->lzqMinSize = $lzqMinSize;
         $this->dataSubBlocks = $dataSubBlocks;

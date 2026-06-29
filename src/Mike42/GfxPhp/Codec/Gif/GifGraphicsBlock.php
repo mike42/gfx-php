@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,9 +7,9 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifGraphicsBlock
 {
-    private $graphicControlExt;
-    private $tableBasedImage;
-    private $plaintextExt;
+    private ?GifGraphicControlExt $graphicControlExt;
+    private ?GifTableBasedImage $tableBasedImage;
+    private ?GifPlaintextExt $plaintextExt;
 
     public function __construct(GifGraphicControlExt $graphicControlExt = null, GifTableBasedImage $tableBasedImage = null, GifPlaintextExt $plaintextExt = null)
     {
@@ -18,17 +18,17 @@ class GifGraphicsBlock
         $this->plaintextExt = $plaintextExt;
     }
 
-    public function getGraphicControlExt()
+    public function getGraphicControlExt(): ?GifGraphicControlExt
     {
         return $this->graphicControlExt;
     }
 
-    public function getTableBasedImage()
+    public function getTableBasedImage(): ?GifTableBasedImage
     {
         return $this->tableBasedImage;
     }
 
-    public function getPlaintextExt()
+    public function getPlaintextExt(): ?GifPlaintextExt
     {
         return $this->plaintextExt;
     }

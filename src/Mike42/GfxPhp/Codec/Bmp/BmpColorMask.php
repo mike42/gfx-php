@@ -1,12 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
 class BmpColorMask
 {
-    private $mask;
-    private $len;
-    private $offset;
+    private int $mask;
+    private int $len;
+    private int $offset;
 
     public function __construct(int $mask)
     {
@@ -31,28 +32,28 @@ class BmpColorMask
         $this->len = $len;
     }
 
-    public function getLen()
+    public function getLen(): int
     {
         return $this->len;
     }
 
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
 
-    public function getMask()
+    public function getMask(): int
     {
         return $this->mask;
     }
 
-    public function getValue(int $input)
+    public function getValue(int $input): int
     {
         // Read value 0 to max value
         return ($input & $this -> mask) >> $this -> offset;
     }
 
-    public function getMaxValue()
+    public function getMaxValue(): int
     {
         // Max value for size of this channel
         return (2 ** $this->len)- 1;
@@ -61,7 +62,7 @@ class BmpColorMask
     /**
      * Mask out a value for this channel, and return its value in a 0-255 range
      */
-    public function getNormalisedValue(int $input)
+    public function getNormalisedValue(int $input): int
     {
         // Get raw value, range depends on mask length
         $rawValue = ($input & ($this -> mask)) >> ($this -> offset);

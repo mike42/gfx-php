@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
 
@@ -11,7 +12,7 @@ abstract class AbstractRasterImage implements RasterImage
      *
      * @param int $fill
      */
-    public function rect($startX, $startY, $width, $height, $filled = false, $outline = 1, $fill = 1)
+    public function rect(int $startX, int $startY, int $width, int $height, bool $filled = false, int $outline = 1, int $fill = 1): void
     {
         $this -> horizontalLine($startY, $startX, $startX + $width - 1, $outline);
         $this -> horizontalLine($startY + $height - 1, $startX, $startX + $width - 1, $outline);
@@ -27,21 +28,21 @@ abstract class AbstractRasterImage implements RasterImage
         }
     }
  
-    protected function horizontalLine($y, $startX, $endX, $outline)
+    protected function horizontalLine(int $y, int $startX, int $endX, int $outline): void
     {
         for ($x = $startX; $x <= $endX; $x++) {
             $this -> setPixel($x, $y, $outline);
         }
     }
     
-    protected function verticalLine($x, $startY, $endY, $outline)
+    protected function verticalLine(int $x, int $startY, int $endY, int $outline): void
     {
         for ($y = $startY; $y <= $endY; $y++) {
             $this -> setPixel($x, $y, $outline);
         }
     }
     
-    public function write(string $filename)
+    public function write(string $filename): void
     {
         // Use file extension to decide output codec
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
@@ -82,7 +83,7 @@ abstract class AbstractRasterImage implements RasterImage
         return $ret;
     }
 
-    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height)
+    public function compose(RasterImage $source, int $startX, int $startY, int $destStartX, int $destStartY, int $width, int $height): void
     {
         for ($y = 0; $y < $height; $y++) {
             $srcY = $y + $startY;
