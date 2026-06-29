@@ -88,7 +88,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         $this -> bytesPerRow = intdiv($width + 7, 8);
     }
 
-    public static function create(int $width, int $height, array $data = null) : BlackAndWhiteRasterImage
+    public static function create(int $width, int $height, ?array $data = null) : BlackAndWhiteRasterImage
     {
         $bytesPerRow = intdiv($width + 7, 8);
         $expectedBytes = $bytesPerRow * $height;

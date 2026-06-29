@@ -104,7 +104,7 @@ class RgbRasterImage extends AbstractRasterImage
         $this -> maxVal = $maxVal;
     }
 
-    public static function create($width, $height, array $data = null, $maxVal = 255) : RgbRasterImage
+    public static function create($width, $height, ?array $data = null, $maxVal = 255) : RgbRasterImage
     {
         $expectedBytes = $width * $height * 3;
         if ($data === null) {

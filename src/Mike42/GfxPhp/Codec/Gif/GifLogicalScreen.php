@@ -11,7 +11,7 @@ class GifLogicalScreen
     private GifLogicalScreenDescriptor $logicalScreenDescriptor;
     private ?GifColorTable $globalColorTable;
 
-    public function __construct(GifLogicalScreenDescriptor $logicalScreenDescriptor, GifColorTable $globalColorTable = null)
+    public function __construct(GifLogicalScreenDescriptor $logicalScreenDescriptor, ?GifColorTable $globalColorTable = null)
     {
         $this->logicalScreenDescriptor = $logicalScreenDescriptor;
         $this->globalColorTable = $globalColorTable;

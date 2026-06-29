@@ -61,7 +61,7 @@ class GifDataStream
         throw new \Exception("Could not find image #$imageIndex in GIF file");
     }
 
-    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage, GifGraphicControlExt $graphicControlExt = null) : IndexedRasterImage
+    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage, ?GifGraphicControlExt $graphicControlExt = null) : IndexedRasterImage
     {
 
         $width = $tableBasedImage->getImageDescriptor()->getWidth();

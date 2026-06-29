@@ -32,7 +32,7 @@ class GifTableBasedImage
         return $this->localColorTable;
     }
 
-    public function __construct(GifImageDescriptor $imageDescriptor, int $lzqMinSize, array $dataSubBlocks, GifColorTable $localColorTable = null)
+    public function __construct(GifImageDescriptor $imageDescriptor, int $lzqMinSize, array $dataSubBlocks, ?GifColorTable $localColorTable = null)
     {
         $this->imageDescriptor = $imageDescriptor;
         $this->lzqMinSize = $lzqMinSize;

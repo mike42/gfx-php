@@ -18,7 +18,7 @@ class GifData
     private ?GifSpecialPurposeBlock $specialPurposeBlock;
     private ?GifUnknownExt $unrecognisedBlock;
 
-    public function __construct(GifGraphicsBlock $graphicsBlock = null, GifSpecialPurposeBlock $specialPurposeBlock = null, GifUnknownExt $unrecognisedBlock = null)
+    public function __construct(?GifGraphicsBlock $graphicsBlock = null, ?GifSpecialPurposeBlock $specialPurposeBlock = null, ?GifUnknownExt $unrecognisedBlock = null)
     {
         $this->graphicsBlock = $graphicsBlock;
         $this->specialPurposeBlock = $specialPurposeBlock;

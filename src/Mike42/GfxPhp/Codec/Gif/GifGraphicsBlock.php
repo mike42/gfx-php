@@ -11,7 +11,7 @@ class GifGraphicsBlock
     private ?GifTableBasedImage $tableBasedImage;
     private ?GifPlaintextExt $plaintextExt;
 
-    public function __construct(GifGraphicControlExt $graphicControlExt = null, GifTableBasedImage $tableBasedImage = null, GifPlaintextExt $plaintextExt = null)
+    public function __construct(?GifGraphicControlExt $graphicControlExt = null, ?GifTableBasedImage $tableBasedImage = null, ?GifPlaintextExt $plaintextExt = null)
     {
         $this->graphicControlExt = $graphicControlExt;
         $this->tableBasedImage = $tableBasedImage;

@@ -66,7 +66,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         return $this -> maxVal;
     }
 
-    public static function create($width, $height, array $data = null, $maxVal = 255) : GrayscaleRasterImage
+    public static function create($width, $height, ?array $data = null, $maxVal = 255) : GrayscaleRasterImage
     {
         $expectedBytes = $width * $height;
         if ($data === null) {

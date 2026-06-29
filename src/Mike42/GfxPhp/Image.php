@@ -27,7 +27,7 @@ class Image
         return self::fromBlob($blob, $filename);
     }
 
-    public static function fromBlob(string $blob, string $filename = null) : RasterImage
+    public static function fromBlob(string $blob, ?string $filename = null) : RasterImage
     {
         if (self::$codecs === null) {
             self::$codecs = ImageCodec::getInstance();

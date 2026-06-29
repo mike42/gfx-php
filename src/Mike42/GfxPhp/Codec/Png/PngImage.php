@@ -18,7 +18,7 @@ class PngImage
     private array $imageData;
     private ?PngChunk $chunkPalette;
     
-    private function __construct(PngHeader $header, array $imageData, PngChunk $chunkPalette = null)
+    private function __construct(PngHeader $header, array $imageData, ?PngChunk $chunkPalette = null)
     {
         $this -> header = $header;
         $this -> imageData = $imageData;
