@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Util;
 
 class LzwDecodeDictionary extends AbstractLzwDictionary
 {
-    
     protected array $decodeDict;
-    
+
     public function clear(): void
     {
         $count = 2 << ($this -> minCodeSize - 1);
@@ -18,7 +18,7 @@ class LzwDecodeDictionary extends AbstractLzwDictionary
         $count++;
         $this -> size = $count;
     }
-    
+
     public function get(int $code): string
     {
         if (!$this -> contains($code)) {
@@ -26,12 +26,12 @@ class LzwDecodeDictionary extends AbstractLzwDictionary
         }
         return $this -> decodeDict[$code];
     }
-    
+
     public function contains(int $code): bool
     {
         return $code < $this -> size;
     }
-    
+
     public function add(string $entry): void
     {
         if ($this -> size == AbstractLzwDictionary::MAX_SIZE) {

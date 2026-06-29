@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Common;
@@ -43,12 +44,12 @@ class DataBlobInputStream implements DataInputStream
     {
         return $this -> offset >= strlen($this -> data);
     }
- 
+
     public static function fromBlob(string $blob): DataBlobInputStream
     {
         return new DataBlobInputStream($blob);
     }
-    
+
     public static function fromFilename(string $filename): DataBlobInputStream
     {
         $blob = file_get_contents($filename);

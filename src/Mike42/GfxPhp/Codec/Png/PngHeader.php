@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Png;
@@ -28,8 +29,10 @@ class PngHeader
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
         // Image dimensions
-        if ($width < 1 || $width > 2147483647 ||
-            $height < 1 || $height > 2147483647) {
+        if (
+            $width < 1 || $width > 2147483647 ||
+            $height < 1 || $height > 2147483647
+        ) {
                 throw new \Exception("Invalid image dimensions");
         }
         $this -> width = $width;
@@ -39,16 +42,16 @@ class PngHeader
         if ($colorType === 0 && ($bitDepth === 1 || $bitDepth === 2 || $bitDepth === 4 || $bitDepth === 8 || $bitDepth === 16)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
-        } else if ($colorType === 2 && ($bitDepth === 8 || $bitDepth === 16)) {
+        } elseif ($colorType === 2 && ($bitDepth === 8 || $bitDepth === 16)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
-        } else if ($colorType === 3 && ($bitDepth === 1 || $bitDepth === 2 || $bitDepth === 4 || $bitDepth === 8)) {
+        } elseif ($colorType === 3 && ($bitDepth === 1 || $bitDepth === 2 || $bitDepth === 4 || $bitDepth === 8)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
-        } else if ($colorType === 4 && ($bitDepth === 8 || $bitDepth === 16)) {
+        } elseif ($colorType === 4 && ($bitDepth === 8 || $bitDepth === 16)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
-        } else if ($colorType === 6 && ($bitDepth === 8 || $bitDepth === 16)) {
+        } elseif ($colorType === 6 && ($bitDepth === 8 || $bitDepth === 16)) {
             $this -> bitDepth = $bitDepth;
             $this -> colorType = $colorType;
         } else {
@@ -65,13 +68,15 @@ class PngHeader
         }
             $this -> filter = $filter;
             // Interlace method
-        if ($interlace != PngHeader::INTERLACE_NONE &&
-                $interlace != PngHeader::INTERLACE_ADAM7) {
+        if (
+            $interlace != PngHeader::INTERLACE_NONE &&
+                $interlace != PngHeader::INTERLACE_ADAM7
+        ) {
                 throw new \Exception("Interlace method not supported");
         }
                 $this -> interlace = $interlace;
     }
-    
+
     public static function fromChunk(PngChunk $chunk): PngHeader
     {
         $chunkData = $chunk -> getData();
@@ -84,7 +89,7 @@ class PngHeader
         // Construct
         return new PngHeader($dataItems['width'], $dataItems['height'], $dataItems['bitDepth'], $dataItems['colorType'], $dataItems['compression'], $dataItems['filter'], $dataItems['interlace']);
     }
-    
+
     public function toString(): string
     {
         return "Image dimensions " . $this -> width . " x " . $this -> height .
@@ -94,34 +99,34 @@ class PngHeader
         ", filter " . $this -> filter .
         ", interlace " . $this -> interlace;
     }
-    
+
     public function allowsPalette(): bool
     {
         return $this -> requiresPalette() ||
         $this -> colorType === PngHeader::COLOR_TYPE_RGB ||
         $this -> colorType === PngHeader::COLOR_TYPE_RGBA;
     }
-    
+
     public function requiresPalette(): bool
     {
         return $this -> colorType === PngHeader::COLOR_TYPE_INDEXED;
     }
-    
+
     public function getWidth(): int
     {
         return $this -> width;
     }
-    
+
     public function getHeight(): int
     {
         return $this -> height;
     }
-    
+
     public function getBitDepth(): int
     {
         return $this -> bitDepth;
     }
-    
+
     public function getColorType(): int
     {
         return $this -> colorType;
@@ -144,12 +149,12 @@ class PngHeader
         ];
         return $channelLookup[$this -> getColorType()];
     }
-    
+
     public function getFilter(): int
     {
         return $this -> filter;
     }
-    
+
     public function getInterlace(): int
     {
         return $this -> interlace;

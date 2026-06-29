@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
@@ -27,21 +28,23 @@ class BmpFile
         $this -> palette = $palette;
     }
 
-    public static function fromBinary(DataInputStream $data) : BmpFile
+    public static function fromBinary(DataInputStream $data): BmpFile
     {
         // Read two different headers
         $fileHeader = BmpFileHeader::fromBinary($data);
         $infoHeader = BmpInfoHeader::fromBinary($data);
-        if ($infoHeader -> bpp != 0 &&
+        if (
+            $infoHeader -> bpp != 0 &&
             $infoHeader -> bpp != 1 &&
             $infoHeader -> bpp != 2 &&
             $infoHeader -> bpp != 4 &&
             $infoHeader -> bpp != 8 &&
             $infoHeader -> bpp != 16 &&
             $infoHeader -> bpp != 24 &&
-            $infoHeader -> bpp != 32) {
+            $infoHeader -> bpp != 32
+        ) {
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not valid.");
-        } else if ($infoHeader -> bpp === 0) {
+        } elseif ($infoHeader -> bpp === 0) {
             // Fail early to give a clearer error: bit depth 0 is used for embedding PNG/JPEG in a bitmap
             throw new Exception("Bit depth " . $infoHeader -> bpp . " not supported.");
         }
@@ -50,10 +53,12 @@ class BmpFile
         $colorTable = [];
         if (self::isOs21XBitmap($fileHeader, $infoHeader, $colorCount)) {
             // This type of image may only be 1, 4, 8 or 24 bit
-            if ($infoHeader -> bpp != 1 &&
+            if (
+                $infoHeader -> bpp != 1 &&
                 $infoHeader -> bpp != 4 &&
                 $infoHeader -> bpp != 8 &&
-                $infoHeader -> bpp != 24) {
+                $infoHeader -> bpp != 24
+            ) {
                 throw new Exception("Bit depth " . $infoHeader->bpp . " not valid for OS/2 1.x bitmap.");
             }
             $calculatedTableSize = intdiv($fileHeader -> offset - (BmpInfoHeader::OS21XBITMAPHEADER_SIZE + BmpFileHeader::FILE_HEADER_SIZE), 3);
@@ -83,16 +88,18 @@ class BmpFile
             if ($calculatedOffset > $fileHeader -> offset) {
                 // Apparently we have read into the image data already, better to fail now before we run out of data later in the file
                 throw new Exception("Header extends into image data. File is likely to be corrupt.");
-            } else if ($calculatedOffset < $fileHeader -> offset) {
+            } elseif ($calculatedOffset < $fileHeader -> offset) {
                 // Skip up to the data.
                 $data -> advance($fileHeader -> offset - $calculatedOffset);
             }
         }
         if ($infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_FULL_SIZE || $infoHeader -> headerSize == BmpInfoHeader::OS22XBITMAPHEADER_MIN_SIZE) {
             // Some compression modes in OS/2 V2 bitmaps use the same numeric ID' as unrelated Windows BMP compression modes, but are not supported.
-            if ($infoHeader -> compression != BmpInfoHeader::B1_RGB &&
+            if (
+                $infoHeader -> compression != BmpInfoHeader::B1_RGB &&
                 $infoHeader -> compression != BmpInfoHeader::B1_RLE4 &&
-                $infoHeader -> compression != BmpInfoHeader::B1_RLE8) {
+                $infoHeader -> compression != BmpInfoHeader::B1_RLE8
+            ) {
                 throw new Exception("Compression method not implemented for OS/2 V2 bitmaps");
             }
         }
@@ -205,22 +212,22 @@ class BmpFile
         return true;
     }
 
-    public function toRasterImage() : RasterImage
+    public function toRasterImage(): RasterImage
     {
         $height = abs($this -> infoHeader -> height);
         $width = $this -> infoHeader -> width;
         if ($this -> infoHeader -> bpp == 1) {
             $expandedData = PngImage::expandBytes1Bpp($this -> uncompressedData, $width);
             return IndexedRasterImage::create($width, $height, $expandedData, $this -> palette);
-        } else if ($this -> infoHeader -> bpp == 2) {
+        } elseif ($this -> infoHeader -> bpp == 2) {
             $expandedData = PngImage::expandBytes2Bpp($this -> uncompressedData, $width);
             return IndexedRasterImage::create($this->infoHeader -> width, $height, $expandedData, $this -> palette);
-        } else if ($this -> infoHeader -> bpp == 4) {
+        } elseif ($this -> infoHeader -> bpp == 4) {
             $expandedData = PngImage::expandBytes4Bpp($this -> uncompressedData, $width);
             return IndexedRasterImage::create($width, $height, $expandedData, $this -> palette);
-        } else if ($this -> infoHeader -> bpp == 8) {
+        } elseif ($this -> infoHeader -> bpp == 8) {
             return IndexedRasterImage::create($width, $height, $this -> uncompressedData, $this -> palette);
-        } else if ($this -> infoHeader -> bpp == 16) {
+        } elseif ($this -> infoHeader -> bpp == 16) {
             $masks = BmpColorBitfield::from16bitDefaults();
             if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
                 // Any non-default values?
@@ -230,9 +237,9 @@ class BmpFile
             $decoder = new BmpBitfieldDecoder($masks);
             $expandedData = $decoder -> read16bit($this -> uncompressedData);
             return RgbRasterImage::create($width, $height, $expandedData);
-        } else if ($this -> infoHeader -> bpp == 24) {
+        } elseif ($this -> infoHeader -> bpp == 24) {
             return RgbRasterImage::create($this->infoHeader->width, $this->infoHeader->height, $this->uncompressedData);
-        } else if ($this -> infoHeader -> bpp == 32) {
+        } elseif ($this -> infoHeader -> bpp == 32) {
             $masks = BmpColorBitfield::from32bitDefaults();
             if ($this -> infoHeader -> redMask !== 0 || $this -> infoHeader -> greenMask !== 0 || $this -> infoHeader -> blueMask || $this -> infoHeader -> alphaMask !== 0) {
                 // Any non-default values?

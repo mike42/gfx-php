@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -7,7 +8,6 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifPlaintextExt
 {
-
     private string $header;
 
     public function getHeader(): string
@@ -27,7 +27,7 @@ class GifPlaintextExt
         $this -> data = $data;
     }
 
-    public static function fromBin(DataInputStream $in) : GifPlaintextExt
+    public static function fromBin(DataInputStream $in): GifPlaintextExt
     {
         $introducer = $in->read(1);
         $label = $in->read(1);

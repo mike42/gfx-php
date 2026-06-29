@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Png;
@@ -6,25 +7,25 @@ namespace Mike42\GfxPhp\Codec\Png;
 class InterlaceDecoder
 {
     private FilterDecoder $filterDecoder;
-    
+
     public function __construct(FilterDecoder $filterDecoder)
     {
         $this -> filterDecoder = $filterDecoder;
     }
-    
+
     public function decode(PngHeader $header, string $binData): array
     {
         if ($header -> getInterlace() === PngHeader::INTERLACE_NONE) {
             // No interlacing!
             return $this -> decodeNoInterlace($header, $binData);
-        } else if ($header -> getInterlace() === PngHeader::INTERLACE_ADAM7) {
+        } elseif ($header -> getInterlace() === PngHeader::INTERLACE_ADAM7) {
             return $this -> decodeAdam7Interlace($header, $binData);
         } else {
             throw new \Exception("Unknown interlace type");
         }
         return $imageData;
     }
-    
+
     private function decodeAdam7Interlace(PngHeader $header, string $binData): array
     {
         $bitDepth = $header -> getBitDepth();
@@ -139,7 +140,7 @@ class InterlaceDecoder
         }
         return $imageData;
     }
-    
+
     private function decodeNoInterlace(PngHeader $header, string $binData): array
     {
         $bitDepth = $header -> getBitDepth();

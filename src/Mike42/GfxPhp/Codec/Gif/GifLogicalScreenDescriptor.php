@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -28,7 +29,7 @@ class GifLogicalScreenDescriptor
         $this -> pixelAspectRatio = $pixelAspectRatio;
     }
 
-    public static function fromBin(DataInputStream $in) : GifLogicalScreenDescriptor
+    public static function fromBin(DataInputStream $in): GifLogicalScreenDescriptor
     {
         $sizeData = $in -> read(4);
         $size = unpack("v2", $sizeData);

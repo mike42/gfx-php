@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Png;
@@ -10,7 +11,7 @@ class PngChunk
     private string $type;
     private string $data;
     private int $crc;
-    
+
     public function __construct(string $type, string $data)
     {
         $this -> type = $type;
@@ -20,7 +21,7 @@ class PngChunk
         // this will be compared, if not, it will be written.
         $this -> crc = crc32($type . $data);
     }
-    
+
     public function toBin(): string
     {
         $len = strlen($this -> data);
@@ -29,22 +30,22 @@ class PngChunk
         $crcData = pack("N", $this -> crc);
         return $lenData . $bodyData . $crcData;
     }
-    
+
     public function getCrc(): int
     {
         return $this -> crc;
     }
-    
+
     public function getType(): string
     {
         return $this -> type;
     }
-    
+
     public function getData(): string
     {
         return $this -> data;
     }
-    
+
     public static function isValidChunkName(string $name): bool
     {
         if (array_search($name, ["IHDR", "IDAT", "PLTE", "IEND"], true) !== false) {
@@ -56,7 +57,7 @@ class PngChunk
         }
         return false;
     }
-    
+
     public static function fromBin(DataInputStream $in): ?PngChunk
     {
         if ($in -> isEof()) {
@@ -80,7 +81,7 @@ class PngChunk
         }
         return $chunk;
     }
-    
+
     public function toString(): string
     {
         return $this -> type . " chunk";

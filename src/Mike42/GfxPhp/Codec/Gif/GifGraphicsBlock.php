@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -33,7 +34,7 @@ class GifGraphicsBlock
         return $this->plaintextExt;
     }
 
-    public static function fromBin(DataInputStream $in) : GifGraphicsBlock
+    public static function fromBin(DataInputStream $in): GifGraphicsBlock
     {
         $peek = $in -> peek(2);
         $blockId = $peek[0];
@@ -53,7 +54,7 @@ class GifGraphicsBlock
             if ($extensionId == GifData::GIF_EXTENSION_APPLICATION) {
                 // ImageMagick drops an 'application' block here, which we can discard (gfx-php does not use it at this stage)
                 GifApplicationExt::fromBin($in);
-            } else if ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
+            } elseif ($extensionId == GifData::GIF_EXTENSION_COMMENT) {
                 // Also GIMP places a 'comment' block here.
                 GifCommentExt::fromBin($in);
             } else {
@@ -68,7 +69,7 @@ class GifGraphicsBlock
             // Plain text
             $plaintextExtension = GifPlaintextExt::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, null, $plaintextExtension);
-        } else if ($blockId == GifData::GIF_IMAGE_SEPARATOR) {
+        } elseif ($blockId == GifData::GIF_IMAGE_SEPARATOR) {
             // Table-based image
             $tableBasedImage = GifTableBasedImage::fromBin($in);
             return new GifGraphicsBlock($graphicControlExtension, $tableBasedImage, null);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -40,7 +41,7 @@ class GifTableBasedImage
         $this->localColorTable = $localColorTable;
     }
 
-    public static function fromBin(DataInputStream $in) : GifTableBasedImage
+    public static function fromBin(DataInputStream $in): GifTableBasedImage
     {
         $imageDescriptor = GifImageDescriptor::fromBin($in);
         $localColorTable = null;

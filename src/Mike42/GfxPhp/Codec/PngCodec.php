@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -20,7 +21,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
         }
         return $this -> encodeRgb($image);
     }
-    
+
     public function identify(string $blob): string
     {
         if (substr($blob, 0, 8) == PngImage::PNG_SIGNATURE) {
@@ -35,7 +36,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
         $png = PngImage::fromBinary($data);
         return $png -> toRasterImage();
     }
-    
+
     public function encodeRgb(RgbRasterImage $image): string
     {
         // PNG signature
@@ -71,7 +72,7 @@ class PngCodec implements ImageEncoder, ImageDecoder
     {
         return ["png"];
     }
-    
+
     public static function getInstance(): PngCodec
     {
         if (self::$instance === null) {

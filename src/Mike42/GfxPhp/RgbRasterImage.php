@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -13,12 +14,12 @@ class RgbRasterImage extends AbstractRasterImage
 
     protected int $maxVal;
 
-    public function getWidth() : int
+    public function getWidth(): int
     {
         return $this -> width;
     }
 
-    public function getHeight() : int
+    public function getHeight(): int
     {
         return $this -> height;
     }
@@ -36,7 +37,7 @@ class RgbRasterImage extends AbstractRasterImage
         return $this -> maxVal;
     }
 
-    public function getPixel(int $x, int $y) : int
+    public function getPixel(int $x, int $y): int
     {
         if ($x < 0 || $x >= $this -> width) {
             return 0;
@@ -52,12 +53,12 @@ class RgbRasterImage extends AbstractRasterImage
     {
         return self::intToRgb($val);
     }
-    
+
     public function rgbToIndex(array $val): int
     {
         return self::rgbToInt($val[0], $val[1], $val[2]);
     }
-    
+
     public static function rgbToInt(int $r, int $g, int $b): int
     {
         return ($r << 16) | ($g << 8) | $b;
@@ -104,7 +105,7 @@ class RgbRasterImage extends AbstractRasterImage
         $this -> maxVal = $maxVal;
     }
 
-    public static function create($width, $height, ?array $data = null, $maxVal = 255) : RgbRasterImage
+    public static function create($width, $height, ?array $data = null, $maxVal = 255): RgbRasterImage
     {
         $expectedBytes = $width * $height * 3;
         if ($data === null) {
@@ -125,12 +126,12 @@ class RgbRasterImage extends AbstractRasterImage
         $item = intdiv($bigvalue, $maxVal);
     }
 
-    public function toRgb() : RgbRasterImage
+    public function toRgb(): RgbRasterImage
     {
         return clone $this;
     }
 
-    public function toGrayscale() : GrayscaleRasterImage
+    public function toGrayscale(): GrayscaleRasterImage
     {
         $img = GrayscaleRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {
@@ -143,7 +144,7 @@ class RgbRasterImage extends AbstractRasterImage
         return $img;
     }
 
-    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    public function toBlackAndWhite(): BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {

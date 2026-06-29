@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
@@ -12,7 +13,7 @@ class BmpBitfieldDecoder
         $this -> bitfields = $bitfields;
     }
 
-    public function read16bit(array $inpBytes) : array
+    public function read16bit(array $inpBytes): array
     {
         $red = $this -> bitfields -> getRed();
         $green = $this -> bitfields -> getGreen();
@@ -39,7 +40,7 @@ class BmpBitfieldDecoder
         return $outpBytes;
     }
 
-    public function read32bit(array $inpBytes) : array
+    public function read32bit(array $inpBytes): array
     {
         $red = $this -> bitfields -> getRed();
         $green = $this -> bitfields -> getGreen();

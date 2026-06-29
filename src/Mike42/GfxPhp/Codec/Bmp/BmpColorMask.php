@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
@@ -56,7 +57,7 @@ class BmpColorMask
     public function getMaxValue(): int
     {
         // Max value for size of this channel
-        return (2 ** $this->len)- 1;
+        return (2 ** $this->len) - 1;
     }
 
     /**
@@ -70,7 +71,7 @@ class BmpColorMask
         $normalisedValue = $rawValue;
         if ($this -> len < 8) {
             $normalisedValue = $rawValue << (8 - ($this->len));
-        } else if ($this -> len > 8) {
+        } elseif ($this -> len > 8) {
             $normalisedValue = $rawValue >> (($this->len) - 8);
         }
         // Correct scaling up

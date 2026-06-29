@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -37,12 +38,12 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         $item = 0;
     }
 
-    public function getWidth() : int
+    public function getWidth(): int
     {
         return $this -> width;
     }
 
-    public function getHeight() : int
+    public function getHeight(): int
     {
         return $this -> height;
     }
@@ -67,7 +68,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
     }
 
-    public function getPixel(int $x, int $y) : int
+    public function getPixel(int $x, int $y): int
     {
         if ($x < 0 || $x >= $this -> width) {
             return 0;
@@ -88,7 +89,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         $this -> bytesPerRow = intdiv($width + 7, 8);
     }
 
-    public static function create(int $width, int $height, ?array $data = null) : BlackAndWhiteRasterImage
+    public static function create(int $width, int $height, ?array $data = null): BlackAndWhiteRasterImage
     {
         $bytesPerRow = intdiv($width + 7, 8);
         $expectedBytes = $bytesPerRow * $height;
@@ -107,9 +108,9 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
                 $lower = $this -> getPixel($x, $y + 1) == 1;
                 if ($upper && $lower) {
                     $char = "█";
-                } else if ($upper) {
+                } elseif ($upper) {
                     $char = "▀";
-                } else if ($lower) {
+                } elseif ($lower) {
                     $char = "▄";
                 } else {
                     $char = " ";
@@ -125,7 +126,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
     {
         return pack("C*", ... $this -> data);
     }
-    
+
     public function mapColor(int $srcColor, RasterImage $destImage): int
     {
         if ($destImage instanceof BlackAndWhiteRasterImage) {
@@ -133,9 +134,9 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
         throw new \Exception("Cannot map colors");
     }
-    
-    
-    public function toRgb() : RgbRasterImage
+
+
+    public function toRgb(): RgbRasterImage
     {
         $img = RgbRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {
@@ -146,8 +147,8 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-    
-    public function toGrayscale() : GrayscaleRasterImage
+
+    public function toGrayscale(): GrayscaleRasterImage
     {
         $img = GrayscaleRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {
@@ -159,7 +160,7 @@ class BlackAndWhiteRasterImage extends AbstractRasterImage
         return $img;
     }
 
-    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    public function toBlackAndWhite(): BlackAndWhiteRasterImage
     {
          return clone $this;
     }

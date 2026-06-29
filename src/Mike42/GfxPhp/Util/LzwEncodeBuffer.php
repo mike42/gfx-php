@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Util;
@@ -18,7 +19,7 @@ class LzwEncodeBuffer
         $this -> bitBuffer = 0;
         $this -> bitPos = 0;
     }
-    
+
     public function add(int $code, int $bits): void
     {
         $mask = [];

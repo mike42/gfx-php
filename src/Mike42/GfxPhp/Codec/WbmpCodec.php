@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -44,7 +45,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return $image;
     }
 
-    public function readInt(DataBlobInputStream $data) : int
+    public function readInt(DataBlobInputStream $data): int
     {
         $i = 0;
         $ret = 0;
@@ -60,7 +61,7 @@ class WbmpCodec implements ImageDecoder, ImageEncoder
         return $ret;
     }
 
-    public function writeInt(int $val) : string
+    public function writeInt(int $val): string
     {
         $i = 0;
         $ret = chr($val & 0x7F);

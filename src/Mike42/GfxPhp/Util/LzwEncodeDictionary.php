@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Util;
@@ -6,7 +7,7 @@ namespace Mike42\GfxPhp\Util;
 class LzwEncodeDictionary extends AbstractLzwDictionary
 {
     protected array $encodeDict;
-    
+
     public function clear(): void
     {
         $count = 2 << ($this -> minCodeSize - 1);
@@ -17,7 +18,7 @@ class LzwEncodeDictionary extends AbstractLzwDictionary
         $count++;
         $this -> size = $count;
     }
-    
+
     public function get(string $code): int
     {
         if (!$this -> contains($code)) {
@@ -25,12 +26,12 @@ class LzwEncodeDictionary extends AbstractLzwDictionary
         }
         return $this -> encodeDict[$code];
     }
-    
+
     public function contains(string $code): bool
     {
         return isset($this -> encodeDict[$code]);
     }
-    
+
     public function add(string $entry): void
     {
         if ($this -> size == self::MAX_SIZE) {

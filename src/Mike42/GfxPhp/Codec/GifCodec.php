@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -47,7 +48,7 @@ class GifCodec implements ImageEncoder, ImageDecoder
             $colorTable[] = 0;
             $colorTable[] = 0;
         }
-       
+
         $gct = pack("C*", ... $colorTable);
         // Transparent color for graphic control
         $transparentColorFlag = 0x00;

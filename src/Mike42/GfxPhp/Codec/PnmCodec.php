@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -19,10 +20,10 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         if ($pnmMagic == "P1" || $pnmMagic == "P4") {
             // Portable BitMap
             return "pbm";
-        } else if ($pnmMagic == "P2" || $pnmMagic == "P5") {
+        } elseif ($pnmMagic == "P2" || $pnmMagic == "P5") {
             // Portable GrayMap
             return "pgm";
-        } else if ($pnmMagic == "P3" || $pnmMagic == "P6") {
+        } elseif ($pnmMagic == "P3" || $pnmMagic == "P6") {
             // Portable PixMap
             return "ppm";
         }
@@ -33,9 +34,11 @@ class PnmCodec implements ImageDecoder, ImageEncoder
     {
         // Read header line
         $im_hdr_line = substr($blob, 0, 3);
-        if ($im_hdr_line !== "P4\n" &&
+        if (
+            $im_hdr_line !== "P4\n" &&
             $im_hdr_line !== "P5\n" &&
-            $im_hdr_line !== "P6\n") {
+            $im_hdr_line !== "P6\n"
+        ) {
             throw new Exception("Format not supported. Expected PNM bitmap.");
         }
         $pnmMagicNumber = substr($im_hdr_line, 0, 2);
@@ -119,7 +122,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
         return ["ppm", "pgm", "pbm"];
     }
 
-    protected static function skipComments(string $im_data, int $line_end) : int
+    protected static function skipComments(string $im_data, int $line_end): int
     {
         while ($line_end !== false && substr($im_data, $line_end + 1, 1) == "#") {
             $line_end = strpos($im_data, "\n", $line_end + 1);
@@ -137,7 +140,7 @@ class PnmCodec implements ImageDecoder, ImageEncoder
             // Auto-select based on type of image
             if ($image instanceof BlackAndWhiteRasterImage) {
                 $format = "pbm";
-            } else if ($image instanceof GrayscaleRasterImage) {
+            } elseif ($image instanceof GrayscaleRasterImage) {
                 $format = "pgm";
             } else {
                 $format = "ppm";

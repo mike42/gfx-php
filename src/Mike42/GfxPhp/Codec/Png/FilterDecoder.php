@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Png;
@@ -18,7 +19,7 @@ class FilterDecoder
             $filterType[] = ord($scanline[0]);
             $filteredData[] = array_values(unpack("C*", substr($scanline, 1)));
         }
-        
+
         // Transform back to raw data
         $rawData = [];
         $bytesPerPixel = intdiv($bitDepth + 7, 8) * $channels;
@@ -43,7 +44,7 @@ class FilterDecoder
         } elseif ($filterType === 1) {
             $ret = array_fill(0, $lw, 128);
             for ($i = 0; $i < $lw; $i++) {
-                $rawLeft = ($i < $bpp ? 0 : $ret[$i-$bpp]);
+                $rawLeft = ($i < $bpp ? 0 : $ret[$i - $bpp]);
                 $subX = $currentFiltered[$i];
                 $ret[$i] = ($subX + $rawLeft) % 256;
             }
@@ -57,7 +58,7 @@ class FilterDecoder
         } elseif ($filterType === 3) {
             $ret = array_fill(0, $lw, 0);
             for ($i = 0; $i < $lw; $i++) {
-                $prevX = $i < $bpp ? 0 : $ret[$i-$bpp];
+                $prevX = $i < $bpp ? 0 : $ret[$i - $bpp];
                 $priorX = $prior[$i];
                 $avgX = intdiv($prevX + $priorX, 2);
                 $prediction = $currentFiltered[$i] - $avgX;
@@ -67,8 +68,8 @@ class FilterDecoder
         } elseif ($filterType === 4) {
             $ret = array_fill(0, $lw, 0);
             for ($i = 0; $i < $lw; $i++) {
-                $upperLeft = $i < $bpp ? 0 : $prior[$i-$bpp];
-                $left = $i < $bpp ? 0 : $ret[$i-$bpp];
+                $upperLeft = $i < $bpp ? 0 : $prior[$i - $bpp];
+                $left = $i < $bpp ? 0 : $ret[$i - $bpp];
                 $upper = $prior[$i];
                 $ret[$i] = ($this -> paethPredictor($left, $upper, $upperLeft) + $currentFiltered[$i]) % 256;
             }
@@ -86,7 +87,7 @@ class FilterDecoder
         $pc = abs($p - $c);
         if ($pa <= $pb && $pa <= $pc) {
             return $a;
-        } else if ($pb <= $pc) {
+        } elseif ($pb <= $pc) {
             return $b;
         }
         return $c;

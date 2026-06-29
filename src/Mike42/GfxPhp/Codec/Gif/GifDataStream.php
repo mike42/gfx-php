@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -9,9 +10,9 @@ use Mike42\GfxPhp\Util\LzwCompression;
 
 class GifDataStream
 {
-    const GIF87_SIGNATURE="GIF87a";
-    const GIF89_SIGNATURE="GIF89a";
-    const GIF_TRAILER="\x3B";
+    const GIF87_SIGNATURE = "GIF87a";
+    const GIF89_SIGNATURE = "GIF89a";
+    const GIF_TRAILER = "\x3B";
 
     private string $header;
     private GifLogicalScreen $logicalScreen;
@@ -26,7 +27,7 @@ class GifDataStream
         $this -> trailer = $trailer;
     }
 
-    public static function fromBinary(DataInputStream $data) : GifDataStream
+    public static function fromBinary(DataInputStream $data): GifDataStream
     {
         // Check header
         $header = $data -> read(6);
@@ -45,7 +46,7 @@ class GifDataStream
         return new GifDataStream($header, $logicalScreen, $imageData, $trailer);
     }
 
-    public function toRasterImage(int $imageIndex = 0) : IndexedRasterImage
+    public function toRasterImage(int $imageIndex = 0): IndexedRasterImage
     {
         // Extract an image from the GIF
         $currentIndex = 0;
@@ -61,7 +62,7 @@ class GifDataStream
         throw new \Exception("Could not find image #$imageIndex in GIF file");
     }
 
-    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage, ?GifGraphicControlExt $graphicControlExt = null) : IndexedRasterImage
+    private static function extractImage(GifLogicalScreen $logicalScreen, GifTableBasedImage $tableBasedImage, ?GifGraphicControlExt $graphicControlExt = null): IndexedRasterImage
     {
 
         $width = $tableBasedImage->getImageDescriptor()->getWidth();
@@ -81,7 +82,7 @@ class GifDataStream
         $expectedLen = $width * $height;
         if ($actualLen > $expectedLen) {
             $decompressedData = substr($decompressedData, 0, $expectedLen);
-        } else if ($actualLen < $expectedLen) {
+        } elseif ($actualLen < $expectedLen) {
             throw new \Exception("GIF corrupt or truncated. Expexted $expectedLen pixels for $width x $height image, but only $actualLen pixels were encoded.");
         }
         if ($tableBasedImage -> getImageDescriptor() -> isInterlaced()) {
@@ -97,7 +98,7 @@ class GifDataStream
         return $image;
     }
 
-    private static function deinterlace(int $width, string $data) : string
+    private static function deinterlace(int $width, string $data): string
     {
         // Four-pass GIF de-interlace. Reads input in order.
         $old = str_split($data, $width);

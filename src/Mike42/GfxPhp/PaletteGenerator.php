@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -14,13 +15,13 @@ class PaletteGenerator
         }
         return $colorTable;
     }
-    
+
     public static function blackAndWhitePalette(): array
     {
         // 2 color levels
         return [[255, 255, 255], [0, 0, 0]];
     }
-    
+
     public static function colorPalette(): array
     {
         // Three bits of red, three bits of green, two bits of blue.
@@ -40,7 +41,7 @@ class PaletteGenerator
         }
         return $colorTable;
     }
-    
+
     public static function whitePalette(): array
     {
         return [[255, 255, 255]];

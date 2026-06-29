@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -27,21 +28,21 @@ abstract class AbstractRasterImage implements RasterImage
             }
         }
     }
- 
+
     protected function horizontalLine(int $y, int $startX, int $endX, int $outline): void
     {
         for ($x = $startX; $x <= $endX; $x++) {
             $this -> setPixel($x, $y, $outline);
         }
     }
-    
+
     protected function verticalLine(int $x, int $startY, int $endY, int $outline): void
     {
         for ($y = $startY; $y <= $endY; $y++) {
             $this -> setPixel($x, $y, $outline);
         }
     }
-    
+
     public function write(string $filename): void
     {
         // Use file extension to decide output codec
@@ -54,12 +55,12 @@ abstract class AbstractRasterImage implements RasterImage
         file_put_contents($filename, $blob);
     }
 
-    protected function createCanvas(int $width, int $height) : RasterImage
+    protected function createCanvas(int $width, int $height): RasterImage
     {
         return $this::create($width, $height);
     }
 
-    public function scale(int $width, int $height) : RasterImage
+    public function scale(int $width, int $height): RasterImage
     {
         $img = $this -> createCanvas($width, $height);
         $thisWidth = $this -> getWidth();
@@ -76,7 +77,7 @@ abstract class AbstractRasterImage implements RasterImage
         return $img;
     }
 
-    public function subImage(int $startX, int $startY, int $width, int $height) : RasterImage
+    public function subImage(int $startX, int $startY, int $width, int $height): RasterImage
     {
         $ret = $this::create($width, $height);
         $ret -> compose($this, $startX, $startY, 0, 0, $width, $height);

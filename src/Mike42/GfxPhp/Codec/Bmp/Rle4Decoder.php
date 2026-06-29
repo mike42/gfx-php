@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
@@ -15,7 +16,7 @@ class Rle4Decoder
     const RLE_END_BITMAP = 1;
     const RLE_JUMP = 2;
 
-    public function decode(string $compressedImgData, int $width, int $height) : string
+    public function decode(string $compressedImgData, int $width, int $height): string
     {
         // Read into numeric input.
         $inpNum = array_values(unpack("C*", $compressedImgData));
@@ -40,7 +41,7 @@ class Rle4Decoder
         return implode($outStringArr);
     }
 
-    private function decodeNumbers(array $inpNum, int $width, int $height) : array
+    private function decodeNumbers(array $inpNum, int $width, int $height): array
     {
         // Initialize canvas
         $buffer = new RleCanvas($width, $height);
@@ -54,9 +55,9 @@ class Rle4Decoder
             if ($firstByte === self::RLE_ESCAPE) {
                 if ($secondByte === self::RLE_END_LINE) {
                     $buffer -> endOfLine();
-                } else if ($secondByte === self::RLE_END_BITMAP) {
+                } elseif ($secondByte === self::RLE_END_BITMAP) {
                     $buffer -> endOfBitmap();
-                } else if ($secondByte === self::RLE_JUMP) {
+                } elseif ($secondByte === self::RLE_JUMP) {
                     // "Delta".
                     if ($i + 2 > $len) {  // Need 2 more bytes to find out how far to jump
                         throw new Exception("Unexpected EOF");

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -69,7 +70,7 @@ class BmpCodec implements ImageEncoder, ImageDecoder
         // Convert RGB to BGR
         $item = strrev($item);
     }
-    
+
     public function getEncodeFormats(): array
     {
         return ["bmp", "dib"];

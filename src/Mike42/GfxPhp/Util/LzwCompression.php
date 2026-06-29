@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -12,6 +13,7 @@ declare(strict_types=1);
  * - https://www.cs.cmu.edu/~cil/lzw.and.gif.txt
  * - https://rosettacode.org/wiki/LZW_compression
  */
+
 namespace Mike42\GfxPhp\Util;
 
 /**
@@ -104,7 +106,7 @@ class LzwCompression
                 $prevcodeStr = $dict -> get($prevcode);
                 $outp .= $prevcodeStr;
                 continue;
-            } else if ($code === $dict -> getEodCode()) {
+            } elseif ($code === $dict -> getEodCode()) {
                 // End the stream
                 break;
             }

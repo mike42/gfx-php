@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
 class GifSpecialPurposeBlock
 {
-
     private ?GifApplicationExt $applicationExt;
     private ?GifCommentExt $commentExt;
 

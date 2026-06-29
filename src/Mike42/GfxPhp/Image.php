@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -14,8 +15,8 @@ class Image
     const IMAGE_RGBA = 4;
 
     protected static ?ImageCodec $codecs = null;
-    
-    public static function fromFile(string $filename) : RasterImage
+
+    public static function fromFile(string $filename): RasterImage
     {
         // Attempt to catch the cause of any errors
         self::clearLastError();
@@ -27,7 +28,7 @@ class Image
         return self::fromBlob($blob, $filename);
     }
 
-    public static function fromBlob(string $blob, ?string $filename = null) : RasterImage
+    public static function fromBlob(string $blob, ?string $filename = null): RasterImage
     {
         if (self::$codecs === null) {
             self::$codecs = ImageCodec::getInstance();
@@ -42,7 +43,7 @@ class Image
         }
         return $decoder -> decode($blob);
     }
-    
+
     public static function create(int $width, int $height, int $impl = self::IMAGE_BLACK_WHITE): BlackAndWhiteRasterImage
     {
         return BlackAndWhiteRasterImage::create($width, $height);

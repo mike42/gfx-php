@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -47,7 +48,7 @@ class GifGraphicControlExt
         return $this->transparentColorIndex;
     }
 
-    public static function fromBin(DataInputStream $in) : GifGraphicControlExt
+    public static function fromBin(DataInputStream $in): GifGraphicControlExt
     {
         $extIntroducer = $in->read(1);
         $extLabel = $in->read(1);

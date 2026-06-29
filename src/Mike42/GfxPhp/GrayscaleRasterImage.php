@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -10,19 +11,19 @@ class GrayscaleRasterImage extends AbstractRasterImage
     protected int $height;
 
     protected array $data;
-    
+
     protected int $maxVal;
 
-    public function getWidth() : int
+    public function getWidth(): int
     {
         return $this -> width;
     }
 
-    public function getHeight() : int
+    public function getHeight(): int
     {
         return $this -> height;
     }
-    
+
     public function setPixel(int $x, int $y, int $value): void
     {
         if ($x < 0 || $x >= $this -> width) {
@@ -34,14 +35,14 @@ class GrayscaleRasterImage extends AbstractRasterImage
         // Cut off at max and min
         if ($value < 0) {
             $value = 0;
-        } else if ($value > $this -> maxVal) {
+        } elseif ($value > $this -> maxVal) {
             $value = $this -> maxVal;
         }
         $byte = $y * $this -> width + $x;
         $this -> data[$byte] = $value;
     }
 
-    public function getPixel(int $x, int $y) : int
+    public function getPixel(int $x, int $y): int
     {
         if ($x < 0 || $x >= $this -> width) {
             return 0;
@@ -60,13 +61,13 @@ class GrayscaleRasterImage extends AbstractRasterImage
         $this -> data = $data;
         $this -> maxVal = $maxVal;
     }
-    
+
     public function getMaxVal(): int
     {
         return $this -> maxVal;
     }
 
-    public static function create($width, $height, ?array $data = null, $maxVal = 255) : GrayscaleRasterImage
+    public static function create($width, $height, ?array $data = null, $maxVal = 255): GrayscaleRasterImage
     {
         $expectedBytes = $width * $height;
         if ($data === null) {
@@ -82,7 +83,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         }
         return pack("C*", ... $this -> data);
     }
-    
+
     public function mapColor(int $srcColor, RasterImage $destImage): int
     {
         if ($destImage instanceof GrayscaleRasterImage) {
@@ -94,8 +95,8 @@ class GrayscaleRasterImage extends AbstractRasterImage
         }
         throw new \Exception("Cannot map colors");
     }
-    
-    public function toRgb() : RgbRasterImage
+
+    public function toRgb(): RgbRasterImage
     {
         $img = RgbRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {
@@ -107,13 +108,13 @@ class GrayscaleRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-    
-    public function toGrayscale() : GrayscaleRasterImage
+
+    public function toGrayscale(): GrayscaleRasterImage
     {
         return clone $this;
     }
-    
-    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+
+    public function toBlackAndWhite(): BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
         $threshold = intdiv($this -> maxVal, 2);
@@ -125,7 +126,7 @@ class GrayscaleRasterImage extends AbstractRasterImage
         }
         return $img;
     }
-    
+
     public function toIndexed(): IndexedRasterImage
     {
         if ($this -> maxVal > 255) {

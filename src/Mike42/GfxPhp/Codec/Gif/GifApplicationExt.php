@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -33,7 +34,7 @@ class GifApplicationExt
         return $this->data;
     }
 
-    public static function fromBin(DataInputStream $in) : GifApplicationExt
+    public static function fromBin(DataInputStream $in): GifApplicationExt
     {
         $extIntroducer = $in->read(1);
         $extLabel = $in->read(1);

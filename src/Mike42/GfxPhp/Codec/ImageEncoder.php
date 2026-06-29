@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec;
@@ -7,7 +8,7 @@ use Mike42\GfxPhp\RasterImage;
 
 interface ImageEncoder
 {
-    public function getEncodeFormats() : array;
+    public function getEncodeFormats(): array;
 
-    public function encode(RasterImage $image, string $format) : string;
+    public function encode(RasterImage $image, string $format): string;
 }

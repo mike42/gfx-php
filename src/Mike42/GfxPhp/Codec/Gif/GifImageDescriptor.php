@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
@@ -7,7 +8,6 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifImageDescriptor
 {
-
     private int $left;
     private int $top;
     private int $width;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mike42\GfxPhp;
@@ -6,17 +7,17 @@ namespace Mike42\GfxPhp;
 class IndexedRasterImage extends AbstractRasterImage
 {
     protected int $width;
-    
+
     protected int $height;
-    
+
     protected array $data;
-    
+
     protected int $maxVal;
-    
+
     protected array $palette;
-    
+
     protected int $transparentColor = -1;
-    
+
     protected function __construct(int $width, int $height, array $data, int $maxVal, array $palette)
     {
         $this -> width = $width;
@@ -30,7 +31,7 @@ class IndexedRasterImage extends AbstractRasterImage
     {
         return $this -> palette;
     }
-    
+
     public function getRasterData(): string
     {
 
@@ -49,7 +50,7 @@ class IndexedRasterImage extends AbstractRasterImage
     {
         return $this -> maxVal;
     }
-    
+
     public function setPixel(int $x, int $y, int $value): void
     {
         if ($x < 0 || $x >= $this -> width) {
@@ -79,7 +80,7 @@ class IndexedRasterImage extends AbstractRasterImage
         return $img;
     }
 
-    public function toBlackAndWhite() : BlackAndWhiteRasterImage
+    public function toBlackAndWhite(): BlackAndWhiteRasterImage
     {
         $img = BlackAndWhiteRasterImage::create($this -> width, $this -> height);
         for ($y = 0; $y < $this -> height; $y++) {
@@ -105,7 +106,7 @@ class IndexedRasterImage extends AbstractRasterImage
         return $img;
     }
 
-    public function getPixel(int $x, int $y) : int
+    public function getPixel(int $x, int $y): int
     {
         if ($x < 0 || $x >= $this -> width) {
             return 0;
@@ -152,7 +153,7 @@ class IndexedRasterImage extends AbstractRasterImage
         return 0;
     }
 
-    public function getTransparentColor() : int
+    public function getTransparentColor(): int
     {
         return $this -> transparentColor;
     }
@@ -206,11 +207,11 @@ class IndexedRasterImage extends AbstractRasterImage
             $this -> maxVal = $maxVal;
             $this -> setPalette(PaletteGenerator::colorPalette());
             return;
-        } else if ($maxVal >= 1) {
+        } elseif ($maxVal >= 1) {
             $this -> maxVal = $maxVal;
             $this -> setPalette(PaletteGenerator::blackAndWhitePalette());
             return;
-        } else if ($maxVal >= 0) {
+        } elseif ($maxVal >= 0) {
             $this -> maxVal = $maxVal;
             $this -> setPalette(PaletteGenerator::whitePalette());
             return;
@@ -234,7 +235,7 @@ class IndexedRasterImage extends AbstractRasterImage
         throw new \Exception("Not implemented");
     }
 
-    protected function createCanvas(int $width, int $height) : RasterImage
+    protected function createCanvas(int $width, int $height): RasterImage
     {
         return IndexedRasterImage::create($width, $height, null, $this -> getPalette(), $this -> getMaxVal());
     }
@@ -276,7 +277,7 @@ class IndexedRasterImage extends AbstractRasterImage
         }
         return new IndexedRasterImage($width, $height, $data, $maxVal, $palette);
     }
-    
+
     protected static function validatePalette($palette): array
     {
         // So that we know that we aren't missing any keys, palette should be array, not map.
