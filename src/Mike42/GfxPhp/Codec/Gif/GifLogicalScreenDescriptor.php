@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Gif;
 
@@ -7,14 +8,14 @@ use Mike42\GfxPhp\Codec\Common\DataInputStream;
 
 class GifLogicalScreenDescriptor
 {
-    private $width;
-    private $height;
-    private $hasGlobalColorTable;
-    private $colorResolution;
-    private $hasSortedGlobalColorTable;
-    private $globalColorTableSize;
-    private $backgroundColorIndex;
-    private $pixelAspectRatio;
+    private int $width;
+    private int $height;
+    private bool $hasGlobalColorTable;
+    private int $colorResolution;
+    private bool $hasSortedGlobalColorTable;
+    private int $globalColorTableSize;
+    private int $backgroundColorIndex;
+    private int $pixelAspectRatio;
 
     public function __construct(int $width, int $height, bool $hasGlobalColorTable, int $colorResolution, bool $hasSortedGlobalColorTable, int $globalColorTableSize, int $backgroundColorIndex, int $pixelAspectRatio)
     {
@@ -28,7 +29,7 @@ class GifLogicalScreenDescriptor
         $this -> pixelAspectRatio = $pixelAspectRatio;
     }
 
-    public static function fromBin(DataInputStream $in) : GifLogicalScreenDescriptor
+    public static function fromBin(DataInputStream $in): GifLogicalScreenDescriptor
     {
         $sizeData = $in -> read(4);
         $size = unpack("v2", $sizeData);

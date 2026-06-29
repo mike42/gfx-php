@@ -1,21 +1,19 @@
 {
-    "php_disable_ini": true,
-    "bootstrap": "vendor/autoload.php",
-    "path": "test/benchmark",
-    "php_config": {
-        "extension": [ "json.so" ]
+    "$schema": "vendor/phpbench/phpbench/phpbench.schema.json",
+    "runner.bootstrap": "vendor/autoload.php",
+    "runner.path": "test/benchmark",
+    "runner.php_disable_ini": true,
+    "runner.time_unit": "microseconds",
+    "report.outputs": {
+        "benchmarks_file": {
+            "extends": "html",
+            "path": "benchmarks.html",
+            "title": "gfx-php benchmarks"
+        }
     },
-    "outputs": {
-         "benchmarks_file": {
-             "extends": "html",
-             "file": "benchmarks.html",
-             "title": "gfx-php benchmarks"
-         }
-    },
-    "reports": {
+    "report.generators": {
         "my_report": {
             "extends": "aggregate"
         }
-    },
-    "time_unit": "microseconds"
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mike42\GfxPhp\Codec\Common;
 
 interface DataInputStream

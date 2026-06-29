@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Mike42\GfxPhp\Codec\Bmp;
 
@@ -10,8 +11,9 @@ class BmpFileHeader
 {
     const FILE_HEADER_SIZE = 14;
 
-    public $offset;
-    public $size;
+    public int $offset;
+    public int $size;
+    private string $fileType;
 
     public function __construct(string $fileType, int $size, int $offset)
     {
@@ -20,7 +22,7 @@ class BmpFileHeader
         $this -> offset = $offset;
     }
 
-    public static function fromBinary(DataInputStream $data) : BmpFileHeader
+    public static function fromBinary(DataInputStream $data): BmpFileHeader
     {
         $fileType = $data->read(2);
         if (array_search($fileType, ["BM", "BA", "CI", "CP", "IC", "PT", "OS"]) === false) {
