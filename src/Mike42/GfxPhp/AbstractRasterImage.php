@@ -55,6 +55,16 @@ abstract class AbstractRasterImage implements RasterImage
         file_put_contents($filename, $blob);
     }
 
+    public function getBlob(string $extension): string
+    {
+        // Use extension to decide output codec
+        if ($extension === null || empty($extension)) {
+            throw new \Exception("Cannot generate: No extension.");
+        }
+        $encoder = ImageCodec::getInstance() -> getEncoderForFormat($extension);
+        return $encoder -> encode($this, $extension);
+    }
+
     protected function createCanvas(int $width, int $height): RasterImage
     {
         return $this::create($width, $height);
