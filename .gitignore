@@ -1,6 +1,8 @@
 vendor
 build
+composer.lock
 docs/_build/
 docs/warnings.log
 docs/xml/
 docs/html/
+.phpunit.cache
